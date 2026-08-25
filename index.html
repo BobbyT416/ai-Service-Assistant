@@ -1069,6 +1069,21 @@ window.SERVICE_ASSISTANT_DEVICE_GROUPS={
 html, body { min-height: 100%; }
 body { min-height: 1200px; }
 </style>
+<style id="v132-navigation">
+.change-diagnostic-method{
+  margin-bottom:14px;
+  width:auto;
+}
+.manual-coverage-header .change-diagnostic-method{
+  display:block;
+}
+#problemCategories > .change-diagnostic-method{
+  display:block;
+}
+</style>
+<style id="v133-safe-symptom-routing">
+.warning-status{background:#fff6df!important;border-color:#e4c46a!important}
+</style>
 </head>
 <body>
 <header class="app-header">
@@ -1716,6 +1731,33 @@ function cancelReportPrint(){
 function closeServiceReport(){document.getElementById("serviceReportCard")?.classList.add("hidden");}
 function resetServiceReport(){serviceReportLog=[];serviceReportContext={problem:"",disposition:"",errorCode:"",message:""};serviceReportLastKey="";closeServiceReport();}
 
+function returnToDiagnosticSelection(){
+  // This is deliberately NOT a full reset. Keep the selected machine and
+  // firmware, but return the technician to the method-selection controls.
+  const idsToHide=[
+    "manualCoveragePanel","problemCategories","otherEntry","resultCard",
+    "errorCodeEntry"
+  ];
+  idsToHide.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.classList.add("hidden");
+  });
+
+  const errorPanel=document.getElementById("errorLookupPanel");
+  const messagePanel=document.getElementById("messageLookupPanel");
+  if(errorPanel) errorPanel.classList.remove("lookup-hidden");
+  if(messagePanel) messagePanel.classList.remove("lookup-hidden");
+
+  const select=document.getElementById("problemCategory");
+  if(select) select.value="";
+
+  window._guidedDiagnostic=null;
+  diagnosticHistory=[];
+  const result=document.getElementById("result");
+  if(result) result.innerHTML="";
+  window.scrollTo({top:document.getElementById("selectCard")?.offsetTop || 0,behavior:"smooth"});
+}
+
 function startOverDiagnostic(){
   // "Start Another Diagnosis" means a true clean restart of the application,
   // not merely returning to the previous problem screen.
@@ -2347,6 +2389,7 @@ function startSymptomDiagnosis(label,kind){
    const other=document.getElementById("otherEntry");
    const errorEntry=document.getElementById("errorCodeEntry");
    const resultCard=document.getElementById("resultCard");
+   const manualPanel=document.getElementById("manualCoveragePanel");
    if(errorPanel) errorPanel.classList.add("lookup-hidden");
    if(messagePanel) messagePanel.classList.add("lookup-hidden");
    if(errorEntry) errorEntry.classList.add("hidden");
@@ -2355,6 +2398,13 @@ function startSymptomDiagnosis(label,kind){
    const select=document.getElementById("problemCategory");
    if(select) select.value="";
    if(resultCard) resultCard.classList.add("hidden");
+   if(manualPanel) manualPanel.classList.add("hidden");
+
+   // Keep a visible way to switch methods without restarting the diagnosis.
+   if(categories && !categories.querySelector(".change-diagnostic-method")){
+     categories.insertAdjacentHTML("afterbegin",
+       '<button type="button" class="secondary change-diagnostic-method" onclick="returnToDiagnosticSelection()">← Change Diagnostic Selection</button>');
+   }
    return;
  }
  const r=document.getElementById("result"); diagnosticHistory=[];
@@ -2381,9 +2431,16 @@ function startSymptomDiagnosis(label,kind){
    <button onclick="diagnosticAnswer('boot-display')">Yes</button>
    <button onclick="diagnosticAnswer('boot-blank')">No / blank</button>`;
  } else {
-   html+=`<h2>${escapeHtml(label)}</h2><div class="status">The prototype does not yet contain a verified diagnostic path for this category.</div>
-   <p>The production version will search the verified documentation for the exact model and either start a supported path or clearly state that the information could not be verified.</p>
-   <button class="secondary" onclick="backToOtherDescription()">Back / Edit Description</button>`;
+   html+=`<h2>${escapeHtml(label)}</h2>
+   <div class="status warning-status"><strong>No verified guided procedure is available for this symptom yet.</strong></div>
+   <p>The supplied HP documentation does not provide a standalone technician procedure for this generic symptom. The assistant will not invent troubleshooting steps or recommend a part without documented support.</p>
+   <div class="guided-resolution">
+     <h4>How would you like to continue?</h4>
+     <div class="guided-choice-row">
+       <button type="button" onclick="returnToDiagnosticSelection()">← Change Diagnostic Selection</button>
+       <button type="button" class="secondary" onclick="showManualCoverage()">Browse All Manual Troubleshooting</button>
+     </div>
+   </div>`;
  }
  // Safety net: every diagnostic screen must leave the technician a way
  // to navigate. Branch-specific controls remain primary; this only fills
@@ -2466,6 +2523,11 @@ function manualCoverageSubmitSearch(event){
 function showManualCoverage(){
   const panel=document.getElementById("manualCoveragePanel");
   if(!panel) return;
+
+  // Switching diagnostic methods should not require a full restart.
+  ["errorLookupPanel","messageLookupPanel","errorCodeEntry","problemCategories","otherEntry","resultCard"]
+    .forEach(id=>{ const el=document.getElementById(id); if(el) el.classList.add("hidden"); });
+
   panel.classList.remove("hidden");
 
   const errors=Array.isArray(window.E52645_ERROR_CATALOG) ? window.E52645_ERROR_CATALOG : (typeof E52645_ERROR_CATALOG!=="undefined" ? E52645_ERROR_CATALOG : []);
@@ -2475,6 +2537,8 @@ function showManualCoverage(){
 
   panel.innerHTML=`
     <div class="manual-coverage-header">
+      <button type="button" class="secondary change-diagnostic-method"
+              onclick="returnToDiagnosticSelection()">← Change Diagnostic Selection</button>
       <h3>HP Manual Coverage</h3>
       <p>This index is built from the supplied E52645 service documentation. It lets a technician reach every indexed numerical error and alphabetical control-panel message directly.</p>
       <div class="coverage-stats">
@@ -3895,11 +3959,27 @@ function diagnosticAnswer(answer){
    <div class="status">The 31.03.20 error is no longer present. Record the completed checks and repair, if any.</div>
    <button class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>`;
  } else if(answer==='power-some-life' || answer==='power-none'){
-   html+=`<h2>Power Diagnosis</h2><div class="status">The power condition has been established.</div>
-   <p>The production engine will use the exact model's documented power-on checks before recommending a power supply, controller, or other component.</p>`;
+   html+=`<h2>Power Diagnosis</h2>
+   <div class="status warning-status"><strong>No verified guided procedure is available for this symptom yet.</strong></div>
+   <p>The supplied HP documentation contains power-related procedures tied to specific error conditions, but it does not provide a standalone technician procedure for a generic "Dead / No Power" complaint. The assistant will not invent a power-supply or controller recommendation.</p>
+   <div class="guided-resolution">
+     <h4>How would you like to continue?</h4>
+     <div class="guided-choice-row">
+       <button type="button" onclick="returnToDiagnosticSelection()">← Change Diagnostic Selection</button>
+       <button type="button" class="secondary" onclick="showManualCoverage()">Browse All Manual Troubleshooting</button>
+     </div>
+   </div>`;
  } else if(answer==='boot-display' || answer==='boot-blank'){
-   html+=`<h2>Startup Diagnosis</h2><div class="status">The startup condition has been established.</div>
-   <p>The production engine will distinguish firmware/startup symptoms from hardware faults using verified model documentation.</p>`;
+   html+=`<h2>Startup Diagnosis</h2>
+   <div class="status warning-status"><strong>No verified guided procedure is available for this symptom yet.</strong></div>
+   <p>The supplied HP documentation does not provide a standalone technician procedure for a generic startup complaint without an error code or message. The assistant will not invent troubleshooting steps.</p>
+   <div class="guided-resolution">
+     <h4>How would you like to continue?</h4>
+     <div class="guided-choice-row">
+       <button type="button" onclick="returnToDiagnosticSelection()">← Change Diagnostic Selection</button>
+       <button type="button" class="secondary" onclick="showManualCoverage()">Browse All Manual Troubleshooting</button>
+     </div>
+   </div>`;
  } else if(answer==='location-adf'){
    const cfg=getMachineConfig(currentMachineModel);
    if(cfg && !cfg.hasADF){
