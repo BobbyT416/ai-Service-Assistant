@@ -1084,6 +1084,12 @@ body { min-height: 1200px; }
 <style id="v133-safe-symptom-routing">
 .warning-status{background:#fff6df!important;border-color:#e4c46a!important}
 </style>
+<style id="v134-power-guided">
+.power-source-note{font-size:.9rem}
+</style>
+<style id="v137-power-correction">
+.power-tech-note{margin-top:10px;padding:10px;border-left:4px solid #55708b;background:#f5f7fa}
+</style>
 </head>
 <body>
 <header class="app-header">
@@ -3140,7 +3146,16 @@ function renderGuidedStep(){
 
     const testInfo=extractDiagnosticTestReference(step);
 
-    if(testInfo && isCurrent){
+    if(g.powerMode && isCurrent && n===4){
+      html+=`<div class="guided-test-result">
+        <h4>What was the engine test result?</h4>
+        <p class="muted">Record what happened when the engine test was performed.</p>
+        <div class="guided-choice-row">
+          <button type="button" onclick="guidedPowerEngineResult('printed')">Engine Test Printed</button>
+          <button type="button" class="secondary" onclick="guidedPowerEngineResult('not-printed')">Engine Test Did Not Print</button>
+        </div>
+      </div>`;
+    } else if(testInfo && isCurrent){
       html+=`<div class="diagnostic-navigation">
         <strong>Diagnostic test</strong>
         <div style="margin-top:5px;">${escapeHtml(testInfo.testName)}</div>
@@ -3213,6 +3228,15 @@ function guidedProblemResolved(){
 function guidedNextStep(){
   const g=window._guidedDiagnostic;
   if(!g) return;
+
+  // HP's power procedure only calls for DC-controller replacement when the
+  // engine test page does not print. Step 6 (connector check) is still done
+  // either way, but step 7 is skipped when the engine test printed.
+  if(g.powerMode && g.current===5 && g.engineTestFailed===false){
+    guidedProcedureEndpoint();
+    return;
+  }
+
   if(g.current < g.steps.length-1){
     g.current++;
     renderGuidedStep();
@@ -3238,6 +3262,21 @@ function guidedProcedureEndpoint(){
       </button>
     </div>
   </div>`;
+}
+
+function guidedPowerEngineResult(result){
+  const g=window._guidedDiagnostic;
+  if(!g || !g.powerMode) return;
+
+  g.engineTestFailed=(result==="not-printed");
+  g.results[g.current]=result==="printed"
+    ? "Engine test printed"
+    : "Engine test did not print";
+
+  // HP directs the technician to the DC-controller connector check next
+  // regardless of the engine-test result.
+  g.current++;
+  renderGuidedStep();
 }
 
 function guidedDiagnosticResult(result){
@@ -3959,16 +3998,32 @@ function diagnosticAnswer(answer){
    <div class="status">The 31.03.20 error is no longer present. Record the completed checks and repair, if any.</div>
    <button class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>`;
  } else if(answer==='power-some-life' || answer==='power-none'){
-   html+=`<h2>Power Diagnosis</h2>
-   <div class="status warning-status"><strong>No verified guided procedure is available for this symptom yet.</strong></div>
-   <p>The supplied HP documentation contains power-related procedures tied to specific error conditions, but it does not provide a standalone technician procedure for a generic "Dead / No Power" complaint. The assistant will not invent a power-supply or controller recommendation.</p>
-   <div class="guided-resolution">
-     <h4>How would you like to continue?</h4>
-     <div class="guided-choice-row">
-       <button type="button" onclick="returnToDiagnosticSelection()">← Change Diagnostic Selection</button>
-       <button type="button" class="secondary" onclick="showManualCoverage()">Browse All Manual Troubleshooting</button>
-     </div>
-   </div>`;
+   const completelyDead=(answer==='power-none');
+   const powerSteps=[
+     "Verify the AC power source. Make sure the printer is connected directly to a known-good wall receptacle, not a power strip, surge protector, or UPS. Verify the outlet voltage is appropriate for the printer.",
+     "Try a different known-good wall receptacle and, if available, a different power cord with the same connector and electrical specifications.",
+     "Turn the printer on and check for any indication of life: control-panel illumination, formatter LEDs, fan noise, or motor activity.",
+     "If the printer is completely dead after the outlet and cord checks, isolate the low-voltage power supply (LVPS). With the printer safely powered down, verify that AC input is actually reaching the LVPS and that its connectors are seated correctly.",
+     "If the LVPS is receiving the correct AC input but is not producing its required low-voltage output, the LVPS is the first power-supply component to replace. For an E52645, the documented LVPS is RM2-7951-000CN for 110–127 V or RM2-7952-000CN for 220–240 V.",
+     "After restoring low-voltage power, turn the printer on and retest. If the machine now shows normal startup activity, continue with the appropriate startup/error-code troubleshooting rather than the dead-machine path.",
+     "If the LVPS tests correctly and the machine remains completely dead, continue with DC-controller/power-control isolation using the service manual rather than substituting the 55.00.yy engine-test procedure."
+   ];
+
+   html+=`<h2>Dead Machine / No Power</h2>
+   <div class="status"><strong>Power-source and power-supply diagnosis</strong></div>
+   <p>For a machine that is completely dead, the assistant will not ask the technician to perform an engine test that requires the printer to power on. The HP documentation supports the outlet, surge-protector/UPS, and power-cord checks, and separately documents the E52645 LVPS and its part numbers. The component-level LVPS decision below is identified as <strong>technician electrical isolation</strong>, not as an HP error-code procedure.</p>
+   <div id="guidedStepArea"></div>`;
+   window._guidedDiagnostic={
+     code:"__power__",
+     item:{message:"Dead / No Power"},
+     steps:powerSteps,
+     current:0,
+     results:{},
+     powerMode:true,
+     powerBranch:"dead"
+   };
+   renderGuidedStep();
+ } else if(answer==='boot-display' || answer==='boot-blank'){
  } else if(answer==='boot-display' || answer==='boot-blank'){
    html+=`<h2>Startup Diagnosis</h2>
    <div class="status warning-status"><strong>No verified guided procedure is available for this symptom yet.</strong></div>
