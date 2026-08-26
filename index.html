@@ -1161,7 +1161,7 @@ body { min-height: 1200px; }
 <p style="margin-top:0">Start by telling the app what you know.</p>
 <h3 style="margin-bottom:8px">Do you have an error code?</h3>
 
-<div class="lookup-choice-grid"><button class="lookup-choice" onclick="showLookup('error')"><strong>Numerical Error Code</strong><span>For codes such as 53.B0.05 or 65.80.A0</span></button><button class="lookup-choice" onclick="showLookup('message')"><strong>Alphabetical Message</strong><span>For messages shown on the control panel</span></button></div><div id="errorLookupPanel" class="lookup-panel lookup-hidden"><h3>Enter Numerical Error Code</h3><input id="errorCodeLookup" class="lookup-input" autocomplete="off" placeholder="Example: 53.B0.05"><button type="button" class="lookup-enter" onclick="submitErrorLookup(event)">Enter Error Code</button><div class="lookup-help">Enter the code exactly as shown on the machine.</div><div id="errorCodeResults" class="lookup-results"></div></div><div id="messageLookupPanel" class="lookup-panel lookup-hidden"><h3>Enter Alphabetical Message</h3><input id="messageLookup" class="lookup-input" autocomplete="off" placeholder="Example: Bad optional tray connection"><button type="button" class="lookup-enter" onclick="submitMessageLookup(event)">Enter Message</button><div class="lookup-help">You can enter the complete message or just enough to find it.</div><div id="messageResults" class="lookup-results"></div></div><div class="lookup-divider">or</div><button onclick="startSymptomDiagnosis()">I don't have an error code or message</button><button class="secondary" type="button" onclick="showManualCoverage()">Browse All Manual Troubleshooting</button>
+<div class="lookup-choice-grid"><button type="button" class="lookup-choice" onclick="showLookup('error')"><strong>Numerical Error Code</strong><span>For codes such as 53.B0.05 or 65.80.A0</span></button><button type="button" class="lookup-choice" onclick="showLookup('message')"><strong>Alphabetical Message</strong><span>For messages shown on the control panel</span></button></div><div id="errorLookupPanel" class="lookup-panel lookup-hidden"><h3>Enter Numerical Error Code</h3><input id="errorCodeLookup" class="lookup-input" autocomplete="off" placeholder="Example: 53.B0.05"><button type="button" class="lookup-enter" onclick="submitErrorLookup(event)">Enter Error Code</button><div class="lookup-help">Enter the code exactly as shown on the machine.</div><div id="errorCodeResults" class="lookup-results"></div></div><div id="messageLookupPanel" class="lookup-panel lookup-hidden"><h3>Enter Alphabetical Message</h3><input id="messageLookup" class="lookup-input" autocomplete="off" placeholder="Example: Bad optional tray connection"><button type="button" class="lookup-enter" onclick="submitMessageLookup(event)">Enter Message</button><div class="lookup-help">You can enter the complete message or just enough to find it.</div><div id="messageResults" class="lookup-results"></div></div><div class="lookup-divider">or</div><button onclick="startSymptomDiagnosis()">I don't have an error code or message</button><button class="secondary" type="button" onclick="showManualCoverage()">Browse All Manual Troubleshooting</button>
 
 <!-- Variable/template error-code completion -->
 
@@ -2592,6 +2592,27 @@ function showManualCoverage(){
   panel.scrollIntoView({behavior:"smooth",block:"start"});
 }
 
+
+function showProcedureAudit(){
+  const errors=Array.isArray(window.E52645_ERROR_CATALOG)?window.E52645_ERROR_CATALOG:[];
+  const messages=Array.isArray(window.E52645_ALPHABETICAL_MESSAGES)?window.E52645_ALPHABETICAL_MESSAGES:[];
+  const emptyErrors=errors.filter(x=>!Array.isArray(x.steps)||!x.steps.length);
+  const emptyMessages=messages.filter(x=>!Array.isArray(x.actions)||!x.actions.length);
+  const r=document.getElementById("result");
+  if(!r) return;
+  r.innerHTML=`
+    <div class="pill">E52645 Manual Audit</div>
+    <h2>Procedure Coverage Audit</h2>
+    <div class="status"><strong>${errors.length}</strong> numerical entries; <strong>${errors.length-emptyErrors.length}</strong> currently have stored steps.</div>
+    <div class="status"><strong>${messages.length}</strong> alphabetical messages; <strong>${messages.length-emptyMessages.length}</strong> currently have stored actions.</div>
+    <p>Entries without verified stored steps/actions are flagged for reconciliation against the HP manual before they are exposed as guided troubleshooting.</p>
+    <h3>Numerical entries needing reconciliation</h3>
+    <div class="audit-list">${emptyErrors.slice(0,100).map(x=>`<div>${escapeHtml(x.code||x.message||"Unnamed entry")}</div>`).join("")||"<div>None</div>"}</div>
+    <h3>Alphabetical messages needing reconciliation</h3>
+    <div class="audit-list">${emptyMessages.slice(0,100).map(x=>`<div>${escapeHtml(x.message||x.code||"Unnamed message")}</div>`).join("")||"<div>None</div>"}</div>
+    <button type="button" class="secondary" onclick="startOverDiagnostic()">Back</button>`;
+}
+
 function manualCoverageNormalize(text){
   return String(text||"")
     .toLowerCase()
@@ -2733,7 +2754,14 @@ function openManualMessageFromIndex(index){
   diagnosticAnswer("alphabetical-message");
 }
 
-function showLookup(which){const ep=document.getElementById("errorLookupPanel"),mp=document.getElementById("messageLookupPanel");if(ep)ep.classList.toggle("lookup-hidden",which!=="error");if(mp)mp.classList.toggle("lookup-hidden",which!=="message");const el=document.getElementById(which==="error"?"errorCodeLookup":"messageLookup");if(el)el.focus();}
+function showLookup(which){
+  const ep=document.getElementById("errorLookupPanel");
+  const mp=document.getElementById("messageLookupPanel");
+  if(ep){ ep.classList.toggle("lookup-hidden", which!=="error"); ep.style.display=(which==="error")?"block":"none"; }
+  if(mp){ mp.classList.toggle("lookup-hidden", which!=="message"); mp.style.display=(which==="message")?"block":"none"; }
+  const el=document.getElementById(which==="error"?"errorCodeLookup":"messageLookup");
+  if(el){ try{el.focus({preventScroll:true});}catch(e){el.focus();} }
+}
 function beginErrorCodeDiagnosis(code){
   const raw=String(code||"").trim();
   if(!raw) return;
@@ -2793,6 +2821,14 @@ function submitMessageLookup(event){
   searchAlphabeticalMessages(text);
 }
 document.addEventListener("keydown",function(e){if(e.key!=="Enter")return;if(document.activeElement?.id==="errorCodeLookup"){e.preventDefault();submitErrorLookup();}else if(document.activeElement?.id==="messageLookup"){e.preventDefault();submitMessageLookup();}});
+document.addEventListener("DOMContentLoaded",function(){
+  document.querySelectorAll(".lookup-choice").forEach(function(btn){
+    btn.addEventListener("click",function(e){
+      const label=(btn.textContent||"").toLowerCase();
+      showLookup(label.includes("alphabetical")?"message":"error");
+    });
+  });
+});
 function searchErrorCodes(value){
   const box=document.getElementById("errorCodeResults");
   if(!box) return;
@@ -3014,12 +3050,23 @@ function renderDocumentedErrorBranch(raw){
       results:{}
     };
     renderGuidedStep();
+  } else {
+    const resultBox=document.getElementById("guidedStepArea");
+    if(resultBox){
+      resultBox.innerHTML=`<div class="status warning-status"><strong>No verified guided procedure is available for this entry.</strong></div>
+      <p>The manual index contains this entry, but its technician procedure has not been verified as a complete step-by-step workflow. The app will not invent troubleshooting steps.</p>`;
+    }
   }
 
   window.scrollTo({top:document.getElementById("resultCard").offsetTop-20,behavior:"smooth"});
   return true;
 }
 
+
+function isNonTechnicianSupportStep(t){
+  const v=String(t||"").toLowerCase();
+  return /contact (?:hp|customer|technical) support|call (?:hp|customer|technical) support|contact (?:your )?hp-authorized service/.test(v);
+}
 
 function getTechnicianProcedureSteps(rawSteps){
   if(!Array.isArray(rawSteps)) return [];
@@ -3998,20 +4045,18 @@ function diagnosticAnswer(answer){
    <div class="status">The 31.03.20 error is no longer present. Record the completed checks and repair, if any.</div>
    <button class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>`;
  } else if(answer==='power-some-life' || answer==='power-none'){
-   const completelyDead=(answer==='power-none');
    const powerSteps=[
-     "Verify the AC power source. Make sure the printer is connected directly to a known-good wall receptacle, not a power strip, surge protector, or UPS. Verify the outlet voltage is appropriate for the printer.",
-     "Try a different known-good wall receptacle and, if available, a different power cord with the same connector and electrical specifications.",
-     "Turn the printer on and check for any indication of life: control-panel illumination, formatter LEDs, fan noise, or motor activity.",
-     "If the printer is completely dead after the outlet and cord checks, isolate the low-voltage power supply (LVPS). With the printer safely powered down, verify that AC input is actually reaching the LVPS and that its connectors are seated correctly.",
-     "If the LVPS is receiving the correct AC input but is not producing its required low-voltage output, the LVPS is the first power-supply component to replace. For an E52645, the documented LVPS is RM2-7951-000CN for 110–127 V or RM2-7952-000CN for 220–240 V.",
-     "After restoring low-voltage power, turn the printer on and retest. If the machine now shows normal startup activity, continue with the appropriate startup/error-code troubleshooting rather than the dead-machine path.",
-     "If the LVPS tests correctly and the machine remains completely dead, continue with DC-controller/power-control isolation using the service manual rather than substituting the 55.00.yy engine-test procedure."
+     "Turn the printer off and disconnect it from any power strip, surge protector, UPS, or extension cord. Connect the printer directly to a dedicated wall outlet.",
+     "Check the power source. If the area has experienced brownouts or other power-quality problems, correct the source-power issue before replacing a printer component.",
+     "Verify the wall outlet is working and that the outlet voltage matches the printer's voltage specification. If available, test with another known-working outlet and a power cord with the same connector and power specifications.",
+     "With the printer still completely dead, inspect and reseat the accessible power-supply and DC-controller connections. Make sure the connections are secure before replacing a part.",
+     "If the power source is good, the printer is connected directly to the wall, the power connections are secure, and the machine remains completely dead, replace the low-voltage power supply (LVPS). E52645 LVPS: RM2-7951-000CN for 110–127 VAC or RM2-7952-000CN for 220–240 VAC.",
+     "After replacing the LVPS, reconnect the power cord and turn the printer on. Verify that the printer initializes and produces normal startup activity."
    ];
 
    html+=`<h2>Dead Machine / No Power</h2>
-   <div class="status"><strong>Power-source and power-supply diagnosis</strong></div>
-   <p>For a machine that is completely dead, the assistant will not ask the technician to perform an engine test that requires the printer to power on. The HP documentation supports the outlet, surge-protector/UPS, and power-cord checks, and separately documents the E52645 LVPS and its part numbers. The component-level LVPS decision below is identified as <strong>technician electrical isolation</strong>, not as an HP error-code procedure.</p>
+   <div class="status"><strong>Power-source → LVPS troubleshooting</strong></div>
+   <p>Start with the external power source and work inward. If the source power and connections are good and the printer remains completely dead, the troubleshooting path leads to the LVPS.</p>
    <div id="guidedStepArea"></div>`;
    window._guidedDiagnostic={
      code:"__power__",
