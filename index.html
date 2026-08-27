@@ -4358,10 +4358,18 @@ function diagnosticAnswer(answer){
    renderGuidedStep();
  } else if(answer==='boot-stuck'){
    html+=`<h2>Hangs / Will Not Boot — Stuck During Startup</h2>
-   <div class="status"><strong>Is the printer stuck on "Initializing" or otherwise not completing startup?</strong></div>
+   <div class="status"><strong>First, let's identify the type of startup hang.</strong></div>
+   <p><strong>Is the printer stuck on "Initializing," with the counter continuing to climb to an unusually high number?</strong></p>
+   <div class="guided-choice-row">
+     <button type="button" onclick="diagnosticAnswer('boot-initializing-count')">Yes — the Initializing counter keeps climbing</button>
+     <button type="button" class="secondary" onclick="diagnosticAnswer('boot-heartbeat')">No — it is stuck somewhere else</button>
+   </div>
+   <p class="muted">If the Initializing counter is continuously increasing, try the supplemental power-drain reset before checking the formatter heartbeat.</p>`;
+ } else if(answer==='boot-initializing-count'){
+   html+=`<h2>Stuck on Initializing — Supplemental Power-Drain Reset</h2>
    <div class="supplemental-info" style="margin:16px 0;padding:16px;border-radius:14px;background:#eef6ff;border:1px solid #c8def5;">
-     <h3 style="margin-top:0;">Supplemental Power-Drain Reset</h3>
-     <p style="margin-top:0;"><strong>This is supplemental technician information, not a model-specific service-manual procedure.</strong> HP support documentation for multiple LaserJet models describes closely related hard-reset/power-drain procedures for printers that are stuck initializing.</p>
+     <h3 style="margin-top:0;">Try This First</h3>
+     <p style="margin-top:0;"><strong>Supplemental technician information — applies across supported printer models.</strong> This is not presented as a model-specific service-manual procedure. HP support documentation for multiple LaserJet models describes closely related hard-reset/power-drain procedures for printers that are stuck initializing.</p>
      <ol>
        <li>Turn the printer off.</li>
        <li>Unplug the power cord from the printer or wall outlet.</li>
@@ -4369,8 +4377,20 @@ function diagnosticAnswer(answer){
        <li>Reconnect the power cord directly to a known-good wall outlet. Avoid a surge protector, UPS, or extension cord during the test.</li>
        <li>Turn the printer on and allow it to complete its normal initialization.</li>
      </ol>
-     <p class="muted" style="margin-bottom:0;"><strong>Technician note:</strong> If this clears the condition, continue testing to determine why the machine became stuck. If it does not, continue with the model-specific startup diagnostics below.</p>
    </div>
+   <div class="status"><strong>After the power-drain reset, did the printer complete initialization?</strong></div>
+   <div class="guided-choice-row">
+     <button type="button" onclick="diagnosticAnswer('boot-reset-resolved')">Yes — startup completed</button>
+     <button type="button" class="secondary" onclick="diagnosticAnswer('boot-heartbeat')">No — still stuck</button>
+   </div>
+   <p class="muted">If the reset clears the condition, continue testing the machine normally. If it remains stuck, continue to the model-specific startup diagnostics.</p>`;
+ } else if(answer==='boot-reset-resolved'){
+   html+=`<h2>Startup Completed</h2>
+   <div class="status"><strong>The power-drain reset cleared the startup condition.</strong></div>
+   <p>Allow the printer to finish initializing and verify normal operation. If the condition returns, record when it occurs and continue with the applicable model-specific troubleshooting path.</p>
+   <button class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>`;
+ } else if(answer==='boot-heartbeat'){
+   html+=`<h2>Hangs / Will Not Boot — Formatter Heartbeat</h2>
    <div class="status"><strong>Next: check the formatter heartbeat LED.</strong><br>HP documents the heartbeat LED as a way to distinguish firmware/formatter/control-panel conditions during startup.</div>
    <p><strong>What color/state is the heartbeat LED after the startup attempt?</strong></p>
    <select onchange="diagnosticSelectChanged(this.value)" class="diagnostic-select">
