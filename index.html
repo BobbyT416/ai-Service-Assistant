@@ -5312,10 +5312,10 @@ function diagnosticAnswer(answer){
    const code=document.getElementById("scannerError")?.value.trim();
    html += `<h2>Scanner Diagnostic</h2><div class="status">You entered: <strong>${escapeHtml(code || "no code")}</strong></div>`;
  }
+ if(isPrintQualityPrintPath(answer)) html += repetitiveDefectRulerButton();
  if(!/startOverDiagnostic\(\)/.test(html)){
    html += '<button class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>';
  }
- if(isPrintQualityPrintPath(answer)) html += repetitiveDefectRulerButton();
 
  r.innerHTML=html + '<div style="margin-top:18px">' + addBackButton() + '</div>';
 
