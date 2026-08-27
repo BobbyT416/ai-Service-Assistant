@@ -1180,7 +1180,7 @@ body { min-height: 1200px; }
     </div>
   </div>
   <div class="app-header-actions">
-    <button type="button" class="header-action" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Main menu">⌂ <span>Home</span></button>
+    <button type="button" class="header-action" onclick="startOverDiagnostic()" aria-label="Reset and return Home" title="Reset diagnosis and return Home">⌂ <span>Home</span></button>
   </div>
 </header>
 <main>
@@ -1240,7 +1240,7 @@ body { min-height: 1200px; }
 <p style="margin-top:0">Start by telling the app what you know.</p>
 <h3 style="margin-bottom:8px">Do you have an error code?</h3>
 
-<div class="lookup-choice-grid"><button type="button" class="lookup-choice" onclick="showLookup('error')"><strong>Numerical Error Code</strong><span>For codes such as 53.B0.05 or 65.80.A0</span></button><button type="button" class="lookup-choice" onclick="showLookup('message')"><strong>Alphabetical Message</strong><span>For messages shown on the control panel</span></button><button type="button" class="lookup-choice" onclick="showPartLookup()"><strong>Part Lookup Only</strong><span>Find a documented part without starting a diagnosis</span></button></div><div id="partLookupPanel" class="part-lookup-panel lookup-hidden"><h3>Part Lookup Only</h3><div class="status"><strong>Machine identification matters.</strong><br>Part numbers can change between models, configurations, voltage versions, simplex/duplex versions, and other options. Copier Wizard will only show parts supported by the supplied documentation for the selected model.</div><div class="part-lookup-grid"><div class="part-lookup-field"><label for="partLookupProduct">Product Number</label><input id="partLookupProduct" autocomplete="off" placeholder="Enter product number if known"></div><div class="part-lookup-field"><label for="partLookupSerial">Serial Number <span style="font-weight:400">(optional)</span></label><input id="partLookupSerial" autocomplete="off" placeholder="Enter serial number if known"></div></div><div class="part-lookup-note">The product number is especially useful when a model has multiple configurations. The serial number can help identify the exact machine, but this offline build does not query HP's serial-number database, so it will never use a serial number to guess a part number.</div><div class="part-lookup-field" style="margin-top:14px"><label for="partLookupQuery">What part are you looking for?</label><input id="partLookupQuery" autocomplete="off" placeholder="Example: fuser, formatter, transfer roller, LVPS, RM2-2585-000CN"></div><button type="button" class="part-lookup-search" onclick="runPartLookup()">Search Parts</button><div id="partLookupResults" class="part-lookup-results"></div></div><div id="errorLookupPanel" class="lookup-panel lookup-hidden"><h3>Enter Numerical Error Code</h3><input id="errorCodeLookup" class="lookup-input" autocomplete="off" placeholder="Example: 53.B0.05"><button type="button" class="lookup-enter" onclick="submitErrorLookup(event)">Enter Error Code</button><div class="lookup-help">Enter the code exactly as shown on the machine.</div><div id="errorCodeResults" class="lookup-results"></div></div><div id="messageLookupPanel" class="lookup-panel lookup-hidden"><h3>Enter Alphabetical Message</h3><input id="messageLookup" class="lookup-input" autocomplete="off" placeholder="Example: Bad optional tray connection"><button type="button" class="lookup-enter" onclick="submitMessageLookup(event)">Enter Message</button><div class="lookup-help">You can enter the complete message or just enough to find it.</div><div id="messageResults" class="lookup-results"></div></div><div class="lookup-divider">or</div><button onclick="startSymptomDiagnosis()">I don't have an error code or message</button><button class="secondary" type="button" onclick="showManualCoverage()">Browse All Manual Troubleshooting</button>
+<div class="lookup-choice-grid"><button type="button" class="lookup-choice" onclick="showLookup('error')"><strong>Numerical Error Code</strong><span>For codes such as 53.B0.05 or 65.80.A0</span></button><button type="button" class="lookup-choice" onclick="showLookup('message')"><strong>Alphabetical Message</strong><span>For messages shown on the control panel</span></button><button type="button" class="lookup-choice" onclick="showPartLookup()"><strong>Part Lookup Only</strong><span>Find a documented part without starting a diagnosis</span></button></div><div id="partLookupPanel" class="part-lookup-panel lookup-hidden"><h3>Part Lookup Only</h3><div class="status"><strong>Machine identification matters.</strong><br>Part numbers can change between models, configurations, voltage versions, simplex/duplex versions, and other options. Copier Wizard will only show parts supported by the supplied documentation for the selected model.</div><div class="part-lookup-grid"><div class="part-lookup-field"><label for="partLookupProduct">Product Number</label><input id="partLookupProduct" autocomplete="off" placeholder="Enter product number"></div><div class="part-lookup-field"><label for="partLookupSerial">Serial Number <span style="font-weight:400">(optional)</span></label><input id="partLookupSerial" autocomplete="off" placeholder="Enter serial number if known"></div></div><div class="part-lookup-note">Enter the product number and, if available, the serial number. Copier Wizard will first verify the machine identity against its recognized product-number data. The serial number is recorded as additional identification; this offline build does not query HP's serial-number database.</div><button type="button" class="part-lookup-search" id="verifyPartMachineBtn" onclick="verifyPartMachineForLookup()">Verify Machine</button><div id="partLookupIdentity" class="part-lookup-results"></div><div id="partLookupSearchArea" class="lookup-hidden" style="margin-top:14px"><div class="part-lookup-field"><label for="partLookupQuery">What part are you looking for?</label><input id="partLookupQuery" autocomplete="off" placeholder="Example: roller, toner, formatter, fuser, LVPS, or part number"></div><button type="button" class="part-lookup-search" onclick="runVerifiedPartLookup()">Search Parts</button><div id="partLookupResults" class="part-lookup-results"></div></div></div><div id="errorLookupPanel" class="lookup-panel lookup-hidden"><h3>Enter Numerical Error Code</h3><input id="errorCodeLookup" class="lookup-input" autocomplete="off" placeholder="Example: 53.B0.05"><button type="button" class="lookup-enter" onclick="submitErrorLookup(event)">Enter Error Code</button><div class="lookup-help">Enter the code exactly as shown on the machine.</div><div id="errorCodeResults" class="lookup-results"></div></div><div id="messageLookupPanel" class="lookup-panel lookup-hidden"><h3>Enter Alphabetical Message</h3><input id="messageLookup" class="lookup-input" autocomplete="off" placeholder="Example: Bad optional tray connection"><button type="button" class="lookup-enter" onclick="submitMessageLookup(event)">Enter Message</button><div class="lookup-help">You can enter the complete message or just enough to find it.</div><div id="messageResults" class="lookup-results"></div></div><div class="lookup-divider">or</div><button onclick="startSymptomDiagnosis()">I don't have an error code or message</button><button class="secondary" type="button" onclick="showManualCoverage()">Browse All Manual Troubleshooting</button>
 
 <!-- Variable/template error-code completion -->
 
@@ -1388,7 +1388,7 @@ body { min-height: 1200px; }
   </div>
 </div>
 
-<footer><strong>Copier Wizard</strong><br><span>Intelligent Diagnostics for Copiers &amp; Printers</span><br><strong>Build 24</strong><br><span>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</span></footer>
+<footer><strong>Copier Wizard</strong><br><span>Intelligent Diagnostics for Copiers &amp; Printers</span><br><strong>Build 26</strong><br><span>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</span></footer>
 
 <script>
 let verifiedModel="";
@@ -2936,38 +2936,58 @@ function showPartLookup(){
   const product=document.getElementById('partLookupProduct');
   const existing=document.getElementById('product')?.value||'';
   if(product && !product.value && existing) product.value=existing;
-  const query=document.getElementById('partLookupQuery');
-  if(query){ try{query.focus({preventScroll:true});}catch(e){query.focus();} }
+  const area=document.getElementById('partLookupSearchArea');
+  if(area){area.classList.add('lookup-hidden');area.style.display='none';}
+  const identity=document.getElementById('partLookupIdentity');
+  if(identity) identity.innerHTML='';
+  const results=document.getElementById('partLookupResults');
+  if(results) results.innerHTML='';
   panel.scrollIntoView({behavior:'smooth',block:'start'});
 }
-function runPartLookup(){
+function getPartLookupMachineIdentity(){
   const selectedModel=String(document.getElementById('model')?.value||'').trim();
-  // The model shown in the original machine-identification step is the source of truth.
-  // Do not let stale in-memory state override a model the technician actually selected.
   const model=selectedModel || String(verifiedModel||currentMachineModel||'').trim();
   const product=(document.getElementById('partLookupProduct')?.value||document.getElementById('product')?.value||'').trim();
   const serial=(document.getElementById('partLookupSerial')?.value||'').trim();
-  const query=(document.getElementById('partLookupQuery')?.value||'').trim();
+  return {model,product,serial};
+}
+function verifyPartMachineForLookup(){
+  const info=getPartLookupMachineIdentity();
+  const box=document.getElementById('partLookupIdentity');
+  const area=document.getElementById('partLookupSearchArea');
+  if(!box) return false;
+  if(area){area.classList.add('lookup-hidden');area.style.display='none';}
+  if(!info.model){
+    box.innerHTML='<div class="status danger"><strong>Model required.</strong><br>Select the machine model in Step 1 before using Part Lookup.</div>';
+    return false;
+  }
+  const identity=verifyPartLookupIdentity(info.model,info.product,info.serial);
+  const idBlock=`<div class="part-lookup-verification ${identity.level}"><strong>${escapeHtml(identity.title)}</strong><br>${escapeHtml(identity.message)}</div>`;
+  box.innerHTML=idBlock;
+  if(!identity.ok) return false;
+  if(area){area.classList.remove('lookup-hidden');area.style.display='block';}
+  const q=document.getElementById('partLookupQuery');
+  if(q){try{q.focus({preventScroll:true});}catch(e){q.focus();}}
+  return true;
+}
+function runVerifiedPartLookup(){
+  const info=getPartLookupMachineIdentity();
   const box=document.getElementById('partLookupResults');
   if(!box) return;
-  if(!model){
-    box.innerHTML='<div class="status danger"><strong>Model required.</strong><br>Select and verify the machine model before using Part Lookup.</div>';
-    return;
-  }
-  const identity=verifyPartLookupIdentity(model,product,serial);
-  const idBlock=`<div class="part-lookup-verification ${identity.level}"><strong>${escapeHtml(identity.title)}</strong><br>${escapeHtml(identity.message)}</div>`;
+  const identity=verifyPartLookupIdentity(info.model,info.product,info.serial);
   if(!identity.ok){
-    box.innerHTML=idBlock;
+    verifyPartMachineForLookup();
     return;
   }
+  const query=(document.getElementById('partLookupQuery')?.value||'').trim();
   if(!query){
-    box.innerHTML=idBlock+'<div class="status warn"><strong>Enter a part description or part number.</strong><br>For example: fuser, formatter, transfer roller, LVPS, or an exact HP part number.</div>';
+    box.innerHTML='<div class="status warn"><strong>Enter a part name or part number.</strong><br>For example: roller, toner, formatter, fuser, LVPS, or an exact HP part number.</div>';
     return;
   }
   const q=normalizePartLookupText(query);
   const tokens=q.split(/\s+/).filter(Boolean);
   const catalog=Array.isArray(window.HP_PARTS_CATALOG)?window.HP_PARTS_CATALOG:[];
-  const matches=catalog.filter(e=>partLookupModelMatches(e,model)).map(e=>{
+  const matches=catalog.filter(e=>partLookupModelMatches(e,info.model)).map(e=>{
     const hay=normalizePartLookupText((e.partNumber||'')+' '+(e.description||''));
     const part=normalizePartLookupText(e.partNumber||'');
     const exact=part===q;
@@ -2979,18 +2999,19 @@ function runPartLookup(){
     if(allWords) score+=50;
     return {...e,score};
   }).filter(Boolean).sort((a,b)=>b.score-a.score || String(a.description).localeCompare(String(b.description)));
-
   if(!matches.length){
-    box.innerHTML=idBlock+'<div class="status warn"><strong>No documented part match found.</strong><br>The verified machine identity is supported, but the supplied parts data does not establish a matching part for this search.</div>';
+    box.innerHTML='<div class="status warn"><strong>No documented part match found.</strong><br>The machine identity is verified, but the supplied parts data does not establish a matching part for this search.</div>';
     return;
   }
-  box.innerHTML=idBlock+`<div class="lookup-help"><strong>${matches.length}</strong> documented part${matches.length===1?'':'s'} matched your search for <strong>${escapeHtml(query)}</strong>.</div>`+matches.map(e=>{
+  box.innerHTML=`<div class="lookup-help"><strong>${matches.length}</strong> documented part${matches.length===1?'':'s'} matched your search for <strong>${escapeHtml(query)}</strong>.</div>`+matches.map(e=>{
     const applicability=e.models?.length ? e.models.join(', ') : 'No model restriction stated in the extracted parts row';
-    const caution=e.models?.length && !e.models.includes(model)
-      ? 'This result is not documented for the verified model and should not be ordered.'
-      : 'Model identity verified. If HP documents multiple configuration or voltage variants for this part, verify the exact variant before ordering.';
+    const caution='Machine identity verified. If HP documents multiple configuration or voltage variants for this part, verify the exact variant before ordering.';
     return `<div class="part-result"><div class="part-result-number">${escapeHtml(e.partNumber)}</div><div class="part-result-desc">${escapeHtml(e.description)}</div><div class="part-result-meta"><strong>Manual applicability:</strong> ${escapeHtml(applicability)}<br><strong>Source:</strong> ${escapeHtml(e.source||'Supplied service documentation')}</div><div class="part-result-warning">${escapeHtml(caution)}</div></div>`;
   }).join('');
+}
+function runPartLookup(){
+  // Backward-compatible entry point: verify the machine first, then reveal the part-name field.
+  if(verifyPartMachineForLookup()) runVerifiedPartLookup();
 }
 
 function showLookup(which){
@@ -6087,7 +6108,7 @@ function togglePartsReference(btn){
 
 <script id="copier-wizard-update-notice">
 (function(){
-  const CURRENT_BUILD = "24";
+  const CURRENT_BUILD = "25";
   const STORAGE_KEY = "copierWizardLastBuild";
   const VERSION_URL = "./version.json";
   const RELOAD_KEY = "copierWizardReloadingForUpdate";
