@@ -22,16 +22,19 @@ footer{text-align:center;color:#697581;padding:20px;font-size:13px}
 .modal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:20px;z-index:20}
 .modal.show{display:flex}.modal-card{background:white;border-radius:12px;max-width:680px;width:100%;max-height:85vh;overflow:auto;padding:24px;box-shadow:0 8px 30px #0004}
 .modal-card h2{margin-top:0}.modal-close{background:#e9edf1;color:#18212b;margin-top:12px}
-.repetitive-ruler-launch{display:flex;align-items:center;gap:10px;margin:14px 0 4px;padding:0;background:transparent}
+ .repetitive-ruler-launch{display:flex;align-items:center;gap:10px;margin:14px 0 4px;padding:0;background:transparent}
 .repetitive-ruler-launch button{width:auto;flex:1;margin:0;background:#1f5f8b}
 .repetitive-ruler-note{font-size:12px;color:#697581;margin:4px 0 0}
 .ruler-input-row{display:grid;grid-template-columns:1fr 150px;gap:10px;align-items:end}
 .ruler-input-row label{margin:0}
 .ruler-result{margin-top:16px;padding:14px;border-radius:8px;background:#edf7ed}
-.ruler-scale{margin:18px 0 8px;padding:12px 8px 4px;border-bottom:2px solid #18212b;position:relative;height:48px;background:repeating-linear-gradient(to right,transparent 0,transparent 9px,#b9c1c9 9px,#b9c1c9 10px)}
-.ruler-scale::after{content:"";position:absolute;left:0;right:0;bottom:-2px;border-bottom:2px solid #18212b}
-.ruler-ticks{display:flex;justify-content:space-between;font-size:11px;color:#4f5b66;margin-top:8px}
-@media(max-width:600px){.ruler-input-row{grid-template-columns:1fr}.repetitive-ruler-launch button{width:100%}}
+.repetitive-defect-table{width:100%;border-collapse:collapse;margin-top:14px;font-size:13px}
+.repetitive-defect-table th,.repetitive-defect-table td{padding:9px 8px;border-bottom:1px solid #d9dee4;text-align:left;vertical-align:top}
+.repetitive-defect-table th{font-weight:700;background:#f3f5f7}
+.repetitive-defect-table tr.closest{background:#e9f5ff}
+.repetitive-defect-table .measurement{white-space:nowrap;font-weight:600}
+.repetitive-defect-list-title{margin:20px 0 6px}
+@media(max-width:600px){.ruler-input-row{grid-template-columns:1fr}.repetitive-ruler-launch button{width:100%}.repetitive-defect-table{font-size:12px}.repetitive-defect-table th,.repetitive-defect-table td{padding:8px 6px}}
 .source-note{font-size:12px;color:#697581;margin-top:18px}
 
 .decoder{border:1px solid #d7dde3;border-radius:10px;padding:16px;margin:16px 0;background:#f8fafb}
@@ -1323,20 +1326,20 @@ body { min-height: 1200px; }
     <p>Use this tool only for a <strong>printed page</strong>. Measure from one occurrence of the same defect to the next occurrence in the direction of paper travel.</p>
     <div class="ruler-input-row">
       <label>Repeat distance
-        <input id="repetitiveDefectDistance" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Example: 3.25">
+        <input id="repetitiveDefectDistance" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Example: 75.4" oninput="calculateRepetitiveDefectRuler()">
       </label>
       <label>Units
-        <select id="repetitiveDefectUnits">
+        <select id="repetitiveDefectUnits" onchange="calculateRepetitiveDefectRuler()">
           <option value="in">Inches</option>
           <option value="mm">Millimeters</option>
         </select>
       </label>
     </div>
-    <div class="ruler-scale" aria-hidden="true"></div>
-    <div class="ruler-ticks" aria-hidden="true"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5 in</span></div>
-    <p class="muted">Measure the same mark from its corresponding point on one occurrence to the next. If the distance repeats consistently, record the measurement for comparison with the model's documented print-quality information.</p>
+    <p class="muted">Enter the measured distance. Copier Wizard will identify the closest documented repetitive-defect measurement and show the full list below.</p>
     <div id="repetitiveDefectRulerResult" class="ruler-result hidden"></div>
-    <button type="button" onclick="calculateRepetitiveDefectRuler()">Record Measurement</button>
+    <h3 class="repetitive-defect-list-title">E52645 Repetitive Defects</h3>
+    <div id="repetitiveDefectList"></div>
+    <button type="button" onclick="calculateRepetitiveDefectRuler()">Find Closest Match</button>
     <button type="button" class="modal-close" onclick="closeRepetitiveDefectRuler()">Close</button>
   </div>
 </div>
@@ -4039,9 +4042,36 @@ function isPrintQualityPrintPath(answer){
 
 function repetitiveDefectRulerButton(){
   return `<div class="repetitive-ruler-launch">
-    <button type="button" onclick="openRepetitiveDefectRuler()">📏 Repetitive Defect Ruler</button>
+    <button type="button" onclick="openRepetitiveDefectRuler()">Repetitive Defect Ruler</button>
   </div>
   <p class="repetitive-ruler-note">For printed pages only — not for scanned originals or copy defects.</p>`;
+}
+
+const E52645_REPETITIVE_DEFECTS = [
+  {assembly:"Developer roller (toner cartridge)", mm:27.8, inches:1.09},
+  {assembly:"Charge roller (toner cartridge)", mm:28.3, inches:1.11},
+  {assembly:"Face down roller", mm:36.9, inches:1.45},
+  {assembly:"Transfer roller", mm:39.0, inches:1.53},
+  {assembly:"Duplex feed roller", mm:40.3, inches:1.58},
+  {assembly:"Registration roller", mm:43.3, inches:1.70},
+  {assembly:"Switchback roller", mm:43.4, inches:1.70},
+  {assembly:"Feed roller (cassette)", mm:47.4, inches:1.87},
+  {assembly:"Pick roller (cassette)", mm:49.7, inches:1.95},
+  {assembly:"Pressure roller (fuser)", mm:63.5, inches:2.50},
+  {assembly:"Photosensitive drum (OPC drum; toner cartridge)", mm:75.4, inches:2.96},
+  {assembly:"Pick roller (Tray 1)", mm:78.7, inches:3.09}
+];
+
+function renderRepetitiveDefectList(closestIndex=null){
+  const list=document.getElementById("repetitiveDefectList");
+  if(!list) return;
+  list.innerHTML=`<table class="repetitive-defect-table">
+    <thead><tr><th>Assembly</th><th>Distance</th></tr></thead>
+    <tbody>${E52645_REPETITIVE_DEFECTS.map((item,index)=>`<tr class="${index===closestIndex?"closest":""}">
+      <td>${escapeHtml(item.assembly)}${index===closestIndex?" <strong>(closest match)</strong>":""}</td>
+      <td class="measurement">${item.mm.toFixed(1)} mm (${item.inches.toFixed(2)} in)</td>
+    </tr>`).join("")}</tbody>
+  </table>`;
 }
 
 function openRepetitiveDefectRuler(){
@@ -4050,6 +4080,7 @@ function openRepetitiveDefectRuler(){
   if(!modal) return;
   modal.classList.add("show");
   if(result){ result.classList.add("hidden"); result.innerHTML=""; }
+  renderRepetitiveDefectList();
   const input=document.getElementById("repetitiveDefectDistance");
   if(input){ input.focus(); }
 }
@@ -4066,15 +4097,28 @@ function calculateRepetitiveDefectRuler(){
   const units=document.getElementById("repetitiveDefectUnits");
   const result=document.getElementById("repetitiveDefectRulerResult");
   const value=Number(input?.value);
+  renderRepetitiveDefectList();
   if(!Number.isFinite(value) || value<=0){
-    alert("Enter the repeat distance measured on the printed page.");
+    if(result){ result.classList.add("hidden"); result.innerHTML=""; }
     return;
   }
   const unit=units?.value || "in";
-  const inches=unit==="mm" ? value/25.4 : value;
-  const mm=inches*25.4;
+  const mm=unit==="mm" ? value : value*25.4;
+  const inches=mm/25.4;
+  let closestIndex=0;
+  let closestDifference=Math.abs(mm-E52645_REPETITIVE_DEFECTS[0].mm);
+  E52645_REPETITIVE_DEFECTS.forEach((item,index)=>{
+    const difference=Math.abs(mm-item.mm);
+    if(difference<closestDifference){ closestDifference=difference; closestIndex=index; }
+  });
+  const closest=E52645_REPETITIVE_DEFECTS[closestIndex];
+  renderRepetitiveDefectList(closestIndex);
   if(result){
-    result.innerHTML=`<strong>Measurement recorded:</strong> ${escapeHtml(value.toFixed(2))} ${unit==="mm"?"mm":"inches"}<br><span class="muted">Equivalent: ${escapeHtml(mm.toFixed(1))} mm (${escapeHtml(inches.toFixed(3))} in)</span>`;
+    result.innerHTML=`<strong>Closest documented match:</strong> ${escapeHtml(closest.assembly)}<br>
+      Your measurement: <strong>${escapeHtml(unit==="mm"?value.toFixed(1):value.toFixed(2))} ${unit==="mm"?"mm":"inches"}</strong>
+      (${escapeHtml(mm.toFixed(1))} mm / ${escapeHtml(inches.toFixed(2))} in)<br>
+      Documented distance: <strong>${escapeHtml(closest.mm.toFixed(1))} mm (${escapeHtml(closest.inches.toFixed(2))} in)</strong><br>
+      <span class="muted">Difference: ${escapeHtml(closestDifference.toFixed(1))} mm. Treat this as a diagnostic suggestion, not a confirmed component failure.</span>`;
     result.classList.remove("hidden");
   }
 }
