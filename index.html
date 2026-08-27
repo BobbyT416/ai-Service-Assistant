@@ -44,6 +44,7 @@ footer{text-align:center;color:#697581;padding:20px;font-size:13px}
 
 .doc-verification{border-left:4px solid #2b6f9f;background:#f7fafc;padding:12px 14px;border-radius:8px;margin:14px 0;font-size:.94em}
 .doc-verification strong{display:block;margin-bottom:6px}
+.part-lookup-verification{margin:10px 0;padding:12px 14px;border-radius:10px;border:1px solid #d7dee5;background:#f7f9fb}.part-lookup-verification.ok{background:#eaf6ec;border-color:#b9dfc0}.part-lookup-verification.warn{background:#fff7e6;border-color:#efd28a}.part-lookup-verification.danger{background:#fdecec;border-color:#e3aaaa}
 .part-card{background:#fff;border:1px solid #d7dee5;border-radius:8px;padding:12px 14px;margin:12px 0}
 .part-card .label{font-weight:700}
 .source-note{font-size:.85em;color:#4f5b66;margin-top:6px}
@@ -2849,6 +2850,47 @@ function openManualMessageFromIndex(index){
   diagnosticAnswer("alphabetical-message");
 }
 
+// Product-number identity map. Part Lookup must never use a selected model
+// as a substitute for verifying a supplied product number.
+window.CW_PRODUCT_IDENTIFIERS = {
+  "1PS54A": {model:"E52645", variant:"E52645dn"},
+  "1PS55A": {model:"E52645", variant:"Flow E52645c"},
+  "3GY19A": {model:"E52545", variant:"E52545dn"},
+  "3GY20A": {model:"E52545", variant:"E52545c"},
+  "1PV64A": {model:"M528", variant:"M528dn"},
+  "1PV65A": {model:"M528", variant:"M528f"},
+  "1PV66A": {model:"M528", variant:"M528c"},
+  "1PV67A": {model:"M528", variant:"M528z"},
+  "F2A76A": {model:"M527", variant:"M527dn"},
+  "F2A77A": {model:"M527", variant:"M527f"},
+  "F2A78A": {model:"M527", variant:"M527c"},
+  "F2A79A": {model:"M527", variant:"Managed M527"},
+  "F2A80A": {model:"M527", variant:"Managed Flow M527z"},
+  "F2A81A": {model:"M527", variant:"M527z"},
+  "3GY17A": {model:"E62665", variant:"E62665z"}
+};
+function normalizeProductNumber(value){
+  return String(value||'').trim().toUpperCase().replace(/\s+/g,'');
+}
+function verifyPartLookupIdentity(model, product, serial){
+  const p=normalizeProductNumber(product);
+  if(!p){
+    return {ok:false,level:'warn',title:'Product number required for part verification',message:
+      'Enter the printer product number before searching for a part. A serial number by itself cannot verify the exact model in this offline build.'};
+  }
+  const rec=window.CW_PRODUCT_IDENTIFIERS?.[p];
+  if(!rec){
+    return {ok:false,level:'danger',title:'Product number not verified',message:
+      `Product number ${p} is not in Copier Wizard's verified product-identity database. No part number will be shown until the product number can be matched to supported documentation.`};
+  }
+  if(rec.model!==model){
+    return {ok:false,level:'danger',title:'Machine identity mismatch',message:
+      `Product number ${p} identifies an HP ${rec.variant} (${rec.model}), not the selected ${model}. This model is not the same machine family, so Copier Wizard will not provide a part number.`};
+  }
+  return {ok:true,level:'ok',title:'Machine identity verified',message:
+    `${rec.variant} • Product ${p} matches the selected ${model}.${serial?' Serial number recorded, but it is not independently queried in this offline build.':''}`};
+}
+
 function normalizePartLookupText(text){
   return String(text||'').toLowerCase().replace(/[\u2010-\u2015]/g,'-').replace(/[^a-z0-9-]+/g,' ').trim();
 }
@@ -2883,8 +2925,14 @@ function runPartLookup(){
     box.innerHTML='<div class="status danger"><strong>Model required.</strong><br>Select and verify the machine model before using Part Lookup.</div>';
     return;
   }
+  const identity=verifyPartLookupIdentity(model,product,serial);
+  const idBlock=`<div class="part-lookup-verification ${identity.level}"><strong>${escapeHtml(identity.title)}</strong><br>${escapeHtml(identity.message)}</div>`;
+  if(!identity.ok){
+    box.innerHTML=idBlock;
+    return;
+  }
   if(!query){
-    box.innerHTML='<div class="status warn"><strong>Enter a part description or part number.</strong><br>For example: fuser, formatter, transfer roller, LVPS, or RM2-2585-000CN.</div>';
+    box.innerHTML=idBlock+'<div class="status warn"><strong>Enter a part description or part number.</strong><br>For example: fuser, formatter, transfer roller, LVPS, or an exact HP part number.</div>';
     return;
   }
   const q=normalizePartLookupText(query);
@@ -2899,18 +2947,19 @@ function runPartLookup(){
     return {...e,score};
   }).filter(e=>e.score>0).sort((a,b)=>b.score-a.score || String(a.description).localeCompare(String(b.description))).slice(0,30);
 
-  const idNote=(product||serial)?`<div class="part-lookup-note"><strong>Machine identification:</strong> ${escapeHtml(model)}${product?' • Product '+escapeHtml(product):''}${serial?' • Serial '+escapeHtml(serial):''}</div>`:'';
   if(!matches.length){
-    box.innerHTML=idNote+'<div class="status warn"><strong>No documented part match found.</strong><br>The supplied parts data does not establish a matching part for this search and selected model. Try a simpler description or the exact part number.</div>';
+    box.innerHTML=idBlock+'<div class="status warn"><strong>No documented part match found.</strong><br>The verified machine identity is supported, but the supplied parts data does not establish a matching part for this search.</div>';
     return;
   }
-  box.innerHTML=idNote+matches.map(e=>{
+  box.innerHTML=idBlock+matches.map(e=>{
     const applicability=e.models?.length ? e.models.join(', ') : 'No model restriction stated in the extracted parts row';
-    const exact=e.models?.includes(model);
-    const caution=e.models?.length && !exact ? 'This result is not documented for the selected model.' : (product ? 'Product number recorded. If the manual shows multiple configuration variants, verify the exact configuration before ordering.' : 'If this part has configuration variants, enter the product number before ordering.');
+    const caution=e.models?.length && !e.models.includes(model)
+      ? 'This result is not documented for the verified model and should not be ordered.'
+      : 'Model identity verified. If HP documents multiple configuration or voltage variants for this part, verify the exact variant before ordering.';
     return `<div class="part-result"><div class="part-result-number">${escapeHtml(e.partNumber)}</div><div class="part-result-desc">${escapeHtml(e.description)}</div><div class="part-result-meta"><strong>Manual applicability:</strong> ${escapeHtml(applicability)}<br><strong>Source:</strong> ${escapeHtml(e.source||'Supplied service documentation')}</div><div class="part-result-warning">${escapeHtml(caution)}</div></div>`;
   }).join('');
 }
+
 function showLookup(which){
   const pp=document.getElementById("partLookupPanel");
   if(pp){ pp.classList.add("lookup-hidden"); pp.style.display="none"; }
