@@ -1388,7 +1388,7 @@ body { min-height: 1200px; }
   </div>
 </div>
 
-<footer><strong>Copier Wizard</strong><br><span>Intelligent Diagnostics for Copiers &amp; Printers</span><br><strong>Build 27</strong><br><span>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</span></footer>
+<footer><strong>Copier Wizard</strong><br><span>Intelligent Diagnostics for Copiers &amp; Printers</span><br><strong>Build 28</strong><br><span>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</span></footer>
 
 <script>
 let verifiedModel="";
@@ -2879,21 +2879,42 @@ function openManualMessageFromIndex(index){
 // Product-number identity map. Part Lookup must never use a selected model
 // as a substitute for verifying a supplied product number.
 window.CW_PRODUCT_IDENTIFIERS = {
+  // HP-documented product numbers. Each entry is tied to the supported model family.
   "1PS54A": {model:"E52645", variant:"E52645dn"},
   "1PS55A": {model:"E52645", variant:"Flow E52645c"},
   "3GY19A": {model:"E52545", variant:"E52545dn"},
   "3GY20A": {model:"E52545", variant:"E52545c"},
-  "1PV64A": {model:"M528", variant:"M528dn"},
-  "1PV65A": {model:"M528", variant:"M528f"},
-  "1PV66A": {model:"M528", variant:"M528c"},
-  "1PV67A": {model:"M528", variant:"M528z"},
+  "1PV49A": {model:"M528", variant:"M528 family"},
+  "1PV64A": {model:"M528", variant:"M528 family"},
+  "1PV65A": {model:"M528", variant:"M528 family"},
+  "1PV66A": {model:"M528", variant:"M528 family"},
+  "1PV67A": {model:"M528", variant:"M528 family"},
   "F2A76A": {model:"M527", variant:"M527dn"},
   "F2A77A": {model:"M527", variant:"M527f"},
-  "F2A78A": {model:"M527", variant:"M527c"},
+  "F2A78A": {model:"M527", variant:"Flow M527c"},
   "F2A79A": {model:"M527", variant:"Managed M527"},
   "F2A80A": {model:"M527", variant:"Managed Flow M527z"},
-  "F2A81A": {model:"M527", variant:"M527z"},
-  "3GY17A": {model:"E62665", variant:"E62665z"}
+  "F2A81A": {model:"M527", variant:"Flow M527z"},
+  "F2A66A": {model:"M506", variant:"M506 family"},
+  "F2A67A": {model:"M506", variant:"Managed M506 family"},
+  "F2A68A": {model:"M506", variant:"M506n"},
+  "F2A69A": {model:"M506", variant:"M506dn"},
+  "F2A70A": {model:"M506", variant:"M506x"},
+  "F2A71A": {model:"M506", variant:"M506 family"},
+  "J8H60A": {model:"M501", variant:"M501n"},
+  "J8H61A": {model:"M501", variant:"M501dn"},
+  "3GN19A": {model:"E50045", variant:"E50045dw"},
+  "1PU51A": {model:"E50145", variant:"E50145 family"},
+  "1PU52A": {model:"E50145", variant:"E50145 family"},
+  "1PV86A": {model:"M507", variant:"M507n"},
+  "1PV87A": {model:"M507", variant:"M507dn"},
+  "1PV88A": {model:"M507", variant:"M507x"},
+  "1PV89A": {model:"M507", variant:"M507dng"},
+  "3GY14A": {model:"E62665", variant:"E62655/E62665/E62675 family"},
+  "3GY15A": {model:"E62665", variant:"E62655/E62665/E62675 family"},
+  "3GY16A": {model:"E62665", variant:"E62655/E62665/E62675 family"},
+  "3GY17A": {model:"E62665", variant:"E62655/E62665/E62675 family"},
+  "3GY18A": {model:"E62665", variant:"E62655/E62665/E62675 family"}
 };
 function normalizeProductNumber(value){
   return String(value||'').trim().toUpperCase().replace(/\s+/g,'');
@@ -6108,7 +6129,7 @@ function togglePartsReference(btn){
 
 <script id="copier-wizard-update-notice">
 (function(){
-  const CURRENT_BUILD = "27";
+  const CURRENT_BUILD = "28";
   const STORAGE_KEY = "copierWizardLastBuild";
   const VERSION_URL = "./version.json";
   const RELOAD_KEY = "copierWizardReloadingForUpdate";
