@@ -1330,8 +1330,8 @@ body { min-height: 1200px; }
       </label>
       <label>Units
         <select id="repetitiveDefectUnits" onchange="calculateRepetitiveDefectRuler()">
+          <option value="mm" selected>Millimeters</option>
           <option value="in">Inches</option>
-          <option value="mm">Millimeters</option>
         </select>
       </label>
     </div>
@@ -1340,7 +1340,7 @@ body { min-height: 1200px; }
     <h3 class="repetitive-defect-list-title">E52645 Repetitive Defects</h3>
     <div id="repetitiveDefectList"></div>
     <button type="button" onclick="calculateRepetitiveDefectRuler()">Find Closest Match</button>
-    <button type="button" class="modal-close" onclick="closeRepetitiveDefectRuler()">Close</button>
+    <button type="button" class="modal-close" onclick="closeRepetitiveDefectRuler()">Close Ruler</button>
   </div>
 </div>
 
@@ -5351,7 +5351,15 @@ function diagnosticAnswer(answer){
    const code=document.getElementById("scannerError")?.value.trim();
    html += `<h2>Scanner Diagnostic</h2><div class="status">You entered: <strong>${escapeHtml(code || "no code")}</strong></div>`;
  }
- if(isPrintQualityPrintPath(answer)) html += repetitiveDefectRulerButton();
+ if(isPrintQualityPrintPath(answer)){
+   const rulerMarkup = repetitiveDefectRulerButton();
+   const resolutionMarker = '<div class="guided-resolution">';
+   if(html.includes(resolutionMarker)){
+     html = html.replace(resolutionMarker, rulerMarkup + resolutionMarker);
+   } else {
+     html += rulerMarkup;
+   }
+ }
  if(!/startOverDiagnostic\(\)/.test(html)){
    html += '<button class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>';
  }
