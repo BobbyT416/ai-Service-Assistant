@@ -2349,52 +2349,13 @@ function modelSelectionChanged(model){
   }
   hint.textContent="";
   if(fw && !fw.value){
-    setTimeout(()=>autoOpenObviousDropdown(fw),50);
+    setTimeout(()=>fw.focus(),50);
   }
 }
-function autoOpenObviousDropdown(select){
-  if(!select || select.disabled || select.dataset.autoOpened === "1") return;
-  select.dataset.autoOpened = "1";
-  try {
-    select.focus({preventScroll:true});
-  } catch(e) { try { select.focus(); } catch(_) {} }
-  // showPicker() is supported by modern browsers and is the most reliable
-  // way to open a native select immediately after a user action.
-  if(typeof select.showPicker === "function") {
-    try { select.showPicker(); return; } catch(e) {}
-  }
-  // Desktop browsers often permit click() from the same user-action chain.
-  try { select.click(); } catch(e) {}
-}
-
-function autoOpenSingleDiagnosticDropdown(root){
-  if(!root) return;
-  // Never auto-open the unit selector inside the repetitive-defect ruler.
-  if(root.closest && root.closest(".repetitive-ruler-launch, .repetitive-ruler-note")) return;
-  const selects=[...root.querySelectorAll("select")].filter(sel=>{
-    const style=getComputedStyle(sel);
-    return !sel.disabled && style.display!=="none" && style.visibility!=="hidden";
-  });
-  if(selects.length===1 && !selects[0].value){
-    setTimeout(()=>autoOpenObviousDropdown(selects[0]),80);
-  }
-}
-
 function firmwareSelectionChanged(fw){
   const hint=document.getElementById("firmwareHint");
   if(hint) hint.textContent="";
 }
-
-// When a troubleshooting step presents exactly one obvious unanswered
-// dropdown, open it automatically so the technician can choose immediately.
-const diagnosticAutoOpenObserver=new MutationObserver(()=>{
-  const r=document.getElementById("result");
-  if(r) autoOpenSingleDiagnosticDropdown(r);
-});
-setTimeout(()=>{
-  const r=document.getElementById("result");
-  if(r) diagnosticAutoOpenObserver.observe(r,{childList:true,subtree:true});
-},0);
 
 function verifyModel(){
  const m=document.getElementById("model").value;
