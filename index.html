@@ -22,6 +22,16 @@ footer{text-align:center;color:#697581;padding:20px;font-size:13px}
 .modal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:20px;z-index:20}
 .modal.show{display:flex}.modal-card{background:white;border-radius:12px;max-width:680px;width:100%;max-height:85vh;overflow:auto;padding:24px;box-shadow:0 8px 30px #0004}
 .modal-card h2{margin-top:0}.modal-close{background:#e9edf1;color:#18212b;margin-top:12px}
+.repetitive-ruler-launch{display:flex;align-items:center;gap:10px;margin:14px 0 4px;padding:0;background:transparent}
+.repetitive-ruler-launch button{width:auto;flex:1;margin:0;background:#1f5f8b}
+.repetitive-ruler-note{font-size:12px;color:#697581;margin:4px 0 0}
+.ruler-input-row{display:grid;grid-template-columns:1fr 150px;gap:10px;align-items:end}
+.ruler-input-row label{margin:0}
+.ruler-result{margin-top:16px;padding:14px;border-radius:8px;background:#edf7ed}
+.ruler-scale{margin:18px 0 8px;padding:12px 8px 4px;border-bottom:2px solid #18212b;position:relative;height:48px;background:repeating-linear-gradient(to right,transparent 0,transparent 9px,#b9c1c9 9px,#b9c1c9 10px)}
+.ruler-scale::after{content:"";position:absolute;left:0;right:0;bottom:-2px;border-bottom:2px solid #18212b}
+.ruler-ticks{display:flex;justify-content:space-between;font-size:11px;color:#4f5b66;margin-top:8px}
+@media(max-width:600px){.ruler-input-row{grid-template-columns:1fr}.repetitive-ruler-launch button{width:100%}}
 .source-note{font-size:12px;color:#697581;margin-top:18px}
 
 .decoder{border:1px solid #d7dde3;border-radius:10px;padding:16px;margin:16px 0;background:#f8fafb}
@@ -1305,6 +1315,29 @@ body { min-height: 1200px; }
     <p><strong>Future version:</strong> This window should show the exact model-specific supported sizes and weights from the approved specification/user-guide source, rather than relying on generic information.</p>
     <div class="source-note">Source: supplied HP CPMD. The CPMD explicitly directs the technician to the HP ADF specifications document for supported weights and sizes.</div>
     <button class="modal-close" onclick="closeSpecs()">Close</button>
+  </div>
+</div>
+<div class="modal" id="repetitiveDefectRulerModal" onclick="closeRepetitiveDefectRuler(event)">
+  <div class="modal-card">
+    <h2>Repetitive Defect Ruler</h2>
+    <p>Use this tool only for a <strong>printed page</strong>. Measure from one occurrence of the same defect to the next occurrence in the direction of paper travel.</p>
+    <div class="ruler-input-row">
+      <label>Repeat distance
+        <input id="repetitiveDefectDistance" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Example: 3.25">
+      </label>
+      <label>Units
+        <select id="repetitiveDefectUnits">
+          <option value="in">Inches</option>
+          <option value="mm">Millimeters</option>
+        </select>
+      </label>
+    </div>
+    <div class="ruler-scale" aria-hidden="true"></div>
+    <div class="ruler-ticks" aria-hidden="true"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5 in</span></div>
+    <p class="muted">Measure the same mark from its corresponding point on one occurrence to the next. If the distance repeats consistently, record the measurement for comparison with the model's documented print-quality information.</p>
+    <div id="repetitiveDefectRulerResult" class="ruler-result hidden"></div>
+    <button type="button" onclick="calculateRepetitiveDefectRuler()">Record Measurement</button>
+    <button type="button" class="modal-close" onclick="closeRepetitiveDefectRuler()">Close</button>
   </div>
 </div>
 
@@ -3994,10 +4027,63 @@ function saveDuplexFreeFlow(){
     <button class="secondary" onclick="diagnosticAnswer('location-duplex')">Back / Edit Description</button>
     <button class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>`;
 }
+function isPrintQualityPrintPath(answer){
+  return [
+    "pq-print",
+    "pq-print-baseline",
+    "pq-defect-run",
+    "pq-resolved",
+    "pq-escalate"
+  ].includes(String(answer));
+}
+
+function repetitiveDefectRulerButton(){
+  return `<div class="repetitive-ruler-launch">
+    <button type="button" onclick="openRepetitiveDefectRuler()">📏 Repetitive Defect Ruler</button>
+  </div>
+  <p class="repetitive-ruler-note">For printed pages only — not for scanned originals or copy defects.</p>`;
+}
+
+function openRepetitiveDefectRuler(){
+  const modal=document.getElementById("repetitiveDefectRulerModal");
+  const result=document.getElementById("repetitiveDefectRulerResult");
+  if(!modal) return;
+  modal.classList.add("show");
+  if(result){ result.classList.add("hidden"); result.innerHTML=""; }
+  const input=document.getElementById("repetitiveDefectDistance");
+  if(input){ input.focus(); }
+}
+
+function closeRepetitiveDefectRuler(event){
+  if(!event || event.target.id==="repetitiveDefectRulerModal" || event.target.classList.contains("modal-close")){
+    const modal=document.getElementById("repetitiveDefectRulerModal");
+    if(modal) modal.classList.remove("show");
+  }
+}
+
+function calculateRepetitiveDefectRuler(){
+  const input=document.getElementById("repetitiveDefectDistance");
+  const units=document.getElementById("repetitiveDefectUnits");
+  const result=document.getElementById("repetitiveDefectRulerResult");
+  const value=Number(input?.value);
+  if(!Number.isFinite(value) || value<=0){
+    alert("Enter the repeat distance measured on the printed page.");
+    return;
+  }
+  const unit=units?.value || "in";
+  const inches=unit==="mm" ? value/25.4 : value;
+  const mm=inches*25.4;
+  if(result){
+    result.innerHTML=`<strong>Measurement recorded:</strong> ${escapeHtml(value.toFixed(2))} ${unit==="mm"?"mm":"inches"}<br><span class="muted">Equivalent: ${escapeHtml(mm.toFixed(1))} mm (${escapeHtml(inches.toFixed(3))} in)</span>`;
+    result.classList.remove("hidden");
+  }
+}
+
 function diagnosticAnswer(answer){
  const r=document.getElementById("result");
  saveDiagnosticState();
  let html='<div class="pill">HP E52645</div><div class="pill">Model verified</div>';
+ if(isPrintQualityPrintPath(answer)) html += repetitiveDefectRulerButton();
 
  if(answer==='alphabetical-message'){
    const msg=window.selectedMessage||"";
