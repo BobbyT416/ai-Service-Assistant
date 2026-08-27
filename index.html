@@ -1727,35 +1727,7 @@ function preparePrintableReportLink(el){
       #serviceReportCard{display:block!important;border:0!important;box-shadow:none!important;max-width:900px!important;margin:0 auto!important}
       @media print{body{padding:0!important}}
     </style></head><body>${clone.outerHTML}
-<script id="copier-wizard-update-notice">
-(function(){
-  // Increment this number whenever a new GitHub Pages build is published.
-  // The notice is shown only when the loaded build differs from the last build
-  // seen on this device. The first build containing this feature also counts
-  // as an update so the technician can confirm the feature is working.
-  const CURRENT_BUILD = "17";
-  const STORAGE_KEY = "copierWizardLastBuild";
 
-  function showUpdateNotice(){
-    const toast = document.getElementById("cwUpdateToast");
-    if(!toast) return;
-    toast.textContent = "✓ Copier Wizard updated — Build " + CURRENT_BUILD;
-    requestAnimationFrame(()=>toast.classList.add("show"));
-    window.setTimeout(()=>toast.classList.remove("show"), 2800);
-  }
-
-  document.addEventListener("DOMContentLoaded", function(){
-    let lastBuild = null;
-    try { lastBuild = localStorage.getItem(STORAGE_KEY); } catch(e) {}
-
-    // If the stored build is missing (including upgrades from older builds),
-    // show the notice once. After that, only a build-number change triggers it.
-    if(lastBuild !== CURRENT_BUILD) showUpdateNotice();
-
-    try { localStorage.setItem(STORAGE_KEY, CURRENT_BUILD); } catch(e) {}
-  });
-})();
-</script>
 </body></html>`;
     const blob=new Blob([html],{type:"text/html"});
     const url=URL.createObjectURL(blob);
@@ -6104,5 +6076,59 @@ function togglePartsReference(btn){
     btn.setAttribute("aria-expanded","true");
   }
 }
+</script>
+
+<script id="copier-wizard-update-notice">
+(function(){
+  const CURRENT_BUILD = "19";
+  const STORAGE_KEY = "copierWizardLastBuild";
+  const VERSION_URL = "./version.json";
+  const RELOAD_KEY = "copierWizardReloadingForUpdate";
+
+  function showUpdateNotice(message){
+    const toast = document.getElementById("cwUpdateToast");
+    if(!toast) return;
+    toast.textContent = message;
+    requestAnimationFrame(()=>toast.classList.add("show"));
+    window.setTimeout(()=>toast.classList.remove("show"), 2800);
+  }
+
+  function safeGet(key){ try { return localStorage.getItem(key); } catch(e) { return null; } }
+  function safeSet(key,value){ try { localStorage.setItem(key,value); } catch(e) {} }
+
+  async function checkForNewBuild(){
+    try{
+      const response = await fetch(VERSION_URL + "?t=" + Date.now(), {
+        cache: "no-store",
+        headers: { "Cache-Control": "no-cache" }
+      });
+      if(!response.ok) return;
+      const data = await response.json();
+      const remote = String(data.build || "").trim();
+      if(!/^\d+$/.test(remote)) return;
+      if(Number(remote) <= Number(CURRENT_BUILD)) return;
+      if(safeGet(RELOAD_KEY) === remote) return;
+      safeSet(RELOAD_KEY, remote);
+      showUpdateNotice("✓ New Copier Wizard update found — loading Build " + remote + "…");
+      window.setTimeout(function(){
+        const url = new URL(window.location.href);
+        url.searchParams.set("cwupdate", Date.now().toString());
+        window.location.replace(url.toString());
+      }, 900);
+    }catch(e){
+      // Offline or version file unavailable: keep the current build working normally.
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    const lastBuild = safeGet(STORAGE_KEY);
+    if(lastBuild !== CURRENT_BUILD){
+      showUpdateNotice("✓ Copier Wizard updated — Build " + CURRENT_BUILD);
+    }
+    safeSet(STORAGE_KEY, CURRENT_BUILD);
+    safeSet(RELOAD_KEY, "");
+    checkForNewBuild();
+  });
+})();
 </script>
 </body></html>
