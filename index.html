@@ -4358,8 +4358,21 @@ function diagnosticAnswer(answer){
    renderGuidedStep();
  } else if(answer==='boot-stuck'){
    html+=`<h2>Hangs / Will Not Boot — Stuck During Startup</h2>
-   <div class="status"><strong>Check the formatter heartbeat LED.</strong><br>HP documents the heartbeat LED as a way to distinguish firmware/formatter/control-panel conditions during startup.</div>
-   <p><strong>What color/state is the heartbeat LED after initialization?</strong></p>
+   <div class="status"><strong>Is the printer stuck on "Initializing" or otherwise not completing startup?</strong></div>
+   <div class="supplemental-info" style="margin:16px 0;padding:16px;border-radius:14px;background:#eef6ff;border:1px solid #c8def5;">
+     <h3 style="margin-top:0;">Supplemental Power-Drain Reset</h3>
+     <p style="margin-top:0;"><strong>This is supplemental technician information, not a model-specific service-manual procedure.</strong> HP support documentation for multiple LaserJet models describes closely related hard-reset/power-drain procedures for printers that are stuck initializing.</p>
+     <ol>
+       <li>Turn the printer off.</li>
+       <li>Unplug the power cord from the printer or wall outlet.</li>
+       <li>Press and hold the printer's power button for about 10 seconds to discharge residual power.</li>
+       <li>Reconnect the power cord directly to a known-good wall outlet. Avoid a surge protector, UPS, or extension cord during the test.</li>
+       <li>Turn the printer on and allow it to complete its normal initialization.</li>
+     </ol>
+     <p class="muted" style="margin-bottom:0;"><strong>Technician note:</strong> If this clears the condition, continue testing to determine why the machine became stuck. If it does not, continue with the model-specific startup diagnostics below.</p>
+   </div>
+   <div class="status"><strong>Next: check the formatter heartbeat LED.</strong><br>HP documents the heartbeat LED as a way to distinguish firmware/formatter/control-panel conditions during startup.</div>
+   <p><strong>What color/state is the heartbeat LED after the startup attempt?</strong></p>
    <select onchange="diagnosticSelectChanged(this.value)" class="diagnostic-select">
      <option value="">Select the heartbeat LED state...</option>
      <option value="boot-led-green">Green</option>
