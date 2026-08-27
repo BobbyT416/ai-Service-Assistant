@@ -1129,7 +1129,7 @@ body { min-height: 1200px; }
 <body>
 <header class="app-header">
   <div class="app-brand">
-    <div class="app-brand-icon" aria-hidden="true">▣</div>
+    <img class="app-brand-icon" src="icon-192.png" alt="Copier Wizard logo">
     <div>
       <h1>Copier Wizard</h1>
       <p>Intelligent Diagnostics for Copiers &amp; Printers</p>
@@ -1330,8 +1330,8 @@ body { min-height: 1200px; }
       </label>
       <label>Units
         <select id="repetitiveDefectUnits" onchange="calculateRepetitiveDefectRuler()">
+          <option value="mm" selected>Millimeters</option>
           <option value="in">Inches</option>
-          <option value="mm">Millimeters</option>
         </select>
       </label>
     </div>
@@ -1340,7 +1340,7 @@ body { min-height: 1200px; }
     <h3 class="repetitive-defect-list-title">E52645 Repetitive Defects</h3>
     <div id="repetitiveDefectList"></div>
     <button type="button" onclick="calculateRepetitiveDefectRuler()">Find Closest Match</button>
-    <button type="button" class="modal-close" onclick="closeRepetitiveDefectRuler()">Close</button>
+    <button type="button" class="modal-close" onclick="closeRepetitiveDefectRuler()">Close Ruler</button>
   </div>
 </div>
 
@@ -2349,13 +2349,52 @@ function modelSelectionChanged(model){
   }
   hint.textContent="";
   if(fw && !fw.value){
-    setTimeout(()=>fw.focus(),50);
+    setTimeout(()=>autoOpenObviousDropdown(fw),50);
   }
 }
+function autoOpenObviousDropdown(select){
+  if(!select || select.disabled || select.dataset.autoOpened === "1") return;
+  select.dataset.autoOpened = "1";
+  try {
+    select.focus({preventScroll:true});
+  } catch(e) { try { select.focus(); } catch(_) {} }
+  // showPicker() is supported by modern browsers and is the most reliable
+  // way to open a native select immediately after a user action.
+  if(typeof select.showPicker === "function") {
+    try { select.showPicker(); return; } catch(e) {}
+  }
+  // Desktop browsers often permit click() from the same user-action chain.
+  try { select.click(); } catch(e) {}
+}
+
+function autoOpenSingleDiagnosticDropdown(root){
+  if(!root) return;
+  // Never auto-open the unit selector inside the repetitive-defect ruler.
+  if(root.closest && root.closest(".repetitive-ruler-launch, .repetitive-ruler-note")) return;
+  const selects=[...root.querySelectorAll("select")].filter(sel=>{
+    const style=getComputedStyle(sel);
+    return !sel.disabled && style.display!=="none" && style.visibility!=="hidden";
+  });
+  if(selects.length===1 && !selects[0].value){
+    setTimeout(()=>autoOpenObviousDropdown(selects[0]),80);
+  }
+}
+
 function firmwareSelectionChanged(fw){
   const hint=document.getElementById("firmwareHint");
   if(hint) hint.textContent="";
 }
+
+// When a troubleshooting step presents exactly one obvious unanswered
+// dropdown, open it automatically so the technician can choose immediately.
+const diagnosticAutoOpenObserver=new MutationObserver(()=>{
+  const r=document.getElementById("result");
+  if(r) autoOpenSingleDiagnosticDropdown(r);
+});
+setTimeout(()=>{
+  const r=document.getElementById("result");
+  if(r) diagnosticAutoOpenObserver.observe(r,{childList:true,subtree:true});
+},0);
 
 function verifyModel(){
  const m=document.getElementById("model").value;
@@ -4283,18 +4322,60 @@ function diagnosticAnswer(answer){
      powerBranch:"dead"
    };
    renderGuidedStep();
- } else if(answer==='boot-display' || answer==='boot-blank'){
- } else if(answer==='boot-display' || answer==='boot-blank'){
-   html+=`<h2>Startup Diagnosis</h2>
-   <div class="status warning-status"><strong>No verified guided procedure is available for this symptom yet.</strong></div>
-   <p>The supplied HP documentation does not provide a standalone technician procedure for a generic startup complaint without an error code or message. The assistant will not invent troubleshooting steps.</p>
-   <div class="guided-resolution">
-     <h4>How would you like to continue?</h4>
-     <div class="guided-choice-row">
-       <button type="button" onclick="returnToDiagnosticSelection()">← Change Diagnostic Selection</button>
-       <button type="button" class="secondary" onclick="showManualCoverage()">Browse All Manual Troubleshooting</button>
-     </div>
-   </div>`;
+ } else if(answer==='boot-display'){
+   html+=`<h2>Hangs / Will Not Boot</h2>
+   <div class="status"><strong>The control panel is displaying something.</strong><br>Let's determine whether HP has a documented path for what is shown.</div>
+   <p><strong>What is the control panel showing?</strong></p>
+   <div class="guided-choice-row">
+     <button type="button" onclick="showErrorCodeEntry()">An error code</button>
+     <button type="button" onclick="showLookup('message')">An error/message, but no code</button>
+     <button type="button" onclick="diagnosticAnswer('boot-stuck')">It is on, but stuck during startup</button>
+   </div>
+   <p class="muted">This follows the HP troubleshooting guidance: use the documented error/message procedure when one is displayed rather than guessing from a generic startup symptom.</p>`;
+ } else if(answer==='boot-blank'){
+   const blankSteps=[
+     "Make sure the printer is not in Sleep mode. Tap the touchscreen control panel or press a control-panel button to wake it.",
+     "Verify that the printer is plugged directly into a known-working wall outlet, not a power strip or UPS, and that the outlet voltage matches the printer's voltage requirement.",
+     "Make sure the power switch is in the ON position.",
+     "Turn the printer on and verify that the cooling fans run briefly. HP states that this indicates the power supply is operational.",
+     "Turn the printer off. Inspect and reseat the control-panel display wire harness. Then reseat the formatter connectors. Turn the printer back on and check the formatter heartbeat LED and connectivity LED.",
+     "Remove any external solutions and try turning the printer on again.",
+     "If the control panel is still blank and the cooling fans run briefly, perform the HP engine-test procedure. The test page uses Tray 2, so make sure paper is loaded in Tray 2.",
+     "If the engine-test page prints, HP says the print engine is operating normally. Use the control-panel diagnostics to test the control panel. If the display remains blank, continue with the documented power-supply/DC-controller path.",
+     "If the engine-test page does not print, follow the HP procedure for isolating the formatter/engine path. For E52645dn/c, HP also specifies removing the eMMC and repeating the engine test if the first test does not print."
+   ];
+   html+=`<h2>Hangs / Will Not Boot — Blank Control Panel</h2>
+   <div class="status"><strong>HP-documented power-on / blank-control-panel procedure</strong><br>We'll work through the manufacturer's checks in order.</div>
+   <div id="guidedStepArea"></div>`;
+   window._guidedDiagnostic={
+     code:"__boot_blank__",
+     item:{message:"Hangs / Will Not Boot — Blank Control Panel"},
+     steps:blankSteps,
+     current:0,
+     results:{},
+     bootMode:true
+   };
+   renderGuidedStep();
+ } else if(answer==='boot-stuck'){
+   html+=`<h2>Hangs / Will Not Boot — Stuck During Startup</h2>
+   <div class="status"><strong>Check the formatter heartbeat LED.</strong><br>HP documents the heartbeat LED as a way to distinguish firmware/formatter/control-panel conditions during startup.</div>
+   <p><strong>What color/state is the heartbeat LED after initialization?</strong></p>
+   <select onchange="diagnosticSelectChanged(this.value)" class="diagnostic-select">
+     <option value="">Select the heartbeat LED state...</option>
+     <option value="boot-led-green">Green</option>
+     <option value="boot-led-amber">Amber / Yellow</option>
+     <option value="boot-led-red">Red</option>
+     <option value="boot-led-off">Off</option>
+   </select>
+   <p class="muted">HP documents green as normal operation, amber/yellow as a formatter-to-control-panel communication issue, red as a formatter/boot diagnostic condition, and off as potentially a firmware/system freeze, power-off, or sleep condition.</p>`;
+ } else if(answer==='boot-led-green'){
+   html+=`<h2>Startup — Heartbeat LED Green</h2><div class="status">HP identifies green as normal formatter/firmware operation. If the machine remains stuck, check the control panel for an error message and use the documented error/message procedure.</div><button onclick="showErrorCodeEntry()">Enter an Error Code</button><button class="secondary" onclick="showLookup('message')">Look Up an Error Message</button><button class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>`;
+ } else if(answer==='boot-led-amber'){
+   html+=`<h2>Startup — Heartbeat LED Amber / Yellow</h2><div class="status warn">HP documents this state as the formatter being unable to connect to the control panel. Check the control-panel connections and verify control-panel functionality.</div><button class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>`;
+ } else if(answer==='boot-led-red'){
+   html+=`<h2>Startup — Heartbeat LED Red</h2><div class="status warn">HP documents red as a formatter/boot diagnostic condition, including SPI flash boot error, formatter power-on self-test failure, or formatter diagnostic failure.</div><p>Follow the documented formatter/boot troubleshooting procedure for the specific condition or error displayed by the printer. Do not replace a formatter based on the LED alone.</p><button onclick="showErrorCodeEntry()">Enter an Error Code</button><button class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>`;
+ } else if(answer==='boot-led-off'){
+   html+=`<h2>Startup — Heartbeat LED Off</h2><div class="status warn">HP notes that an off heartbeat LED can indicate no 5 V/3.3 V power, power-off/sleep, or a firmware/system freeze.</div><p>Verify power and wake the printer first. If the printer is powered and remains frozen, turn it off and on again. If the condition persists, HP directs the technician to perform a firmware upgrade.</p><button class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>`;
  } else if(answer==='location-adf'){
    const cfg=getMachineConfig(currentMachineModel);
    if(cfg && !cfg.hasADF){
@@ -5312,7 +5393,15 @@ function diagnosticAnswer(answer){
    const code=document.getElementById("scannerError")?.value.trim();
    html += `<h2>Scanner Diagnostic</h2><div class="status">You entered: <strong>${escapeHtml(code || "no code")}</strong></div>`;
  }
- if(isPrintQualityPrintPath(answer)) html += repetitiveDefectRulerButton();
+ if(isPrintQualityPrintPath(answer)){
+   const rulerMarkup = repetitiveDefectRulerButton();
+   const resolutionMarker = '<div class="guided-resolution">';
+   if(html.includes(resolutionMarker)){
+     html = html.replace(resolutionMarker, rulerMarkup + resolutionMarker);
+   } else {
+     html += rulerMarkup;
+   }
+ }
  if(!/startOverDiagnostic\(\)/.test(html)){
    html += '<button class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>';
  }
