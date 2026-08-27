@@ -4059,6 +4059,7 @@ const E52645_REPETITIVE_DEFECTS = [
   {assembly:"Pick roller (cassette)", mm:49.7, inches:1.95},
   {assembly:"Pressure roller (fuser)", mm:63.5, inches:2.50},
   {assembly:"Photosensitive drum (OPC drum; toner cartridge)", mm:75.4, inches:2.96},
+  {assembly:"Fuser sleeve / fuser film (fuser)", mm:75.4, inches:2.96},
   {assembly:"Pick roller (Tray 1)", mm:78.7, inches:3.09}
 ];
 
@@ -4071,7 +4072,8 @@ function renderRepetitiveDefectList(closestIndex=null){
       <td>${escapeHtml(item.assembly)}${index===closestIndex?" <strong>(closest match)</strong>":""}</td>
       <td class="measurement">${item.mm.toFixed(1)} mm (${item.inches.toFixed(2)} in)</td>
     </tr>`).join("")}</tbody>
-  </table>`;
+  </table>
+  <p class="repetitive-ruler-note">HP identifies a repeating fuser-film/fuser-sleeve defect at approximately 75.4 mm (2.96 in). This is why the fuser film is included here alongside the 75.4 mm drum measurement.</p>`;
 }
 
 function openRepetitiveDefectRuler(){
