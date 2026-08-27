@@ -1125,11 +1125,26 @@ body { min-height: 1200px; }
   <meta name="theme-color" content="#0b4b8a">
 
   <link rel="manifest" href="manifest.json">
+<style id="v140-header-logo">
+.app-brand-icon{
+  width:42px !important;
+  height:42px !important;
+  display:block !important;
+  object-fit:cover !important;
+  border:0 !important;
+  border-radius:10px !important;
+  flex:0 0 auto !important;
+  box-shadow:0 1px 4px rgba(0,0,0,.18);
+}
+@media(max-width:600px){
+  .app-brand-icon{width:36px !important;height:36px !important;border-radius:9px !important;}
+}
+</style>
 </head>
 <body>
 <header class="app-header">
   <div class="app-brand">
-    <div class="app-brand-icon" aria-hidden="true">▣</div>
+    <img class="app-brand-icon" src="icon-192.png" alt="Copier Wizard logo">
     <div>
       <h1>Copier Wizard</h1>
       <p>Intelligent Diagnostics for Copiers &amp; Printers</p>
