@@ -1145,8 +1145,32 @@ body { min-height: 1200px; }
 .part-lookup-note{margin-top:10px;font-size:13px;color:#536273;line-height:1.45}
 @media(max-width:600px){.part-lookup-grid{grid-template-columns:1fr}}
 </style>
+
+<style id="update-toast-style">
+  #cwUpdateToast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(18px + env(safe-area-inset-bottom));
+    transform: translate(-50%, 18px);
+    z-index: 99999;
+    max-width: min(92vw, 420px);
+    padding: 13px 18px;
+    border-radius: 999px;
+    background: #123f70;
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(0,0,0,.22);
+    font-size: 15px;
+    font-weight: 750;
+    text-align: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .22s ease, transform .22s ease;
+  }
+  #cwUpdateToast.show { opacity: 1; transform: translate(-50%, 0); }
+</style>
 </head>
 <body>
+<div id="cwUpdateToast" role="status" aria-live="polite" aria-atomic="true"></div>
 <header class="app-header">
   <div class="app-brand">
     <img class="app-brand-icon" src="icon-192.png" alt="Copier Wizard logo">
@@ -1702,7 +1726,37 @@ function preparePrintableReportLink(el){
       body{background:#fff!important;padding:24px!important;color:#111!important}
       #serviceReportCard{display:block!important;border:0!important;box-shadow:none!important;max-width:900px!important;margin:0 auto!important}
       @media print{body{padding:0!important}}
-    </style></head><body>${clone.outerHTML}</body></html>`;
+    </style></head><body>${clone.outerHTML}
+<script id="copier-wizard-update-notice">
+(function(){
+  // Increment this number whenever a new GitHub Pages build is published.
+  // The notice is shown only when the loaded build differs from the last build
+  // seen on this device. The first build containing this feature also counts
+  // as an update so the technician can confirm the feature is working.
+  const CURRENT_BUILD = "17";
+  const STORAGE_KEY = "copierWizardLastBuild";
+
+  function showUpdateNotice(){
+    const toast = document.getElementById("cwUpdateToast");
+    if(!toast) return;
+    toast.textContent = "✓ Copier Wizard updated — Build " + CURRENT_BUILD;
+    requestAnimationFrame(()=>toast.classList.add("show"));
+    window.setTimeout(()=>toast.classList.remove("show"), 2800);
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    let lastBuild = null;
+    try { lastBuild = localStorage.getItem(STORAGE_KEY); } catch(e) {}
+
+    // If the stored build is missing (including upgrades from older builds),
+    // show the notice once. After that, only a build-number change triggers it.
+    if(lastBuild !== CURRENT_BUILD) showUpdateNotice();
+
+    try { localStorage.setItem(STORAGE_KEY, CURRENT_BUILD); } catch(e) {}
+  });
+})();
+</script>
+</body></html>`;
     const blob=new Blob([html],{type:"text/html"});
     const url=URL.createObjectURL(blob);
     el.href=url;
