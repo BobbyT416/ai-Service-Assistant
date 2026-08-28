@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Copier Wizard — Build 140</title>
+<title>Copier Wizard — Build 141</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -431,7 +431,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 </script>
 </head>
 <body>
-<header class="cw-header"><div class="cw-brand"><img src="icon-192.png" alt="Copier Wizard logo"><div><h1>Copier Wizard</h1><p>Intelligent Diagnostics for Copiers &amp; Printers</p></div></div></header>
+<header class="cw-header"><div class="cw-brand"><img src="icon-192.png" alt="Copier Wizard logo"><div><h1>Copier Wizard</h1><p>Intelligent Diagnostics for Copiers &amp; Printers</p></div></div><button id="cw-home-btn" type="button" class="header-home">⌂ Home</button></header>
 <div id="cwUpdateBubble" role="status" aria-live="polite"></div><main>
 <section class="card" id="selectCard">
 <h2>1. Select Equipment</h2>
@@ -473,7 +473,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <p style="margin-top:0">Start by telling the app what you know.</p>
 <h3 style="margin-bottom:8px">Do you have an error code?</h3>
 
-<div id="lookupChoiceGrid" class="lookup-choice-grid"><button class="lookup-choice" onclick="showLookup('error')"><strong>Numerical Error Code</strong><span>For codes such as 53.B0.05 or 65.80.A0</span></button><button class="lookup-choice" onclick="showLookup('message')"><strong>Alphabetical Message</strong><span>For messages shown on the control panel</span></button><button class="lookup-choice" onclick="showPartLookup()"><strong>Parts Lookup</strong><span>Find a documented part for the verified machine</span></button></div><div id="partLookupPanel" class="part-lookup-panel lookup-hidden" style="display:none"><h3>Parts Lookup</h3><div id="partLookupMachine" class="status"></div><label for="partLookupQuery">What part are you looking for?</label><input id="partLookupQuery" class="lookup-input" autocomplete="off" placeholder="Example: formatter, fuser, roller, LVPS, or part number"><button type="button" class="lookup-enter" onclick="runVerifiedPartLookup()">Search Parts</button><div id="partLookupResults" class="lookup-results"></div><button type="button" class="secondary" onclick="hidePartLookup()">← Back</button></div><div id="errorLookupPanel" class="lookup-panel lookup-hidden"><h3>Enter Numerical Error Code</h3><input id="errorCodeLookup" class="lookup-input" autocomplete="off" placeholder="Example: 53.B0.05"><button type="button" class="lookup-enter" onclick="submitErrorLookup(event)">Enter Error Code</button><div class="lookup-help">Enter the code exactly as shown on the machine.</div><div id="errorCodeResults" class="lookup-results"></div></div><div id="messageLookupPanel" class="lookup-panel lookup-hidden"><h3>Enter Alphabetical Message</h3><input id="messageLookup" class="lookup-input" autocomplete="off" placeholder="Example: Bad optional tray connection"><button type="button" class="lookup-enter" onclick="submitMessageLookup(event)">Enter Message</button><div class="lookup-help">You can enter the complete message or just enough to find it.</div><div id="messageResults" class="lookup-results"></div></div><div class="lookup-divider">or</div><button onclick="startSymptomDiagnosis()">I don't have an error code or message</button><button class="secondary" type="button" onclick="showManualCoverage()">Browse All Manual Troubleshooting</button>
+<div id="lookupChoiceGrid" class="lookup-choice-grid"><button class="lookup-choice" onclick="showLookup('error')"><strong>Numerical Error Code</strong><span>For codes such as 53.B0.05 or 65.80.A0</span></button><button class="lookup-choice" onclick="showLookup('message')"><strong>Alphabetical Message</strong><span>For messages shown on the control panel</span></button><button class="lookup-choice" onclick="showPartLookup()"><strong>Parts Lookup</strong><span>Find a documented part for the verified machine</span></button></div><div id="partLookupPanel" class="part-lookup-panel lookup-hidden" style="display:none"><h3>Parts Lookup</h3><div id="partLookupMachine" class="status"></div><label for="partLookupQuery">What part are you looking for?</label><input id="partLookupQuery" class="lookup-input" autocomplete="off" placeholder="Example: formatter, fuser, roller, LVPS, or part number"><button id="searchPartsBtn" type="button" type="button" class="lookup-enter" onclick="runVerifiedPartLookup()">Search Parts</button><div id="partLookupResults" class="lookup-results"></div><button type="button" class="secondary" onclick="hidePartLookup()">← Back</button></div><div id="errorLookupPanel" class="lookup-panel lookup-hidden"><h3>Enter Numerical Error Code</h3><input id="errorCodeLookup" class="lookup-input" autocomplete="off" placeholder="Example: 53.B0.05"><button type="button" class="lookup-enter" onclick="submitErrorLookup(event)">Enter Error Code</button><div class="lookup-help">Enter the code exactly as shown on the machine.</div><div id="errorCodeResults" class="lookup-results"></div></div><div id="messageLookupPanel" class="lookup-panel lookup-hidden"><h3>Enter Alphabetical Message</h3><input id="messageLookup" class="lookup-input" autocomplete="off" placeholder="Example: Bad optional tray connection"><button type="button" class="lookup-enter" onclick="submitMessageLookup(event)">Enter Message</button><div class="lookup-help">You can enter the complete message or just enough to find it.</div><div id="messageResults" class="lookup-results"></div></div><div class="lookup-divider">or</div><button onclick="startSymptomDiagnosis()">I don't have an error code or message</button><button class="secondary" type="button" onclick="showManualCoverage()">Browse All Manual Troubleshooting</button>
 
 <!-- Variable/template error-code completion -->
 
@@ -598,7 +598,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
   </div>
 </div>
 
-<footer><strong>Copier Wizard — Build 140</strong><br>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
+<footer><strong>Copier Wizard — Build 141</strong><br>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
 
 <script>
 let verifiedModel="";
@@ -942,7 +942,7 @@ function preparePrintableReportLink(el){
 
 
 
-<script id="cw-Build 140-selection">
+<script id="cw-Build 141-selection">
 document.addEventListener("DOMContentLoaded",function(){
   const type=document.getElementById("machineType");
   if(type) type.addEventListener("change",function(){machineTypeChanged(this.value);});
@@ -1011,7 +1011,7 @@ function openPrintableServiceReport(){
       .external-report-note{max-width:900px;margin:0 auto 18px;color:#4b5563;font-size:13px}
       @media print{body{padding:0!important}.no-print,.external-report-toolbar,.external-report-note{display:none!important}}
     
-/* Build 140: keep Copier Wizard branding visually static. */
+/* Build 141: keep Copier Wizard branding visually static. */
 .cw-header .cw-brand,
 .cw-header .cw-brand img,
 .cw-header .cw-brand > div,
@@ -1030,7 +1030,7 @@ function openPrintableServiceReport(){
   mix-blend-mode: normal !important;
 }
 
-/* Build 140: Browse-all entries show compact titles; troubleshooting details
+/* Build 141: Browse-all entries show compact titles; troubleshooting details
    are revealed only after selecting an entry. */
 .browse-all-item .troubleshooting-steps,
 .browse-all-item .steps,
@@ -4401,7 +4401,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='140';
+  const CURRENT='141';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;
@@ -4533,6 +4533,41 @@ document.addEventListener("click",function(e){
       if(x!==item)x.classList.remove("is-selected");
     });
     item.classList.toggle("is-selected");
+  }
+});
+</script>
+<script id="cw-final-navigation-handler">
+document.addEventListener("DOMContentLoaded",function(){
+  const search=document.getElementById("searchPartsBtn");
+  if(search){
+    search.onclick=function(e){
+      e.preventDefault();
+      try{
+        if(typeof runVerifiedPartLookup==="function") runVerifiedPartLookup();
+        else {
+          const out=document.getElementById("partLookupResults");
+          if(out)out.innerHTML='<div class="lookup-help"><strong>Parts Lookup is not initialized.</strong></div>';
+        }
+      }catch(err){
+        const out=document.getElementById("partLookupResults");
+        if(out)out.innerHTML='<div class="lookup-help"><strong>Parts Lookup error:</strong> '+escapeHtml(String(err?.message||err))+'</div>';
+      }
+    };
+  }
+  const home=document.getElementById("cw-home-btn");
+  if(home){
+    home.onclick=function(){
+      try{
+        if(typeof resetForm==="function"){ resetForm(); return; }
+        if(typeof goHome==="function"){ goHome(); return; }
+      }catch(err){}
+      window.scrollTo({top:0,behavior:"smooth"});
+      document.querySelectorAll("[id$='Panel']").forEach(p=>{
+        if(p.id!=="mainPanel" && p.id!=="machineSelectionPanel")p.style.display="none";
+      });
+      const main=document.getElementById("mainPanel");
+      if(main)main.style.display="";
+    };
   }
 });
 </script>
