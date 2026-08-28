@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Copier Wizard — Build 109</title>
+<title>Copier Wizard — Build 110</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#17212b;color:white;padding:18px 24px} header h1{margin:0;font-size:24px} header p{margin:5px 0 0;color:#cbd5df}
@@ -360,7 +360,7 @@ select:disabled{background:#eef1f4;color:#7a858f;cursor:not-allowed}
 </style>
 </head>
 <body>
-<header><h1>Copier Wizard</h1><p>Intelligent Diagnostics for Copiers &amp; Printers • Build 109</p></header>
+<header><h1>Copier Wizard</h1><p>Intelligent Diagnostics for Copiers &amp; Printers • Build 110</p></header>
 <main>
 <section class="card" id="selectCard">
 <h2>1. Select Equipment</h2>
@@ -527,7 +527,7 @@ select:disabled{background:#eef1f4;color:#7a858f;cursor:not-allowed}
   </div>
 </div>
 
-<footer>Copier Wizard prototype • Build 109<br>Documentation is organized by machine category and source type. Technical content is based on supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
+<footer>Copier Wizard prototype • Build 110<br>Documentation is organized by machine category and source type. Technical content is based on supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
 
 <script>
 let verifiedModel="";
@@ -935,7 +935,7 @@ function preparePrintableReportLink(el){
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start,{once:true});
   else start();
 })();
-</script>
+<\/script>
 </body></html>`;
     const blob=new Blob([html],{type:"text/html"});
     const url=URL.createObjectURL(blob);
