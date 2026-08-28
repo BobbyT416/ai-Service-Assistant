@@ -1388,7 +1388,7 @@ body { min-height: 1200px; }
   </div>
 </div>
 
-<footer><strong>Copier Wizard</strong><br><span>Intelligent Diagnostics for Copiers &amp; Printers</span><br><strong>Build 32</strong><br><span>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</span></footer>
+<footer><strong>Copier Wizard</strong><br><span>Intelligent Diagnostics for Copiers &amp; Printers</span><br><strong>Build 33</strong><br><span>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</span></footer>
 
 <script>
 let verifiedModel="";
@@ -1936,15 +1936,15 @@ function e52645TraySelection(mode){
   const r=document.getElementById("result");
   r.innerHTML=`<div class="pill">HP ${escapeHtml(currentMachineModel||"Machine")}</div>
   <div class="pill">Model verified</div><h2>Select the Paper Source</h2>
-  <div class="status">Optional 550-sheet feeders are shown only after you confirm they are physically installed on this machine.</div>
-  <p><strong>Which paper source is involved?</strong></p>
-  <select class="diagnostic-select" onchange="e52645ConfiguredTrayChoice(this.value,'${escapeHtml(mode)}')">
-    <option value="">Select a paper source...</option>
+  <div class="status">Select the tray that is not feeding. Tray 3, 4, and 5 are treated as optional 550-sheet feeders, so there is no separate configuration question.</div>
+  <p><strong>Which tray is not picking up paper?</strong></p>
+  <select class="diagnostic-select" onchange="e52645TraySelected(this.value)">
+    <option value="">Select a tray...</option>
     <option value="tray-1">Tray 1 — Multipurpose / bypass</option>
     <option value="tray-2">Tray 2 — Standard 550-sheet tray</option>
-    <option value="optional-none">No optional 550-sheet feeder installed</option>
-    ${e52645OptionalTrayCount()?'<option value="optional-yes">Yes — optional 550-sheet feeder(s) installed</option>':''}
-    <option value="tray-unknown">I'm not sure</option>
+    <option value="tray-3">Tray 3 — Optional 550-sheet feeder</option>
+    <option value="tray-4">Tray 4 — Optional 550-sheet feeder</option>
+    <option value="tray-5">Tray 5 — Optional 550-sheet feeder</option>
   </select>
   <button class="secondary" onclick="diagnosticAnswer('location-paper')">Back</button>`;
   document.getElementById("resultCard").classList.remove("hidden");
@@ -6172,7 +6172,7 @@ function togglePartsReference(btn){
 
 <script id="copier-wizard-update-notice">
 (function(){
-  const CURRENT_BUILD = "32";
+  const CURRENT_BUILD = "33";
   const STORAGE_KEY = "copierWizardLastBuild";
   const VERSION_URL = "./version.json";
   const RELOAD_KEY = "copierWizardReloadingForUpdate";
