@@ -1,9 +1,10 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Copier Wizard — Build 142</title>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Copier Wizard — Build 144</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -54,8 +55,8 @@ footer{text-align:center;color:#697581;padding:20px;font-size:13px}
 .lookup-divider{display:flex;align-items:center;gap:10px;margin:18px 0;color:#667085;font-size:13px}
 .lookup-divider:before,.lookup-divider:after{content:"";height:1px;background:#d8dee5;flex:1}
 </style>
-</style>
-</style>
+
+
 <style>
 /* Phone-friendly diagnostic controls */
 .diagnostic-select{
@@ -68,7 +69,6 @@ footer{text-align:center;color:#697581;padding:20px;font-size:13px}
 @media(max-width:600px){.report-grid{grid-template-columns:1fr}}
 @media print{body{background:#fff}header,footer,main>section:not(#resultCard):not(#serviceReportCard),#resultCard{display:none!important}.service-report{display:block!important;border:0;box-shadow:none;margin:0;padding:0}.service-report .report-inputs,.service-report .report-actions,.report-note{display:none!important}.service-report .report-summary{border:0;padding:0}.service-report h2{font-size:22px}.service-report h3{font-size:16px}.report-grid{display:grid}}
 </style>
-
 <style id="service-report-print-fix">
 @media print {
   body { background:#fff !important; }
@@ -84,8 +84,6 @@ footer{text-align:center;color:#697581;padding:20px;font-size:13px}
   #serviceReportCard h3 { font-size:16px !important; }
 }
 </style>
-
-
 <style id="report-print-mode">
 .report-print-mode .report-inputs,
 .report-print-mode .report-actions,
@@ -118,7 +116,6 @@ footer{text-align:center;color:#697581;padding:20px;font-size:13px}
   }
 }
 </style>
-
 <style id="report-print-preview-style">
 .print-instructions {
   margin: 8px 0 0;
@@ -152,7 +149,6 @@ footer{text-align:center;color:#697581;padding:20px;font-size:13px}
   }
 }
 </style>
-
 <style id="report-header-info-style">
 .report-header-info{
   margin:12px 0 18px;
@@ -175,7 +171,6 @@ footer{text-align:center;color:#697581;padding:20px;font-size:13px}
   }
 }
 </style>
-
 <style id="manual-coverage-style">
 .manual-coverage-panel{
   margin-top:14px;
@@ -207,7 +202,6 @@ footer{text-align:center;color:#697581;padding:20px;font-size:13px}
   .manual-coverage-panel{display:none!important}
 }
 </style>
-
 <style id="manual-coverage-search-style">
 .manual-search-row{
   display:flex;
@@ -218,7 +212,6 @@ footer{text-align:center;color:#697581;padding:20px;font-size:13px}
 .manual-search-row .lookup-input{flex:1;min-width:0}
 .manual-search-row button{white-space:nowrap}
 </style>
-
 <style id="manual-coverage-v83-fix">
 .manual-search-row{
   display:flex;
@@ -254,7 +247,6 @@ footer{text-align:center;color:#697581;padding:20px;font-size:13px}
   color:#374151 !important;
 }
 </style>
-
 <style id="manual-search-help-style">
 .manual-search-help{
   margin:6px 2px 10px;
@@ -263,7 +255,6 @@ footer{text-align:center;color:#697581;padding:20px;font-size:13px}
   color:#4b5563;
 }
 </style>
-
 <style id="report-action-link-style">
 .report-actions .report-action-link{
   display:inline-flex;
@@ -282,7 +273,6 @@ footer{text-align:center;color:#697581;padding:20px;font-size:13px}
 }
 .report-actions .report-action-link:hover{filter:brightness(.96)}
 </style>
-
 <style id="variable-template-ui">
 .variable-template-badge{
   display:inline-block;padding:3px 8px;margin-left:6px;border-radius:999px;
@@ -293,14 +283,12 @@ footer{text-align:center;color:#697581;padding:20px;font-size:13px}
   background:#fff8e1;border:1px solid #ead38a;
 }
 </style>
-
 <style id="documented-procedure-ui">
 .documented-step-list{margin:10px 0 14px;}
 .documented-step-check:checked + span{text-decoration:line-through;opacity:.72;}
 .documented-parts li{margin-bottom:8px;}
 button:disabled{opacity:.55;cursor:not-allowed;}
 </style>
-
 <style id="v103-diagnostic-ui">
 .documented-step-list{margin:10px 0 14px;}
 .documented-step-check{accent-color:#286b97;}
@@ -332,7 +320,6 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 }
 button:disabled{opacity:.55;cursor:not-allowed;}
 </style>
-
 <style id="v106-uniform-checkboxes">
 .documented-step label{
   display:flex;
@@ -391,7 +378,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
   }
 }
 </style>
-<link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link href="icon-192.png" rel="icon"/><link href="apple-touch-icon.png" rel="apple-touch-icon"/>
 <style id="cw-update-bubble">#cwUpdateBubble{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#1f5f8b;color:#fff;padding:9px 14px;border-radius:18px;font-weight:700;font-size:13px;box-shadow:0 3px 12px #0003;z-index:9999;display:none;white-space:nowrap}#cwUpdateBubble.show{display:block}</style>
 <style id="cw-parts-lookup-clean">
 .part-lookup-panel{margin-top:16px;padding:16px;border:1px solid #d8dee6;border-radius:12px;background:#fff}
@@ -401,7 +388,6 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 .part-result-meta,.part-result-warning{margin-top:8px;font-size:13px}
 .part-result-warning{padding:9px;border-radius:8px;background:#fff3cd}
 </style>
-
 <style id="cw-readable-choice-buttons">
 .lookup-choice,
 .lookup-choice:visited,
@@ -431,13 +417,12 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 </script>
 </head>
 <body>
-<header class="cw-header"><div class="cw-brand"><img src="icon-192.png" alt="Copier Wizard logo"><div><h1>Copier Wizard</h1><p>Intelligent Diagnostics for Copiers &amp; Printers</p></div></div><button id="cw-home-btn" type="button" class="header-home compact-home" aria-label="Home" title="Home">⌂</button></header>
-<div id="cwUpdateBubble" role="status" aria-live="polite"></div><main>
+<header class="cw-header"><div class="cw-brand"><img alt="Copier Wizard logo" src="icon-192.png"/><div><h1>Copier Wizard</h1><p>Intelligent Diagnostics for Copiers &amp; Printers</p><button aria-label="Home" class="header-home compact-home" id="cw-home-btn" title="Home" type="button">⌂</button></div></div></header>
+<div aria-live="polite" id="cwUpdateBubble" role="status"></div><main>
 <section class="card" id="selectCard">
 <h2>1. Select Equipment</h2>
 <label>Manufacturer</label>
 <select id="manufacturer"><option>HP</option></select>
-
 <label>Printer Type</label>
 <select id="machineType" onchange="machineTypeChanged(this.value)">
 <option value="">Select printer type...</option>
@@ -445,113 +430,88 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <option value="color">Color</option>
 <option value="pagewide">PageWide</option>
 </select>
-
 <label>Machine Family</label>
-<select id="machineFamily" onchange="familySelectionChanged(this.value)" disabled>
+<select disabled="" id="machineFamily" onchange="familySelectionChanged(this.value)">
 <option value="">Select a printer type first...</option>
 </select>
-
 <label>Model</label>
-<select id="model" onchange="modelSelectionChanged(this.value)" disabled>
+<select disabled="" id="model" onchange="modelSelectionChanged(this.value)">
 <option value="">Select a family first...</option>
 </select>
-<div id="modelHint" class="source-note"></div>
-
+<div class="source-note" id="modelHint"></div>
 <label>Product Number <span style="font-weight:normal">(optional)</span></label>
-<select id="product" onchange="productNumberSelectionChanged(this.value)" disabled>
+<select disabled="" id="product" onchange="productNumberSelectionChanged(this.value)">
 <option value="">Product Number</option>
 </select>
-<div id="productHint" class="source-note">Optional. Select the exact product number if you want the app to verify the complete model designation.</div>
-
-<div id="firmwareSection" class="hidden"><label>FutureSmart level <span style="font-weight:normal">(only if applicable)</span></label><select id="firmwareLevel" onchange="firmwareSelectionChanged(this.value)"><option value="">Select FutureSmart level...</option></select><div id="firmwareHint" class="source-note"></div><label>Firmware version <span style="font-weight:normal">(optional)</span></label><input id="firmwareVersion" placeholder="Example: 5.9.2.3"></div>
+<div class="source-note" id="productHint">Optional. Select the exact product number if you want the app to verify the complete model designation.</div>
+<div class="hidden" id="firmwareSection"><label>FutureSmart level <span style="font-weight:normal">(only if applicable)</span></label><select id="firmwareLevel" onchange="firmwareSelectionChanged(this.value)"><option value="">Select FutureSmart level...</option></select><div class="source-note" id="firmwareHint"></div><label>Firmware version <span style="font-weight:normal">(optional)</span></label><input id="firmwareVersion" placeholder="Example: 5.9.2.3"/></div>
 <button onclick="verifyModel()">Verify Machine</button>
 <div id="verify"></div>
 </section>
-
 <section class="card hidden" id="problemCard">
 <h2>2. What's wrong?</h2>
 <p style="margin-top:0">Start by telling the app what you know.</p>
 <h3 style="margin-bottom:8px">Do you have an error code?</h3>
-
-<div id="lookupChoiceGrid" class="lookup-choice-grid"><button class="lookup-choice" onclick="showLookup('error')"><strong>Numerical Error Code</strong><span>For codes such as 53.B0.05 or 65.80.A0</span></button><button class="lookup-choice" onclick="showLookup('message')"><strong>Alphabetical Message</strong><span>For messages shown on the control panel</span></button><button class="lookup-choice" onclick="showPartLookup()"><strong>Parts Lookup</strong><span>Find a documented part for the verified machine</span></button></div><div id="partLookupPanel" class="part-lookup-panel lookup-hidden" style="display:none"><h3>Parts Lookup</h3><div id="partLookupMachine" class="status"></div><label for="partLookupQuery">What part are you looking for?</label><input id="partLookupQuery" class="lookup-input" autocomplete="off" placeholder="Example: formatter, fuser, roller, LVPS, or part number"><button id="searchPartsBtn" type="button" type="button" class="lookup-enter" onclick="runVerifiedPartLookup()">Search Parts</button><div id="partLookupResults" class="lookup-results"></div><button type="button" class="secondary" onclick="hidePartLookup()">← Back</button></div><div id="errorLookupPanel" class="lookup-panel lookup-hidden"><h3>Enter Numerical Error Code</h3><input id="errorCodeLookup" class="lookup-input" autocomplete="off" placeholder="Example: 53.B0.05"><button type="button" class="lookup-enter" onclick="submitErrorLookup(event)">Enter Error Code</button><div class="lookup-help">Enter the code exactly as shown on the machine.</div><div id="errorCodeResults" class="lookup-results"></div></div><div id="messageLookupPanel" class="lookup-panel lookup-hidden"><h3>Enter Alphabetical Message</h3><input id="messageLookup" class="lookup-input" autocomplete="off" placeholder="Example: Bad optional tray connection"><button type="button" class="lookup-enter" onclick="submitMessageLookup(event)">Enter Message</button><div class="lookup-help">You can enter the complete message or just enough to find it.</div><div id="messageResults" class="lookup-results"></div></div><div class="lookup-divider">or</div><button onclick="startSymptomDiagnosis()">I don't have an error code or message</button><button class="secondary" type="button" onclick="showManualCoverage()">Browse All Manual Troubleshooting</button>
-
+<div class="lookup-choice-grid" id="lookupChoiceGrid"><button class="lookup-choice" onclick="showLookup('error')"><strong>Numerical Error Code</strong><span>For codes such as 53.B0.05 or 65.80.A0</span></button><button class="lookup-choice" onclick="showLookup('message')"><strong>Alphabetical Message</strong><span>For messages shown on the control panel</span></button><button class="lookup-choice" onclick="showPartLookup()"><strong>Parts Lookup</strong><span>Find a documented part for the verified machine</span></button></div><div class="part-lookup-panel lookup-hidden" id="partLookupPanel" style="display:none"><h3>Parts Lookup</h3><div class="status" id="partLookupMachine"></div><label for="partLookupQuery">What part are you looking for?</label><input autocomplete="off" class="lookup-input" id="partLookupQuery" placeholder="Example: formatter, fuser, roller, LVPS, or part number"/><button class="lookup-enter" id="searchPartsBtn" onclick="runVerifiedPartLookup()" type="button">Search Parts</button><div class="lookup-results" id="partLookupResults"></div><button class="primary" id="partLookupFinishBtn" type="button">Finish</button><button class="secondary" id="partLookupBackBtn" onclick="hidePartLookup()" type="button">← Back</button></div><div class="lookup-panel lookup-hidden" id="errorLookupPanel"><h3>Enter Numerical Error Code</h3><input autocomplete="off" class="lookup-input" id="errorCodeLookup" placeholder="Example: 53.B0.05"/><button class="lookup-enter" onclick="submitErrorLookup(event)" type="button">Enter Error Code</button><div class="lookup-help">Enter the code exactly as shown on the machine.</div><div class="lookup-results" id="errorCodeResults"></div></div><div class="lookup-panel lookup-hidden" id="messageLookupPanel"><h3>Enter Alphabetical Message</h3><input autocomplete="off" class="lookup-input" id="messageLookup" placeholder="Example: Bad optional tray connection"/><button class="lookup-enter" onclick="submitMessageLookup(event)" type="button">Enter Message</button><div class="lookup-help">You can enter the complete message or just enough to find it.</div><div class="lookup-results" id="messageResults"></div></div><div class="lookup-divider">or</div><button onclick="startSymptomDiagnosis()">I don't have an error code or message</button><button class="secondary" onclick="showManualCoverage()" type="button">Browse All Manual Troubleshooting</button>
 <!-- Variable/template error-code completion -->
-
-<div id="templateErrorChooser" class="panel hidden" style="margin-top:16px;">
-  <h3>Variable Error Code</h3>
-  <p id="templateErrorChooserText"></p>
-  <div class="panel" style="margin-top:12px;">
-    <h4>Option 1 — Enter the complete error code from the device</h4>
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-      <input id="templateCompleteCode" type="text"
-             placeholder="Example: 13.B9.B2" autocomplete="off"
-             style="min-width:240px;">
-      <button type="button" class="primary" id="templateUseComplete">
+<div class="panel hidden" id="templateErrorChooser" style="margin-top:16px;">
+<h3>Variable Error Code</h3>
+<p id="templateErrorChooserText"></p>
+<div class="panel" style="margin-top:12px;">
+<h4>Option 1 — Enter the complete error code from the device</h4>
+<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+<input autocomplete="off" id="templateCompleteCode" placeholder="Example: 13.B9.B2" style="min-width:240px;" type="text"/>
+<button class="primary" id="templateUseComplete" type="button">
         Use Complete Code
       </button>
-    </div>
-  </div>
-  <div class="panel" style="margin-top:12px;">
-    <h4>Option 2 — Enter the variable value</h4>
-    <div id="templateVariableFields"
-         style="display:flex;gap:10px;flex-wrap:wrap;"></div>
-    <button type="button" class="primary" id="templateUseVariables"
-            style="margin-top:12px;">Continue</button>
-  </div>
-  <button type="button" class="secondary" id="templateDifferentCode"
-          style="margin-top:12px;">
+</div>
+</div>
+<div class="panel" style="margin-top:12px;">
+<h4>Option 2 — Enter the variable value</h4>
+<div id="templateVariableFields" style="display:flex;gap:10px;flex-wrap:wrap;"></div>
+<button class="primary" id="templateUseVariables" style="margin-top:12px;" type="button">Continue</button>
+</div>
+<button class="secondary" id="templateDifferentCode" style="margin-top:12px;" type="button">
     Enter a Different Complete Error Code
   </button>
 </div>
-<div id="variableErrorPrompt" class="panel hidden" style="margin-top:16px;">
-  <h3>Complete This Error Code</h3>
-  <p id="variableErrorDescription">
+<div class="panel hidden" id="variableErrorPrompt" style="margin-top:16px;">
+<h3>Complete This Error Code</h3>
+<p id="variableErrorDescription">
     This manual entry contains variable information. You can either enter the
     complete error code shown on the device, or enter the individual values
     requested by the manual.
   </p>
-
-  <div class="panel" style="margin-top:12px;">
-    <h4>Option 1 — Enter the complete error code from the device</h4>
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-      <input id="completeVariableErrorCode" type="text"
-             placeholder="Example: 13.B9.05" autocomplete="off"
-             style="min-width:240px;">
-      <button type="button" class="primary" id="useCompleteVariableErrorCode">
+<div class="panel" style="margin-top:12px;">
+<h4>Option 1 — Enter the complete error code from the device</h4>
+<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+<input autocomplete="off" id="completeVariableErrorCode" placeholder="Example: 13.B9.05" style="min-width:240px;" type="text"/>
+<button class="primary" id="useCompleteVariableErrorCode" type="button">
         Use Complete Code
       </button>
-    </div>
-  </div>
-
-  <div class="panel" style="margin-top:12px;">
-    <h4>Option 2 — Enter the individual values</h4>
-    <div id="variableErrorFields"
-         style="display:flex;gap:10px;flex-wrap:wrap;"></div>
-    <button type="button" class="primary" id="continueVariableError"
-            style="margin-top:12px;">
+</div>
+</div>
+<div class="panel" style="margin-top:12px;">
+<h4>Option 2 — Enter the individual values</h4>
+<div id="variableErrorFields" style="display:flex;gap:10px;flex-wrap:wrap;"></div>
+<button class="primary" id="continueVariableError" style="margin-top:12px;" type="button">
       Continue
     </button>
-  </div>
-
-  <button type="button" class="secondary" id="enterDifferentErrorCode"
-          style="margin-top:12px;">
+</div>
+<button class="secondary" id="enterDifferentErrorCode" style="margin-top:12px;" type="button">
     Enter a Different Complete Error Code
   </button>
 </div>
-
-<div id="manualCoveragePanel" class="manual-coverage-panel hidden"></div>
-
-
-<div id="errorCodeEntry" class="hidden" style="margin-top:16px">
+<div class="manual-coverage-panel hidden" id="manualCoveragePanel"></div>
+<div class="hidden" id="errorCodeEntry" style="margin-top:16px">
 <label>Error code</label>
-<input id="problem" placeholder="Enter error code, e.g. 31.13.00">
+<input id="problem" placeholder="Enter error code, e.g. 31.13.00"/>
 <p style="color:#697581;font-size:14px;margin:8px 0 0">Error codes are free-flow. Enter the code exactly as it appears on the machine.</p>
 <button onclick="diagnose()">Diagnose Error Code</button>
 </div>
-
-<div id="problemCategories" class="hidden" style="margin-top:16px">
+<div class="hidden" id="problemCategories" style="margin-top:16px">
 <h3 style="margin-bottom:8px">What type of problem are you having?</h3>
-<select id="problemCategory" onchange="categorySelected(this.value)" class="diagnostic-select">
+<select class="diagnostic-select" id="problemCategory" onchange="categorySelected(this.value)">
 <option value="">Select a problem...</option>
 <option value="power">Dead / No Power</option>
 <option value="boot">Hangs / Will Not Boot</option>
@@ -561,45 +521,40 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <option value="other">Other</option>
 </select>
 </div>
-
-<div id="otherEntry" class="hidden" style="margin-top:16px">
+<div class="hidden" id="otherEntry" style="margin-top:16px">
 <label>Describe the problem</label>
-<textarea id="otherProblem" rows="4" style="width:100%;padding:12px;border:1px solid #c7ced6;border-radius:8px;font-size:16px" placeholder="Describe what the machine is doing..."></textarea>
+<textarea id="otherProblem" placeholder="Describe what the machine is doing..." rows="4" style="width:100%;padding:12px;border:1px solid #c7ced6;border-radius:8px;font-size:16px"></textarea>
 <div style="display:flex;gap:10px;margin-top:10px">
-<button class="secondary" style="flex:1" onclick="backToProblemCategories()">Back</button>
-<button style="flex:2" onclick="diagnoseOther()">Continue</button>
+<button class="secondary" onclick="backToProblemCategories()" style="flex:1">Back</button>
+<button onclick="diagnoseOther()" style="flex:2">Continue</button>
 </div>
 </div>
 </section>
-
 <section class="card hidden result" id="resultCard">
 <div id="result"></div>
 </section>
-
 <section class="card hidden service-report" id="serviceReportCard">
-  <div id="serviceReport"></div>
+<div id="serviceReport"></div>
 </section>
 </main>
 <div class="modal" id="specModal" onclick="closeSpecs(event)">
-  <div class="modal-card">
-    <h2>ADF Specifications &amp; Best Practices</h2>
-    <p>The current CPMD points technicians to the HP document covering supported ADF weights and sizes. It also gives these checks:</p>
-    <ul>
-      <li>Make sure the originals meet the ADF's supported weight and size requirements.</li>
-      <li>Do not overload the ADF input tray.</li>
-      <li>Adjust the guides correctly against the document without bending it.</li>
-      <li>Keep the document stack centered and aligned with the direction of travel.</li>
-      <li>Remove staples and paper clips from original documents.</li>
-      <li>Use the flatbed scanner for narrow documents when appropriate.</li>
-    </ul>
-    <p><strong>Future version:</strong> This window should show the exact model-specific supported sizes and weights from the approved specification/user-guide source, rather than relying on generic information.</p>
-    <div class="source-note">Source: supplied HP CPMD. The CPMD explicitly directs the technician to the HP ADF specifications document for supported weights and sizes.</div>
-    <button class="modal-close" onclick="closeSpecs()">Close</button>
-  </div>
+<div class="modal-card">
+<h2>ADF Specifications &amp; Best Practices</h2>
+<p>The current CPMD points technicians to the HP document covering supported ADF weights and sizes. It also gives these checks:</p>
+<ul>
+<li>Make sure the originals meet the ADF's supported weight and size requirements.</li>
+<li>Do not overload the ADF input tray.</li>
+<li>Adjust the guides correctly against the document without bending it.</li>
+<li>Keep the document stack centered and aligned with the direction of travel.</li>
+<li>Remove staples and paper clips from original documents.</li>
+<li>Use the flatbed scanner for narrow documents when appropriate.</li>
+</ul>
+<p><strong>Future version:</strong> This window should show the exact model-specific supported sizes and weights from the approved specification/user-guide source, rather than relying on generic information.</p>
+<div class="source-note">Source: supplied HP CPMD. The CPMD explicitly directs the technician to the HP ADF specifications document for supported weights and sizes.</div>
+<button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
-
-<footer><strong>Copier Wizard — Build 142</strong><br>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
-
+</div>
+<footer><strong>Copier Wizard — Build 144</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -942,7 +897,7 @@ function preparePrintableReportLink(el){
 
 
 
-<script id="cw-Build 142-selection">
+<script id="cw-Build 144-selection">
 document.addEventListener("DOMContentLoaded",function(){
   const type=document.getElementById("machineType");
   if(type) type.addEventListener("change",function(){machineTypeChanged(this.value);});
@@ -1011,7 +966,7 @@ function openPrintableServiceReport(){
       .external-report-note{max-width:900px;margin:0 auto 18px;color:#4b5563;font-size:13px}
       @media print{body{padding:0!important}.no-print,.external-report-toolbar,.external-report-note{display:none!important}}
     
-/* Build 142: keep Copier Wizard branding visually static. */
+/* Build 144: keep Copier Wizard branding visually static. */
 .cw-header .cw-brand,
 .cw-header .cw-brand img,
 .cw-header .cw-brand > div,
@@ -1030,7 +985,7 @@ function openPrintableServiceReport(){
   mix-blend-mode: normal !important;
 }
 
-/* Build 142: Browse-all entries show compact titles; troubleshooting details
+/* Build 144: Browse-all entries show compact titles; troubleshooting details
    are revealed only after selecting an entry. */
 .browse-all-item .troubleshooting-steps,
 .browse-all-item .steps,
@@ -1041,7 +996,7 @@ function openPrintableServiceReport(){
 .browse-all-item.is-selected .solution,
 .browse-all-item.is-selected .detail { display:block !important; }
 
-/* Build 142: compact Home control, matching the original house-only button. */
+/* Build 144: compact Home control, matching the original house-only button. */
 .header-home.compact-home{
   width:32px !important;
   min-width:32px !important;
@@ -1056,6 +1011,36 @@ function openPrintableServiceReport(){
   justify-content:center !important;
   border-radius:8px !important;
 }
+
+/* Build 144: tiny Home icon lives inside the header brand row. */
+.cw-brand{position:relative;}
+.header-home.compact-home{
+  appearance:none !important;
+  -webkit-appearance:none !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:28px !important;
+  min-width:28px !important;
+  max-width:28px !important;
+  height:28px !important;
+  min-height:28px !important;
+  max-height:28px !important;
+  margin:0 0 0 8px !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:6px !important;
+  background:transparent !important;
+  color:inherit !important;
+  font-size:20px !important;
+  line-height:28px !important;
+  flex:0 0 28px !important;
+  vertical-align:middle !important;
+}
+.header-home.compact-home:hover{background:rgba(255,255,255,.12) !important;}
+
+/* Build 144: once a part search returns results, only Finish remains below it. */
+#partLookupFinishBtn{width:100% !important;margin-top:16px !important;display:none;}
 </style><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 </head><body>
     <div class="external-report-toolbar no-print">
@@ -4417,7 +4402,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='142';
+  const CURRENT='144';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;
@@ -4451,8 +4436,6 @@ document.addEventListener("click",(event)=>{
   });
 })();
 </script>
-
-
 <script id="cw-parts-lookup-safety">
 (function(){
   window.partsLookupReady=function(){
@@ -4462,7 +4445,6 @@ document.addEventListener("click",(event)=>{
   };
 })();
 </script>
-
 <script id="cw-parts-lookup-main">
 function normalizePartLookupText(value){
   return String(value==null?"":value)
@@ -4593,5 +4575,58 @@ document.addEventListener("DOMContentLoaded",function(){
     };
   }
 });
+</script>
+<script id="cw-parts-finish-v144">
+(function(){
+  function hasRealResults(){
+    const box=document.getElementById("partLookupResults");
+    if(!box) return false;
+    return !!box.querySelector(".part-result, .lookup-result, .part, li, table, .lookup-count");
+  }
+  function syncPartsState(){
+    const done=hasRealResults();
+    const choices=document.getElementById("lookupChoiceGrid");
+    const ep=document.getElementById("errorLookupPanel");
+    const mp=document.getElementById("messageLookupPanel");
+    const browse=document.getElementById("browseManualTroubleshootingBtn");
+    const back=document.getElementById("partLookupBackBtn");
+    const finish=document.getElementById("partLookupFinishBtn");
+    if(done){
+      if(choices)choices.style.display="none";
+      if(ep)ep.style.display="none";
+      if(mp)mp.style.display="none";
+      if(browse)browse.style.display="none";
+      if(back)back.style.display="none";
+      if(finish)finish.style.display="block";
+    }else{
+      if(finish)finish.style.display="none";
+      if(back)back.style.display="";
+    }
+  }
+  function resetFormCompletely(){
+    try{
+      if(typeof resetForm==="function"){ resetForm(); return; }
+    }catch(e){}
+    const form=document.querySelector("form");
+    if(form)try{form.reset();}catch(e){}
+    document.querySelectorAll(".lookup-panel").forEach(p=>p.style.display="none");
+    const choices=document.getElementById("lookupChoiceGrid");
+    if(choices)choices.style.display="";
+    const results=document.getElementById("partLookupResults");
+    if(results)results.innerHTML="";
+    const finish=document.getElementById("partLookupFinishBtn");
+    if(finish)finish.style.display="none";
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+  document.addEventListener("DOMContentLoaded",function(){
+    const finish=document.getElementById("partLookupFinishBtn");
+    if(finish)finish.addEventListener("click",resetFormCompletely);
+    const box=document.getElementById("partLookupResults");
+    if(box){
+      new MutationObserver(syncPartsState).observe(box,{childList:true,subtree:true,characterData:true});
+    }
+    syncPartsState();
+  });
+})();
 </script>
 </body></html>
