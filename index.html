@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Copier Wizard — Build 118</title>
+<title>Copier Wizard — Build 120</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -561,7 +561,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
   </div>
 </div>
 
-<footer><strong>Copier Wizard — Build 118</strong><br>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
+<footer><strong>Copier Wizard — Build 120</strong><br>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
 
 <script>
 let verifiedModel="";
@@ -900,17 +900,19 @@ function preparePrintableReportLink(el){
       #serviceReportCard{display:block!important;border:0!important;box-shadow:none!important;max-width:900px!important;margin:0 auto!important}
       @media print{body{padding:0!important}}
     </style><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
-</head><body>${clone.outerHTML}<script id="cw-update-check">(function(){const CURRENT='118';function show(msg){const b=document.getElementById('cwUpdateBubble');if(!b)return;b.textContent=msg;b.classList.add('show');setTimeout(()=>b.classList.remove('show'),3000)}async function check(){try{const r=await fetch('version.json?cb='+Date.now(),{cache:'no-store'});if(!r.ok)return;const d=await r.json(),latest=String(d.build||'');if(!latest||latest===CURRENT)return;localStorage.setItem('cw_pending_update',latest);location.reload(true)}catch(e){}}document.addEventListener('DOMContentLoaded',()=>{const p=localStorage.getItem('cw_pending_update');if(p===CURRENT){localStorage.removeItem('cw_pending_update');show('Copier Wizard updated — Build '+CURRENT)}check()})})();</script>
-<script>document.addEventListener("DOMContentLoaded",()=>{const templateCodes=new Set((window.E52645_ERROR_CATALOG||[]).map(x=>String(x.code||"").toUpperCase()).filter(code=>/[XYZ]/.test(code)));document.querySelectorAll(".manual-index-item").forEach(el=>{const strong=el.querySelector("strong"),code=(strong?.textContent||"").trim().toUpperCase();if(!templateCodes.has(code)||el.querySelector(".variable-template-badge"))return;const badge=document.createElement("span");badge.className="variable-template-badge";badge.textContent="VARIABLE CODE";strong.appendChild(badge);});});</script>
+</head><body>${clone.outerHTML}<script id="cw-update-check">(function(){const CURRENT='120';function show(msg){const b=document.getElementById('cwUpdateBubble');if(!b)return;b.textContent=msg;b.classList.add('show');setTimeout(()=>b.classList.remove('show'),3000)}async function check(){try{const r=await fetch('version.json?cb='+Date.now(),{cache:'no-store'});if(!r.ok)return;const d=await r.json(),latest=String(d.build||'');if(!latest||latest===CURRENT)return;localStorage.setItem('cw_pending_update',latest);location.reload(true)}catch(e){}}document.addEventListener('DOMContentLoaded',()=>{const p=localStorage.getItem('cw_pending_update');if(p===CURRENT){localStorage.removeItem('cw_pending_update');show('Copier Wizard updated — Build '+CURRENT)}check()})})();<\/script>
+<script>document.addEventListener("DOMContentLoaded",()=>{const templateCodes=new Set((window.E52645_ERROR_CATALOG||[]).map(x=>String(x.code||"").toUpperCase()).filter(code=>/[XYZ]/.test(code)));document.querySelectorAll(".manual-index-item").forEach(el=>{const strong=el.querySelector("strong"),code=(strong?.textContent||"").trim().toUpperCase();if(!templateCodes.has(code)||el.querySelector(".variable-template-badge"))return;const badge=document.createElement("span");badge.className="variable-template-badge";badge.textContent="VARIABLE CODE";strong.appendChild(badge);});});<\/script>
 
 
 
-<script id="cw-build118-selection">
+<script id="cw-Build 120-selection">
 document.addEventListener("DOMContentLoaded",function(){
   const type=document.getElementById("machineType");
   if(type) type.addEventListener("change",function(){machineTypeChanged(this.value);});
 });
-</script>
+<\/script>
+
+
 
 </body></html>`;
     const blob=new Blob([html],{type:"text/html"});
@@ -1615,41 +1617,43 @@ function machineTypeChanged(type){
   const familyEl=document.getElementById("machineFamily");
   const modelEl=document.getElementById("model");
   const hint=document.getElementById("modelHint");
-  if(!familyEl || !modelEl) return;
+  if(!familyEl||!modelEl)return;
+  familyEl.disabled=true;
   familyEl.innerHTML='<option value="">Select a machine family...</option>';
-  modelEl.innerHTML='<option value="">Select a family first...</option>';
   modelEl.disabled=true;
-  if(hint) hint.textContent="";
+  modelEl.innerHTML='<option value="">Select a family first...</option>';
+  if(hint)hint.textContent="";
+  if(!type)return;
   const groups=machineSelectionFamilies;
-  const entries=(groups && groups[type]) ? Object.entries(groups[type]) : [];
-  familyEl.disabled=entries.length===0;
+  const families=groups && groups[type] ? groups[type] : {};
+  const entries=Object.entries(families);
   entries.forEach(([id,f])=>{
-    const o=document.createElement("option");
-    o.value=id;
-    o.textContent=f.label;
-    familyEl.appendChild(o);
+    const option=document.createElement("option");
+    option.value=id;
+    option.textContent=f.label;
+    familyEl.appendChild(option);
   });
-  if(!entries.length && type==="pagewide"){
-    familyEl.innerHTML='<option value="">No PageWide families loaded yet</option>';
-  }
+  familyEl.disabled=entries.length===0;
 }
 
 function familySelectionChanged(familyId){
-  const type=(document.getElementById("machineType")||{}).value || "";
+  const type=document.getElementById("machineType")?.value||"";
   const modelEl=document.getElementById("model");
   const hint=document.getElementById("modelHint");
-  if(!modelEl) return;
+  if(!modelEl)return;
+  modelEl.disabled=true;
   modelEl.innerHTML='<option value="">Select a model...</option>';
-  modelEl.disabled=!familyId;
-  if(hint) hint.textContent="";
-  const family=machineSelectionFamilies[type]?.[familyId];
-  if(!family) return;
-  (family.models || []).forEach(m=>{
-    const o=document.createElement("option");
-    o.value=m;
-    o.textContent=m;
-    modelEl.appendChild(o);
+  if(hint)hint.textContent="";
+  if(!familyId||!type)return;
+  const family=machineSelectionFamilies?.[type]?.[familyId];
+  if(!family)return;
+  (family.models||[]).forEach(model=>{
+    const option=document.createElement("option");
+    option.value=model;
+    option.textContent=model;
+    modelEl.appendChild(option);
   });
+  modelEl.disabled=(family.models||[]).length===0;
 }
 const firmwarePolicy={
   M506:["FS3","FS5"],M507:["FS4","FS5"],M525:["FS3","FS4"],M527:["FS3","FS4","FS5"],M528:["FS4","FS5"],
@@ -4254,4 +4258,37 @@ document.addEventListener("click",(event)=>{
   },true);
 })();
 </script>
+<script id="cw-update-check-real">
+(function(){
+  const CURRENT='120';
+  function show(msg){
+    const b=document.getElementById('cwUpdateBubble');
+    if(!b)return;
+    b.textContent=msg;
+    b.classList.add('show');
+    setTimeout(function(){b.classList.remove('show');},3000);
+  }
+  async function check(){
+    try{
+      const r=await fetch('version.json?cb='+Date.now(),{cache:'no-store'});
+      if(!r.ok)return;
+      const d=await r.json();
+      const latest=String(d.build||'');
+      if(latest && latest!==CURRENT){
+        localStorage.setItem('cw_pending_update',latest);
+        location.reload(true);
+      }
+    }catch(e){}
+  }
+  document.addEventListener('DOMContentLoaded',function(){
+    const pending=localStorage.getItem('cw_pending_update');
+    if(pending===CURRENT){
+      localStorage.removeItem('cw_pending_update');
+      show('Copier Wizard updated — Build '+CURRENT);
+    }
+    check();
+  });
+})();
+</script>
+
 </body></html>
