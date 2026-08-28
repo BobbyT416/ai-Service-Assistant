@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Copier Wizard — Build 35</title>
+<title>Copier Wizard — Build 109</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
-header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
+header{background:#17212b;color:white;padding:18px 24px} header h1{margin:0;font-size:24px} header p{margin:5px 0 0;color:#cbd5df}
 main{max-width:900px;margin:28px auto;padding:0 18px}.card{background:white;border-radius:12px;padding:24px;margin-bottom:18px;box-shadow:0 2px 8px #0001}
 label{display:block;font-weight:700;margin:14px 0 6px}select,input,button{width:100%;padding:12px;border:1px solid #c7ced6;border-radius:8px;font-size:16px}
 button{background:#1f5f8b;color:white;border:0;font-weight:700;cursor:pointer;margin-top:18px}button.secondary{background:#e9edf1;color:#18212b}button:disabled{opacity:.5;cursor:not-allowed}
@@ -296,6 +296,20 @@ footer{text-align:center;color:#697581;padding:20px;font-size:13px}
 }
 </style>
 
+<style id="documentation-library-ui">
+.documentation-panel{margin-top:14px;padding:15px;border:1px solid #cfd6df;border-radius:10px;background:#f8fafc}
+.documentation-panel h3{margin:0 0 6px;color:#183b5b}
+.documentation-summary{font-size:13px;color:#4b5563;margin:0 0 10px}
+.documentation-family{border:1px solid #d7dde5;border-radius:9px;background:#fff;padding:11px 12px;margin-top:9px}
+.documentation-family strong{display:block;margin-bottom:4px}
+.documentation-tag{display:inline-block;font-size:11px;font-weight:700;padding:3px 7px;border-radius:999px;background:#e8eef4;color:#405568;margin:2px 4px 2px 0}
+.documentation-tag.primary{background:#e7f3e8;color:#315b35}
+.documentation-tag.supplemental{background:#fff3d9;color:#755515}
+.documentation-tag.missing{background:#fdeaea;color:#8a3030}
+.documentation-note{font-size:12px;color:#596574;margin-top:7px;line-height:1.4}
+.documentation-button{margin-top:10px}
+</style>
+
 <style id="documented-procedure-ui">
 .documented-step-list{margin:10px 0 14px;}
 .documented-step-check:checked + span{text-decoration:line-through;opacity:.72;}
@@ -333,98 +347,43 @@ button:disabled{opacity:.55;cursor:not-allowed;}
   .diagnostic-nav-card{max-height:calc(100vh - 20px);padding:18px;}
 }
 button:disabled{opacity:.55;cursor:not-allowed;}
+<style id="build107-selection">
+.selection-note{padding:10px 12px;border-radius:8px;background:#eef6fb;margin:10px 0 4px;color:#344454;font-size:.94em}
+select:disabled{background:#eef1f4;color:#7a858f;cursor:not-allowed}
+</style>
 </style>
 
-<style id="v106-uniform-checkboxes">
-.documented-step label{
-  display:flex;
-  gap:12px;
-  align-items:flex-start;
-  cursor:pointer;
-}
-.documented-step-check{
-  appearance:none;
-  -webkit-appearance:none;
-  flex:0 0 22px;
-  width:22px;
-  height:22px;
-  min-width:22px;
-  margin:2px 0 0 0 !important;
-  padding:0;
-  border:2px solid #71808d;
-  border-radius:5px;
-  background:#fff;
-  position:relative;
-  cursor:pointer;
-  box-sizing:border-box;
-}
-.documented-step-check:hover{
-  border-color:#286b97;
-}
-.documented-step-check:focus-visible{
-  outline:3px solid rgba(40,107,151,.25);
-  outline-offset:2px;
-}
-.documented-step-check:checked{
-  background:#286b97;
-  border-color:#286b97;
-}
-.documented-step-check:checked::after{
-  content:"";
-  position:absolute;
-  left:5px;
-  top:1px;
-  width:7px;
-  height:12px;
-  border:solid #fff;
-  border-width:0 2.5px 2.5px 0;
-  transform:rotate(45deg);
-}
-.documented-step-check:checked + span{
-  text-decoration:line-through;
-  opacity:.72;
-}
-@media(max-width:600px){
-  .documented-step-check{
-    flex-basis:24px;
-    width:24px;
-    height:24px;
-    min-width:24px;
-  }
-}
+<style>
+/* Copier Wizard update notice: one-shot, non-blinking */
+.cw-update-toast{position:fixed;left:50%;top:18px;transform:translateX(-50%);z-index:9999;background:#18212b;color:#fff;padding:12px 18px;border-radius:10px;box-shadow:0 6px 22px #0004;font-weight:700;font-size:15px;display:none;max-width:calc(100% - 32px);text-align:center}
+.cw-update-toast.show{display:block}
 </style>
-<link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 </head>
 <body>
-<header class="cw-header"><div class="cw-brand"><img src="icon-192.png" alt="Copier Wizard logo"><div><h1>Copier Wizard</h1><p>Intelligent Diagnostics for Copiers &amp; Printers</p></div></div></header>
+<header><h1>Copier Wizard</h1><p>Intelligent Diagnostics for Copiers &amp; Printers • Build 109</p></header>
 <main>
 <section class="card" id="selectCard">
 <h2>1. Select Equipment</h2>
-<label>Manufacturer</label>
-<select id="manufacturer"><option>HP</option></select>
-
-<label>Printer Type</label>
+<label>Machine Type</label>
 <select id="machineType" onchange="machineTypeChanged(this.value)">
-<option value="">Select printer type...</option>
-<option value="mono">Monochrome</option>
-<option value="color">Color</option>
-<option value="pagewide">PageWide</option>
+<option value="">Select machine type...</option>
+<option value="Color">Color</option>
+<option value="Mono">Mono</option>
+<option value="PageWide">PageWide</option>
 </select>
-
+<div id="machineTypeHint" class="source-note"></div>
 <label>Machine Family</label>
-<select id="machineFamily" onchange="familySelectionChanged(this.value)" disabled>
-<option value="">Select a printer type first...</option>
+<select id="machineFamily" onchange="machineFamilyChanged(this.value)" disabled>
+<option value="">Select a machine family...</option>
 </select>
-
 <label>Model</label>
 <select id="model" onchange="modelSelectionChanged(this.value)" disabled>
-<option value="">Select a family first...</option>
+<option value="">Select a model...</option>
 </select>
 <div id="modelHint" class="source-note"></div>
-
-<label>Product Number <span style="font-weight:normal">(optional)</span></label>
+<div id="documentationPanel" class="documentation-panel hidden"></div>
+<label>Product Number <span style="font-weight:normal">(optional for this prototype)</span></label>
 <input id="product" placeholder="Enter if needed">
-
 <label>FutureSmart version</label>
 <select id="firmwareLevel" onchange="firmwareSelectionChanged(this.value)">
 <option value="">Select firmware level...</option>
@@ -568,7 +527,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
   </div>
 </div>
 
-<footer><strong>Copier Wizard — Build 35</strong><br>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
+<footer>Copier Wizard prototype • Build 109<br>Documentation is organized by machine category and source type. Technical content is based on supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
 
 <script>
 let verifiedModel="";
@@ -906,8 +865,78 @@ function preparePrintableReportLink(el){
       body{background:#fff!important;padding:24px!important;color:#111!important}
       #serviceReportCard{display:block!important;border:0!important;box-shadow:none!important;max-width:900px!important;margin:0 auto!important}
       @media print{body{padding:0!important}}
-    </style><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
-</head><body>${clone.outerHTML}</body></html>`;
+    </style></head><body>${clone.outerHTML}
+
+
+<script>
+/* Copier Wizard update checker -- main application startup */
+(function(){
+  const CURRENT_BUILD=109;
+  const PUBLISHED_INDEX='https://bobbyt416.github.io/ai-Service-Assistant/index.html';
+  const CHECK_KEY='cw_update_check';
+  const APPLIED_KEY='cw_update_applied';
+  const CHECK_DELAY=800;
+
+  function getBuild(text){
+    const m=[...String(text||'').matchAll(/Build\s+(\d+)/gi)]
+      .map(x=>Number(x[1])).filter(Number.isFinite);
+    return m.length ? Math.max(...m) : null;
+  }
+
+  function showToast(msg){
+    let t=document.getElementById('cwUpdateToast');
+    if(!t){
+      t=document.createElement('div');
+      t.id='cwUpdateToast';
+      t.className='cw-update-toast';
+      document.body.appendChild(t);
+    }
+    t.textContent=msg;
+    t.classList.add('show');
+    window.setTimeout(()=>t.classList.remove('show'),3000);
+  }
+
+  function cleanNotice(){
+    try{
+      const applied=sessionStorage.getItem(APPLIED_KEY);
+      if(Number(applied)===CURRENT_BUILD){
+        sessionStorage.removeItem(APPLIED_KEY);
+        const p=new URLSearchParams(location.search);
+        if(p.has('cw_refresh')){
+          p.delete('cw_refresh');
+          history.replaceState(null,'',location.pathname+(p.toString()?'?'+p:'')+location.hash);
+        }
+        window.setTimeout(()=>showToast('Update applied — Build '+CURRENT_BUILD),100);
+      }
+    }catch(e){}
+  }
+
+  async function check(){
+    try{
+      const url=PUBLISHED_INDEX+'?cw_version_check='+Date.now();
+      const r=await fetch(url,{cache:'no-store',credentials:'omit',redirect:'follow'});
+      if(!r.ok) return;
+      const latest=getBuild(await r.text());
+      if(!latest || latest<=CURRENT_BUILD) return;
+      const last=sessionStorage.getItem(CHECK_KEY);
+      if(last===String(latest)) return;
+      sessionStorage.setItem(CHECK_KEY,String(latest));
+      sessionStorage.setItem(APPLIED_KEY,String(latest));
+      const p=new URLSearchParams(location.search);
+      p.set('cw_refresh',String(Date.now()));
+      location.replace(location.pathname+'?'+p.toString()+location.hash);
+    }catch(e){ /* non-critical */ }
+  }
+
+  function start(){
+    cleanNotice();
+    window.setTimeout(check,CHECK_DELAY);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start,{once:true});
+  else start();
+})();
+</script>
+</body></html>`;
     const blob=new Blob([html],{type:"text/html"});
     const url=URL.createObjectURL(blob);
     el.href=url;
@@ -966,8 +995,7 @@ function openPrintableServiceReport(){
       .external-report-toolbar a.secondary{background:#e7edf2;color:#111}
       .external-report-note{max-width:900px;margin:0 auto 18px;color:#4b5563;font-size:13px}
       @media print{body{padding:0!important}.no-print,.external-report-toolbar,.external-report-note{display:none!important}}
-    </style><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
-</head><body>
+    </style></head><body>
     <div class="external-report-toolbar no-print">
       <a href="${printAction}">🖨 Print</a>
       <a href="${printAction}" class="secondary">⬇ Save as PDF</a>
@@ -1538,122 +1566,143 @@ function e52645DiagnosticPath(testName){
 }
 
 
-const machineSelectionFamilies = {
-  mono: {
-    "m501-family": {
-      label: "M501 / M506 / M507 / M527 / M528 family",
-      models: ["M501","M506","M507","M527","M528","E50045","E50145","E52545","E52645"],
-      supported: true,
-      docs: "Service Manual + CPMD"
-    },
-    "m607-family": {
-      label: "M607 / M608 / M609 / M610 / M611 / M612 family",
-      models: ["M607","M608","M609","M610","M611","M612","E60055","E60065","E60075","E60155","E60165","E60175"],
-      supported: false,
-      docs: "Service Manual + CPMD"
-    },
-    "m631-family": {
-      label: "M631 / M632 / M633 / M634 / M635 / M636 / M637 family",
-      models: ["M631","M632","M633","M634","M635","M636","M637","E62555","E62565","E62575","E62655","E62665","E62675"],
-      supported: false,
-      docs: "Service Manual + CPMD"
-    },
-    "x627-family": {
-      label: "6500 / 6501 / X60257 / X60357 / 6600 / X62757 family",
-      models: ["6500","6501","X60257","X60357","6600","X62757"],
-      supported: false,
-      docs: "CPMD received; Repair Manual missing"
-    }
-  },
-  color: {
-    "m652-family": {
-      label: "M652 / M653 / E65050 / E65060 / E65150 / E65160 family",
-      models: ["M652","M653","E65050","E65060","E65150","E65160"],
-      supported: false,
-      docs: "Service Manual + CPMD"
-    },
-    "m681-family": {
-      label: "M681 / M682 / E67550 / E67560 / E67650 / E67660 family",
-      models: ["M681","M682","E67550","E67560","E67650","E67660"],
-      supported: false,
-      docs: "Service Manual + CPMD"
-    },
-    "x577-family": {
-      label: "5700 / X557 / X55745 / 5800 / X57945 / X58045 family",
-      models: ["5700","X557","X55745","5800","X57945","X58045"],
-      supported: false,
-      docs: "Service Manual received (newer revision present)"
-    },
-    "x677-family": {
-      label: "6700 / 6701 / X677 / X67755 / X67765 / 6800 / 6801 / X654 / X65455 / X65465 family",
-      models: ["6700","6701","X677","X67755","X67765","6800","6801","X654","X65455","X65465"],
-      supported: false,
-      docs: "Repair Manual + User Guide"
-    },
-    "8801-family": {
-      label: "8801 MFP / 8801 Flow MFP family",
-      models: ["8801 MFP","8801 Flow MFP"],
-      supported: false,
-      docs: "CPMD received; Repair Manual missing"
-    }
-  },
-  pagewide: {
+const documentationIndex = {
+  // Primary manuals / strong technical sources currently available to this build.
+  E52645: {category:'Mono', docs:[['Service/Repair Manual','E52645-family service/repair documentation','primary'],['CPMD','E52645 CPMD / troubleshooting content','primary'],['Parts','Parts and diagrams included in the family documentation','primary']]},
+  M507: {category:'Mono', docs:[['Service/Repair Manual','E52645-family documentation includes M507-specific part/application references','primary'],['CPMD','E52645-family CPMD','primary']]},
+  M527: {category:'Mono', docs:[['Service/Repair Manual','E52645-family documentation','primary'],['CPMD','E52645-family CPMD','primary']]},
+  E52545: {category:'Mono', docs:[['Service/Repair Manual','E52645-family documentation','primary'],['CPMD','E52645-family CPMD','primary']]},
+  M528: {category:'Mono', docs:[['Service/Repair Manual','E52645-family documentation','primary'],['CPMD','E52645-family CPMD','primary']]},
+  M506: {category:'Mono', docs:[['Service/Repair Manual','E52645-family documentation','primary'],['CPMD','E52645-family CPMD','primary']]},
+  M501: {category:'Mono', docs:[['E52645-family CPMD','Model-specific references present in supplied CPMD','primary']]},
+  E50045: {category:'Mono', docs:[['E52645-family CPMD','Model-specific references present in supplied CPMD','primary']]},
+  E50145: {category:'Mono', docs:[['E52645-family CPMD','Model-specific references present in supplied CPMD','primary']]},
+  M652: {category:'Color', docs:[['Repair Manual','M652/M653/M681/M682 Repair Manual','primary'],['Troubleshooting Manual','Referenced by the Repair Manual; not yet separately confirmed in the files available to this build','missing']]},
+  M653: {category:'Color', docs:[['Repair Manual','M652/M653/M681/M682 Repair Manual','primary'],['Troubleshooting Manual','Referenced by the Repair Manual; not yet separately confirmed in the files available to this build','missing']]},
+  M681: {category:'Color', docs:[['Repair Manual','M652/M653/M681/M682 Repair Manual','primary'],['Troubleshooting Manual','Referenced by the Repair Manual; not yet separately confirmed in the files available to this build','missing']]},
+  M682: {category:'Color', docs:[['Repair Manual','M652/M653/M681/M682 Repair Manual','primary'],['Troubleshooting Manual','Referenced by the Repair Manual; not yet separately confirmed in the files available to this build','missing']]},
+  M751: {category:'Color', docs:[['Repair Manual','M751/M856/E75245/E85055/M776 Repair Manual','primary']]},
+  M776: {category:'Color', docs:[['Repair Manual','M751/M856/E75245/E85055/M776 Repair Manual','primary'],['Video references','The manual includes references to HP LaserJet videos','supplemental']]},
+  M856: {category:'Color', docs:[['Repair Manual','M751/M856/E75245/E85055/M776 Repair Manual','primary']]},
+  E75245: {category:'Color', docs:[['Repair Manual','M751/M856/E75245/E85055/M776 Repair Manual','primary']]},
+  E85055: {category:'Color', docs:[['Repair Manual','M751/M856/E75245/E85055/M776 Repair Manual','primary']]},
+  '5700': {category:'Color', docs:[['Service Manual','5700/X557/X55745/5800/X57945/X58045 Service Manual','primary']]},
+  X557: {category:'Color', docs:[['Service Manual','5700/X557/X55745/5800/X57945/X58045 Service Manual','primary']]},
+  X55745: {category:'Color', docs:[['Service Manual','5700/X557/X55745/5800/X57945/X58045 Service Manual','primary']]},
+  '5800': {category:'Color', docs:[['Service Manual','5700/X557/X55745/5800/X57945/X58045 Service Manual','primary']]},
+  X57945: {category:'Color', docs:[['Repair/Service Manual','X57945 Repair Manual and 5700/X557/X55745/5800/X57945/X58045 Service Manual','primary']]},
+  X58045: {category:'Color', docs:[['Service Manual','5700/X557/X55745/5800/X57945/X58045 Service Manual','primary']]},
+  M4555: {category:'Mono', docs:[['Service Manual','HP LaserJet Enterprise M4555 MFP Series Service Manual','primary'],['User Guide','Related user guide identified in the service manual','supplemental']]},
+  M525: {category:'Mono', docs:[['User Guide','HP LaserJet Enterprise M525 User Guide','supplemental']]},
+  M725: {category:'Mono', docs:[['User Guide','HP LaserJet Enterprise M725 User Guide','supplemental']]},
+  P4014: {category:'Mono', docs:[['Service Manual','P4014/P4015/P4515 Service Manual','primary']]},
+  P4015: {category:'Mono', docs:[['Service Manual','P4014/P4015/P4515 Service Manual','primary']]},
+  P4515: {category:'Mono', docs:[['Service Manual','P4014/P4015/P4515 Service Manual','primary']]},
+  'PW 556': {category:'PageWide', docs:[['FutureSmart PIN QRS','PageWide model listed in supplied FutureSmart Service PIN reference','supplemental']]},
+  'PW 586': {category:'PageWide', docs:[['FutureSmart PIN QRS','PageWide model listed in supplied FutureSmart Service PIN reference','supplemental']]},
+  'PW 765': {category:'PageWide', docs:[['FutureSmart PIN QRS','PageWide model listed in supplied FutureSmart Service PIN reference','supplemental']]},
+  'PW 780': {category:'PageWide', docs:[['FutureSmart PIN QRS','PageWide model listed in supplied FutureSmart Service PIN reference','supplemental']]},
+  'PW 785': {category:'PageWide', docs:[['FutureSmart PIN QRS','PageWide model listed in supplied FutureSmart Service PIN reference','supplemental']]},
+  E75160: {category:'PageWide', docs:[['FutureSmart PIN QRS','PageWide model listed in supplied FutureSmart Service PIN reference','supplemental']]},
+  E77650: {category:'PageWide', docs:[['FutureSmart PIN QRS','PageWide model listed in supplied FutureSmart Service PIN reference','supplemental']]},
+  E77660: {category:'PageWide', docs:[['FutureSmart PIN QRS','PageWide model listed in supplied FutureSmart Service PIN reference','supplemental']]}
+};
+
+function renderDocumentationPanel(model){
+  const panel=document.getElementById('documentationPanel');
+  if(!panel) return;
+  if(!model){panel.classList.add('hidden');panel.innerHTML='';return;}
+  const item=documentationIndex[model];
+  panel.classList.remove('hidden');
+  if(!item){
+    panel.innerHTML='<h3>Documentation Status</h3><p class="documentation-summary">No indexed documentation is currently mapped to this model in this build.</p>';
+    return;
   }
+  const tags=item.docs.map(d=>`<span class="documentation-tag ${d[2]}">${escapeHtml(d[0])}</span>`).join('');
+  const details=item.docs.map(d=>`<div class="documentation-family"><strong>${escapeHtml(d[0])}</strong><div>${escapeHtml(d[1])}</div></div>`).join('');
+  const workflow=(model==='E52645')
+    ? '<div class="documentation-note"><strong>Guided diagnostics:</strong> Enabled for the verified E52645 workflow currently in this prototype.</div>'
+    : '<div class="documentation-note"><strong>Guided diagnostics:</strong> Not enabled yet. This prevents the app from turning a newly indexed manual into an unverified troubleshooting path.</div>';
+  panel.innerHTML=`<h3>Documentation Status — ${escapeHtml(model)}</h3>
+    <p class="documentation-summary">${escapeHtml(item.category)} machine. The app keeps primary service/troubleshooting sources separate from supplemental references.</p>
+    <div>${tags}</div>${details}${workflow}
+    <button type="button" class="secondary documentation-button" onclick="showManualCoverage()">Browse Indexed Manual Entries</button>`;
+}
+
+const machineFamilies = {
+  Mono: [
+    {id:'m501-507', label:'M501 / M506 / M507 family', models:['M501','M506','M507']},
+    {id:'m527-family', label:'M527 / M528 / E52545 / E52645 family', models:['M527','M528','E52545','E52645']},
+    {id:'e50045-family', label:'E50045 / E50145 family', models:['E50045','E50145']},
+    {id:'m525', label:'M525 family', models:['M525']},
+    {id:'m725', label:'M725 family', models:['M725']},
+    {id:'m4555', label:'M4555 family', models:['M4555']},
+    {id:'p4014-family', label:'P4014 / P4015 / P4515 family', models:['P4014','P4015','P4515']}
+  ],
+  Color: [
+    {id:'m652-family', label:'M652 / M653 / M681 / M682 family', models:['M652','M653','M681','M682']},
+    {id:'m751-family', label:'M751 / M776 / M856 / E75245 / E85055 family', models:['M751','M776','M856','E75245','E85055']},
+    {id:'5700-family', label:'5700 / X557 / X55745 / 5800 / X57945 / X58045 family', models:['5700','X557','X55745','5800','X57945','X58045']}
+  ],
+  PageWide: [
+    {id:'pw-500', label:'PageWide 556 / 586 family', models:['PW 556','PW 586']},
+    {id:'pw-700', label:'PageWide 765 / 780 / 785 family', models:['PW 765','PW 780','PW 785']},
+    {id:'e75160', label:'E75160 family', models:['E75160']},
+    {id:'e776-family', label:'E77650 / E77660 family', models:['E77650','E77660']}
+  ]
 };
 
 function machineTypeChanged(type){
-  const familyEl=document.getElementById("machineFamily");
-  const modelEl=document.getElementById("model");
-  const hint=document.getElementById("modelHint");
-  if(!familyEl || !modelEl) return;
-  familyEl.innerHTML='<option value="">Select a machine family...</option>';
-  modelEl.innerHTML='<option value="">Select a family first...</option>';
-  familyEl.disabled=!type;
-  modelEl.disabled=true;
-  if(hint) hint.textContent="";
-  if(type && machineSelectionFamilies[type]){
-    const entries=Object.entries(machineSelectionFamilies[type]);
-    if(entries.length){
-      entries.forEach(([id,f])=>{
-        const o=document.createElement("option"); o.value=id; o.textContent=f.label; familyEl.appendChild(o);
-      });
-      familyEl.focus();
-    } else {
-      familyEl.innerHTML='<option value="">No PageWide families loaded yet</option>';
-      familyEl.disabled=true;
-      if(hint) hint.innerHTML='<strong>PageWide selected.</strong> PageWide documentation has not yet been loaded into this build. Add the applicable manuals to enable this category.';
-    }
-  }
+  const family=document.getElementById('machineFamily');
+  const model=document.getElementById('model');
+  const hint=document.getElementById('machineTypeHint');
+  if(!family || !model) return;
+  family.innerHTML='<option value="">Select a machine family...</option>';
+  model.innerHTML='<option value="">Select a model...</option>';
+  family.disabled=!type; model.disabled=true;
+  document.getElementById('modelHint').textContent='';
+  const panel=document.getElementById('documentationPanel');
+  if(panel){panel.classList.add('hidden');panel.innerHTML='';}
+  if(!type){if(hint) hint.textContent=''; return;}
+  const groups=machineFamilies[type]||[];
+  groups.forEach(f=>{const o=document.createElement('option');o.value=f.id;o.textContent=f.label;family.appendChild(o);});
+  if(hint) hint.innerHTML='<strong>'+escapeHtml(type)+' selected.</strong> Now select the applicable machine family.';
+  setTimeout(()=>family.focus(),50);
 }
 
-function familySelectionChanged(familyId){
-  const type=(document.getElementById("machineType")||{}).value || "";
-  const modelEl=document.getElementById("model");
-  const hint=document.getElementById("modelHint");
-  if(!modelEl) return;
-  modelEl.innerHTML='<option value="">Select a model...</option>';
-  modelEl.disabled=!familyId;
-  if(hint) hint.textContent="";
-  const family=machineSelectionFamilies[type]?.[familyId];
-  if(!family) return;
-  family.models.forEach(m=>{
-    const o=document.createElement("option"); o.value=m; o.textContent=m; modelEl.appendChild(o);
-  });
-  modelEl.focus();
+function machineFamilyChanged(familyId){
+  const type=document.getElementById('machineType')?.value;
+  const family=document.getElementById('machineFamily');
+  const model=document.getElementById('model');
+  const hint=document.getElementById('modelHint');
+  if(!model) return;
+  model.innerHTML='<option value="">Select a model...</option>';
+  model.disabled=true;
+  if(hint) hint.textContent='';
+  const panel=document.getElementById('documentationPanel');
+  if(panel){panel.classList.add('hidden');panel.innerHTML='';}
+  const group=(machineFamilies[type]||[]).find(f=>f.id===familyId);
+  if(!group) return;
+  group.models.forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;model.appendChild(o);});
+  model.disabled=false;
+  if(hint) hint.innerHTML='<strong>Family selected:</strong> '+escapeHtml(family.options[family.selectedIndex].text)+'. Now select the exact model.';
+  setTimeout(()=>model.focus(),50);
 }
 
 function modelSelectionChanged(model){
   const hint=document.getElementById("modelHint");
   const fw=document.getElementById("firmwareLevel");
   if(!hint) return;
-  if(!model){ hint.textContent=""; return; }
-  const type=(document.getElementById("machineType")||{}).value || "";
-  const familyId=(document.getElementById("machineFamily")||{}).value || "";
-  const family=machineSelectionFamilies[type]?.[familyId];
+  if(!model){
+    hint.textContent="";
+    return;
+  }
   hint.innerHTML="<strong>Model selected:</strong> "+escapeHtml(model)+
-    (family?.supported ? ". This family is currently enabled in Copier Wizard. Now select the machine's FutureSmart firmware level below." : ". Documentation is loaded for this family; the diagnostic workflow is not enabled for this family yet.")+
-    (family?.docs ? " <span class=\"source-note\">Documentation: "+escapeHtml(family.docs)+".</span>" : "");
-  if(family?.supported && fw && !fw.value){ setTimeout(()=>fw.focus(),50); }
+    ". Now select the machine's FutureSmart firmware level below.";
+  renderDocumentationPanel(model);
+  if(fw && !fw.value){
+    setTimeout(()=>fw.focus(),50);
+  }
 }
 function firmwareSelectionChanged(fw){
   const hint=document.getElementById("firmwareHint");
@@ -1671,29 +1720,14 @@ function verifyModel(){
  const m=document.getElementById("model").value;
  const fw=document.getElementById("firmwareLevel").value;
  const v=document.getElementById("verify");
- const type=(document.getElementById("machineType")||{}).value || "";
- const familyId=(document.getElementById("machineFamily")||{}).value || "";
- const family=machineSelectionFamilies[type]?.[familyId];
- if(!type){
-   v.innerHTML='<div class="status danger"><strong>Step 1:</strong> Select Monochrome or Color.</div>';
-   return;
- }
- if(!familyId || !family){
-   v.innerHTML='<div class="status danger"><strong>Step 2:</strong> Select the machine family.</div>';
-   return;
- }
  if(!m){
    v.innerHTML='<div class="status danger"><strong>Step 1:</strong> Select the machine model.</div>';
    return;
  }
  if(!fw){
-   v.innerHTML='<div class="status danger"><strong>Step 4:</strong> Select the FutureSmart firmware level. The diagnostic menu path changes between FutureSmart 3 and FutureSmart 4 or higher.</div>';
+   v.innerHTML='<div class="status danger"><strong>Step 2:</strong> Select the FutureSmart firmware level. The diagnostic menu path changes between FutureSmart 3 and FutureSmart 4 or higher.</div>';
    const fwEl=document.getElementById("firmwareLevel");
    if(fwEl) fwEl.focus();
-   return;
- }
- if(!family.supported){
-   v.innerHTML='<div class="status"><strong>Documentation found — diagnostic workflow not yet enabled</strong><br>HP '+escapeHtml(m)+' is organized under the '+escapeHtml(family.label)+'. The supporting manual data is present, but this family has not yet been enabled for guided troubleshooting in this build. No diagnosis will be started from this selection.</div>';
    return;
  }
  verifiedModel=m;
