@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Copier Wizard — Build 115</title>
+<title>Copier Wizard — Build 116</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -561,7 +561,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
   </div>
 </div>
 
-<footer><strong>Copier Wizard — Build 115</strong><br>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
+<footer><strong>Copier Wizard — Build 116</strong><br>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
 
 <script>
 let verifiedModel="";
@@ -902,6 +902,54 @@ function preparePrintableReportLink(el){
     </style><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 </head><body>${clone.outerHTML}<script id="cw-update-check">(function(){const CURRENT='115';function show(msg){const b=document.getElementById('cwUpdateBubble');if(!b)return;b.textContent=msg;b.classList.add('show');setTimeout(()=>b.classList.remove('show'),3000)}async function check(){try{const r=await fetch('version.json?cb='+Date.now(),{cache:'no-store'});if(!r.ok)return;const d=await r.json(),latest=String(d.build||'');if(!latest||latest===CURRENT)return;localStorage.setItem('cw_pending_update',latest);location.reload(true)}catch(e){}}document.addEventListener('DOMContentLoaded',()=>{const p=localStorage.getItem('cw_pending_update');if(p===CURRENT){localStorage.removeItem('cw_pending_update');show('Copier Wizard updated — Build '+CURRENT)}check()})})();</script>
 <script>document.addEventListener("DOMContentLoaded",()=>{const templateCodes=new Set((window.E52645_ERROR_CATALOG||[]).map(x=>String(x.code||"").toUpperCase()).filter(code=>/[XYZ]/.test(code)));document.querySelectorAll(".manual-index-item").forEach(el=>{const strong=el.querySelector("strong"),code=(strong?.textContent||"").trim().toUpperCase();if(!templateCodes.has(code)||el.querySelector(".variable-template-badge"))return;const badge=document.createElement("span");badge.className="variable-template-badge";badge.textContent="VARIABLE CODE";strong.appendChild(badge);});});</script>
+
+<script id="build116-family-fix">
+(function () {
+  function wireFamilySelection() {
+    const type = document.querySelector('#machineType, #machine-type, select[name="machineType"], select[name="machine_type"]');
+    const family = document.querySelector('#machineFamily, #machine-family, select[name="machineFamily"], select[name="machine_family"]');
+    if (!type || !family || family.dataset.cw116wired) return;
+    family.dataset.cw116wired = "1";
+
+    type.addEventListener('change', function () {
+      // Let the existing app handler run first, then ensure the family control
+      // is populated/enabled for the selected type.
+      setTimeout(function () {
+        family.disabled = false;
+        if (family.options.length === 0 || family.options.length === 1) {
+          const selected = String(type.value || '').toLowerCase();
+          const fallback = {
+            color: ['Color LaserJet'],
+            mono: ['Mono LaserJet'],
+            pagewide: ['PageWide']
+          };
+          const key = selected.includes('pagewide') ? 'pagewide' :
+                      selected.includes('mono') ? 'mono' :
+                      selected.includes('color') ? 'color' : null;
+          if (key && family.options.length === 0) {
+            fallback[key].forEach(function (label) {
+              const o = document.createElement('option');
+              o.value = label;
+              o.textContent = label;
+              family.appendChild(o);
+            });
+          }
+        }
+        family.dispatchEvent(new Event('input', {bubbles:true}));
+      }, 0);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', wireFamilySelection);
+  } else {
+    wireFamilySelection();
+  }
+  setTimeout(wireFamilySelection, 250);
+  setTimeout(wireFamilySelection, 1000);
+})();
+</script>
+
 </body></html>`;
     const blob=new Blob([html],{type:"text/html"});
     const url=URL.createObjectURL(blob);
