@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Service Assistant — First Draft</title>
+<title>Copier Wizard — Build 35</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
-header{background:#17212b;color:white;padding:18px 24px} header h1{margin:0;font-size:24px} header p{margin:5px 0 0;color:#cbd5df}
+header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
 main{max-width:900px;margin:28px auto;padding:0 18px}.card{background:white;border-radius:12px;padding:24px;margin-bottom:18px;box-shadow:0 2px 8px #0001}
 label{display:block;font-weight:700;margin:14px 0 6px}select,input,button{width:100%;padding:12px;border:1px solid #c7ced6;border-radius:8px;font-size:16px}
 button{background:#1f5f8b;color:white;border:0;font-weight:700;cursor:pointer;margin-top:18px}button.secondary{background:#e9edf1;color:#18212b}button:disabled{opacity:.5;cursor:not-allowed}
@@ -393,9 +393,10 @@ button:disabled{opacity:.55;cursor:not-allowed;}
   }
 }
 </style>
+<link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 </head>
 <body>
-<header><h1>Service Assistant — First Draft</h1><p>Prototype: model-verified HP diagnostic workflow</p></header>
+<header class="cw-header"><div class="cw-brand"><img src="icon-192.png" alt="Copier Wizard logo"><div><h1>Copier Wizard</h1><p>Intelligent Diagnostics for Copiers &amp; Printers</p></div></div></header>
 <main>
 <section class="card" id="selectCard">
 <h2>1. Select Equipment</h2>
@@ -407,6 +408,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <option value="">Select printer type...</option>
 <option value="mono">Monochrome</option>
 <option value="color">Color</option>
+<option value="pagewide">PageWide</option>
 </select>
 
 <label>Machine Family</label>
@@ -566,7 +568,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
   </div>
 </div>
 
-<footer>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
+<footer><strong>Copier Wizard — Build 35</strong><br>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
 
 <script>
 let verifiedModel="";
@@ -904,7 +906,8 @@ function preparePrintableReportLink(el){
       body{background:#fff!important;padding:24px!important;color:#111!important}
       #serviceReportCard{display:block!important;border:0!important;box-shadow:none!important;max-width:900px!important;margin:0 auto!important}
       @media print{body{padding:0!important}}
-    </style></head><body>${clone.outerHTML}</body></html>`;
+    </style><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+</head><body>${clone.outerHTML}</body></html>`;
     const blob=new Blob([html],{type:"text/html"});
     const url=URL.createObjectURL(blob);
     el.href=url;
@@ -963,7 +966,8 @@ function openPrintableServiceReport(){
       .external-report-toolbar a.secondary{background:#e7edf2;color:#111}
       .external-report-note{max-width:900px;margin:0 auto 18px;color:#4b5563;font-size:13px}
       @media print{body{padding:0!important}.no-print,.external-report-toolbar,.external-report-note{display:none!important}}
-    </style></head><body>
+    </style><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+</head><body>
     <div class="external-report-toolbar no-print">
       <a href="${printAction}">🖨 Print</a>
       <a href="${printAction}" class="secondary">⬇ Save as PDF</a>
@@ -1539,30 +1543,61 @@ const machineSelectionFamilies = {
     "m501-family": {
       label: "M501 / M506 / M507 / M527 / M528 family",
       models: ["M501","M506","M507","M527","M528","E50045","E50145","E52545","E52645"],
-      supported: true
+      supported: true,
+      docs: "Service Manual + CPMD"
     },
     "m607-family": {
       label: "M607 / M608 / M609 / M610 / M611 / M612 family",
       models: ["M607","M608","M609","M610","M611","M612","E60055","E60065","E60075","E60155","E60165","E60175"],
-      supported: false
+      supported: false,
+      docs: "Service Manual + CPMD"
     },
     "m631-family": {
       label: "M631 / M632 / M633 / M634 / M635 / M636 / M637 family",
       models: ["M631","M632","M633","M634","M635","M636","M637","E62555","E62565","E62575","E62655","E62665","E62675"],
-      supported: false
+      supported: false,
+      docs: "Service Manual + CPMD"
+    },
+    "x627-family": {
+      label: "6500 / 6501 / X60257 / X60357 / 6600 / X62757 family",
+      models: ["6500","6501","X60257","X60357","6600","X62757"],
+      supported: false,
+      docs: "CPMD received; Repair Manual missing"
     }
   },
   color: {
     "m652-family": {
       label: "M652 / M653 / E65050 / E65060 / E65150 / E65160 family",
       models: ["M652","M653","E65050","E65060","E65150","E65160"],
-      supported: false
+      supported: false,
+      docs: "Service Manual + CPMD"
     },
     "m681-family": {
       label: "M681 / M682 / E67550 / E67560 / E67650 / E67660 family",
       models: ["M681","M682","E67550","E67560","E67650","E67660"],
-      supported: false
+      supported: false,
+      docs: "Service Manual + CPMD"
+    },
+    "x577-family": {
+      label: "5700 / X557 / X55745 / 5800 / X57945 / X58045 family",
+      models: ["5700","X557","X55745","5800","X57945","X58045"],
+      supported: false,
+      docs: "Service Manual received (newer revision present)"
+    },
+    "x677-family": {
+      label: "6700 / 6701 / X677 / X67755 / X67765 / 6800 / 6801 / X654 / X65455 / X65465 family",
+      models: ["6700","6701","X677","X67755","X67765","6800","6801","X654","X65455","X65465"],
+      supported: false,
+      docs: "Repair Manual + User Guide"
+    },
+    "8801-family": {
+      label: "8801 MFP / 8801 Flow MFP family",
+      models: ["8801 MFP","8801 Flow MFP"],
+      supported: false,
+      docs: "CPMD received; Repair Manual missing"
     }
+  },
+  pagewide: {
   }
 };
 
@@ -1577,10 +1612,17 @@ function machineTypeChanged(type){
   modelEl.disabled=true;
   if(hint) hint.textContent="";
   if(type && machineSelectionFamilies[type]){
-    Object.entries(machineSelectionFamilies[type]).forEach(([id,f])=>{
-      const o=document.createElement("option"); o.value=id; o.textContent=f.label; familyEl.appendChild(o);
-    });
-    familyEl.focus();
+    const entries=Object.entries(machineSelectionFamilies[type]);
+    if(entries.length){
+      entries.forEach(([id,f])=>{
+        const o=document.createElement("option"); o.value=id; o.textContent=f.label; familyEl.appendChild(o);
+      });
+      familyEl.focus();
+    } else {
+      familyEl.innerHTML='<option value="">No PageWide families loaded yet</option>';
+      familyEl.disabled=true;
+      if(hint) hint.innerHTML='<strong>PageWide selected.</strong> PageWide documentation has not yet been loaded into this build. Add the applicable manuals to enable this category.';
+    }
   }
 }
 
@@ -1609,7 +1651,8 @@ function modelSelectionChanged(model){
   const familyId=(document.getElementById("machineFamily")||{}).value || "";
   const family=machineSelectionFamilies[type]?.[familyId];
   hint.innerHTML="<strong>Model selected:</strong> "+escapeHtml(model)+
-    (family?.supported ? ". This family is currently enabled in Copier Wizard. Now select the machine's FutureSmart firmware level below." : ". Documentation is loaded for this family; the diagnostic workflow is not enabled for this family yet.");
+    (family?.supported ? ". This family is currently enabled in Copier Wizard. Now select the machine's FutureSmart firmware level below." : ". Documentation is loaded for this family; the diagnostic workflow is not enabled for this family yet.")+
+    (family?.docs ? " <span class=\"source-note\">Documentation: "+escapeHtml(family.docs)+".</span>" : "");
   if(family?.supported && fw && !fw.value){ setTimeout(()=>fw.focus(),50); }
 }
 function firmwareSelectionChanged(fw){
