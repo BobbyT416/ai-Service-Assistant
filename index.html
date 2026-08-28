@@ -1168,6 +1168,18 @@ body { min-height: 1200px; }
   }
   #cwUpdateToast.show { opacity: 1; transform: translate(-50%, 0); }
 </style>
+
+<style id="build113-logo-fix">
+/* Restore a compact Copier Wizard header logo. */
+.app-logo, .header-logo, .brand-logo, header img.logo, header .logo img {
+  width: 38px !important;
+  height: 38px !important;
+  max-width: 38px !important;
+  max-height: 38px !important;
+  object-fit: contain !important;
+}
+</style>
+
 </head>
 <body>
 <div id="cwUpdateToast" role="status" aria-live="polite" aria-atomic="true"></div>
@@ -1206,7 +1218,7 @@ body { min-height: 1200px; }
 <option value="FS3">FutureSmart 3</option>
 <option value="FS4PLUS">FutureSmart 4 or higher</option>
 </select>
-<div id="firmwareHint" class="source-note"></div>
+
 <label>Firmware version <span style="font-weight:normal">(optional)</span></label><div class="status" style="font-size:.9em;margin-top:6px">If the machine is running FutureSmart 5 or another newer release, select <strong>FutureSmart 4 or higher</strong> and enter the exact firmware version when available.</div>
 <input id="firmwareVersion" placeholder="Example: 4.11.x">
 <button onclick="verifyModel()">Verify Machine</button>
@@ -1366,7 +1378,7 @@ body { min-height: 1200px; }
   </div>
 </div>
 
-<footer><strong>Copier Wizard</strong><br><span>Intelligent Diagnostics for Copiers &amp; Printers</span><br><strong>Build 112</strong><br><span>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</span></footer>
+<footer><strong>Copier Wizard</strong><br><span>Intelligent Diagnostics for Copiers &amp; Printers</span><br><strong>Build 113</strong><br><span>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</span></footer>
 
 <script>
 let verifiedModel="";
@@ -1705,6 +1717,30 @@ function preparePrintableReportLink(el){
       #serviceReportCard{display:block!important;border:0!important;box-shadow:none!important;max-width:900px!important;margin:0 auto!important}
       @media print{body{padding:0!important}}
     </style></head><body>${clone.outerHTML}
+
+
+<script id="build113-firmware-policy">
+window.COPIER_WIZARD_FIRMWARE_POLICY = {
+  "M506": ["FutureSmart 3", "FutureSmart 5"],
+  "M507": ["FutureSmart 4", "FutureSmart 5"],
+  "M527": ["FutureSmart 3", "FutureSmart 4", "FutureSmart 5"],
+  "M528": ["FutureSmart 4", "FutureSmart 5"],
+  "M525": ["FutureSmart 3", "FutureSmart 4"],
+  "X555": ["FutureSmart 3", "FutureSmart 5"],
+  "X585": ["FutureSmart 3", "FutureSmart 4"],
+  "PageWide 556": ["FutureSmart 3", "FutureSmart 4", "FutureSmart 5"],
+  "PageWide 586": ["FutureSmart 3", "FutureSmart 4", "FutureSmart 5"],
+  "PageWide 755": ["FutureSmart 4", "FutureSmart 5"]
+};
+
+window.cwFirmwareOptionsForModel = function(modelText) {
+  const s = String(modelText || "").toUpperCase();
+  for (const key of Object.keys(window.COPIER_WIZARD_FIRMWARE_POLICY)) {
+    if (s.includes(key.toUpperCase())) return window.COPIER_WIZARD_FIRMWARE_POLICY[key];
+  }
+  return [];
+};
+</script>
 
 </body></html>`;
     const blob=new Blob([html],{type:"text/html"});
