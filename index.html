@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Copier Wizard — Build 132</title>
+<title>Copier Wizard — Build 134</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -188,7 +188,7 @@ footer{text-align:center;color:#697581;padding:20px;font-size:13px}
 .coverage-stats{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
 .coverage-tabs{display:flex;gap:8px;margin:12px 0}
 .coverage-tab.active{font-weight:700}
-.manual-coverage-list{display:grid;gap:7px;margin-top:10px;max-height:520px;overflow:auto}
+.manual-coverage-list{display:grid;gap:7px;margin-top:10px;max-height:none;overflow:visible}
 .manual-index-item{
   display:flex;
   flex-direction:column;
@@ -589,7 +589,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
   </div>
 </div>
 
-<footer><strong>Copier Wizard — Build 132</strong><br>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
+<footer><strong>Copier Wizard — Build 134</strong><br>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
 
 <script>
 let verifiedModel="";
@@ -933,7 +933,7 @@ function preparePrintableReportLink(el){
 
 
 
-<script id="cw-Build 132-selection">
+<script id="cw-Build 134-selection">
 document.addEventListener("DOMContentLoaded",function(){
   const type=document.getElementById("machineType");
   if(type) type.addEventListener("change",function(){machineTypeChanged(this.value);});
@@ -1641,6 +1641,15 @@ const machineSelectionFamilies = {
   }
 };
 
+// Keep family labels globally synchronized with their actual selectable models.
+Object.values(machineSelectionFamilies).forEach(typeFamilies=>{
+  Object.values(typeFamilies||{}).forEach(family=>{
+    if(Array.isArray(family.models)&&family.models.length){
+      family.label=family.models.join(" / ")+" family";
+    }
+  });
+});
+
 function machineTypeChanged(type){
   const familyEl=document.getElementById("machineFamily");
   const modelEl=document.getElementById("model");
@@ -1686,6 +1695,15 @@ function familySelectionChanged(familyId){
 }
 
 const productNumberCatalog={
+  "M607":[{product:"K0Q14A",model:"M607n"},{product:"K0Q15A",model:"M607dn"}],
+  "M608":[{product:"K0Q17A",model:"M608n"},{product:"K0Q18A",model:"M608dn"},{product:"K0Q19A",model:"M608x"}],
+  "M609":[{product:"K0Q21A",model:"M609dn"},{product:"K0Q22A",model:"M609x"}],
+  "M610":[{product:"7PS82A",model:"M610dn"}],
+  "M611":[{product:"7PS84A",model:"M611dn"},{product:"7PS85A",model:"M611x"}],
+  "M612":[{product:"7PS86A",model:"M612dn"},{product:"7PS87A",model:"M612x"}],
+  "E60055":[{product:"M0P33A",model:"E60055dn"}],
+  "E60065":[{product:"M0P35A",model:"E60065dn"},{product:"M0P36A",model:"E60065x"}],
+  "E60075":[{product:"M0P39A",model:"E60075dn"},{product:"M0P40A",model:"E60075x"}],
   "M501":[{product:"J8H60A",model:"M501n"},{product:"J8H61A",model:"M501dn"}],
   "M506":[{product:"F2A68A",model:"M506n"},{product:"F2A69A",model:"M506dn"},{product:"F2A70A",model:"M506x"}],
   "M507":[{product:"1PV86A",model:"M507n"},{product:"1PV87A",model:"M507dn"},{product:"1PV88A",model:"M507x"},{product:"1PV89A",model:"M507dng"}],
@@ -1693,10 +1711,12 @@ const productNumberCatalog={
   "M528":[{product:"1PV64A",model:"M528dn"},{product:"1PV65A",model:"M528f"},{product:"1PV67A",model:"M528z"}]
 };
 function productCatalogKey(model){
-  const s=String(model||"").toUpperCase();
-  const m=s.match(/M501|M506|M507|M527|M528/);
-  return m?m[0]:"";
+  const s=String(model||"").trim().toUpperCase();
+  if(!s)return "";
+  const keys=Object.keys(productNumberCatalog||{}).sort((a,b)=>b.length-a.length);
+  return keys.find(k=>String(k).toUpperCase()===s) || "";
 }
+
 function configureProductNumberForModel(model){
   const el=document.getElementById("product"),hint=document.getElementById("productHint");
   if(!el)return;
@@ -1925,7 +1945,7 @@ function showManualCoverage(){
   panel.innerHTML=`
     <div class="manual-coverage-header">
       <h3>HP Manual Coverage</h3>
-      <p>This index is built from the supplied E52645 service documentation. It lets a technician reach every indexed numerical error and alphabetical control-panel message directly.</p>
+      <p>This browser displays the currently indexed service-manual entries loaded into the app. The list is not artificially capped, so additional indexed entries will continue below as more manuals are added.</p>
       <div class="coverage-stats">
         <span class="pill">${errors.length} numerical entries</span>
         <span class="pill">${actionableErrors.length} with documented procedures</span>
@@ -2042,7 +2062,7 @@ function renderManualCoverageList(type){
     });
     const ranked=combined.filter(x=>!search||x.score>=70)
       .sort((a,b)=>b.score-a.score || a.kind.localeCompare(b.kind));
-    list.innerHTML=ranked.slice(0,100).map(({kind,item,index})=>{
+    list.innerHTML=ranked.map(({kind,item,index})=>{
       const hasProcedure=kind==="Numerical" ? Array.isArray(item.steps)&&item.steps.length : Array.isArray(item.actions)&&item.actions.length;
       const title=kind==="Numerical" ? item.code : (item.message||item.title||"");
       const desc=kind==="Numerical" ? item.desc : item.description;
@@ -4342,7 +4362,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='132';
+  const CURRENT='134';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;
