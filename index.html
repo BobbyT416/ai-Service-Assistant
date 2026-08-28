@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Copier Wizard — Build 128</title>
+<title>Copier Wizard — Build 129</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -401,6 +401,25 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 .part-result-meta,.part-result-warning{margin-top:8px;font-size:13px}
 .part-result-warning{padding:9px;border-radius:8px;background:#fff3cd}
 </style>
+
+<style id="cw-readable-choice-buttons">
+.lookup-choice,
+.lookup-choice:visited,
+.lookup-choice:hover,
+.lookup-choice:active,
+.lookup-choice:focus {
+  color: #18212b !important;
+  -webkit-text-fill-color: #18212b !important;
+}
+.lookup-choice strong,
+.lookup-choice span {
+  color: #18212b !important;
+  -webkit-text-fill-color: #18212b !important;
+  opacity: 1 !important;
+}
+.lookup-choice strong { display:block !important; font-weight:700 !important; }
+.lookup-choice span { display:block !important; }
+</style>
 </head>
 <body>
 <header class="cw-header"><div class="cw-brand"><img src="icon-192.png" alt="Copier Wizard logo"><div><h1>Copier Wizard</h1><p>Intelligent Diagnostics for Copiers &amp; Printers</p></div></div></header>
@@ -570,7 +589,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
   </div>
 </div>
 
-<footer><strong>Copier Wizard — Build 128</strong><br>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
+<footer><strong>Copier Wizard — Build 129</strong><br>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
 
 <script>
 let verifiedModel="";
@@ -914,7 +933,7 @@ function preparePrintableReportLink(el){
 
 
 
-<script id="cw-Build 128-selection">
+<script id="cw-Build 129-selection">
 document.addEventListener("DOMContentLoaded",function(){
   const type=document.getElementById("machineType");
   if(type) type.addEventListener("change",function(){machineTypeChanged(this.value);});
@@ -4309,7 +4328,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='128';
+  const CURRENT='129';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;
