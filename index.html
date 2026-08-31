@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 164</title>
+<title>Copier Wizard — Build 168</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -419,6 +419,25 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 .lookup-browse-link{display:inline-flex;align-items:center;width:max-content;max-width:100%;margin:0 0 4px 6px;padding:4px 8px;border:0;background:transparent;color:#25658f;font-size:12px;font-weight:600;cursor:pointer;border-radius:6px}
 .lookup-browse-link:hover,.lookup-browse-link:focus-visible{background:#eef3f7;text-decoration:underline;outline:none}
 </style>
+<style id="cw-lookup-result-contrast-v168">
+.lookup-result,.lookup-result:visited,.lookup-result:hover,.lookup-result:active,.lookup-result:focus{
+ color:#18212b !important;
+ -webkit-text-fill-color:#18212b !important;
+ background:#f7f9fb !important;
+ font-weight:400 !important;
+ text-align:left !important;
+}
+.lookup-result strong{
+ color:#18212b !important;
+ -webkit-text-fill-color:#18212b !important;
+ font-weight:700 !important;
+}
+.lookup-result span{
+ color:#374151 !important;
+ -webkit-text-fill-color:#374151 !important;
+ opacity:1 !important;
+}
+</style>
 </head>
 <body>
 <header class="cw-header"><div class="cw-brand"><a class="cw-logo-home" href="#" aria-label="Copier Wizard Home" title="Copier Wizard Home" onclick="startOverDiagnostic();return false;"><img alt="Copier Wizard logo" src="icon-192.png"/></a><div><h1>Copier Wizard</h1><p>Intelligent Diagnostics for Copiers &amp; Printers</p></div></div></header>
@@ -558,7 +577,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 164</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
+<footer><strong>Copier Wizard — Build 168</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -895,8 +914,8 @@ function preparePrintableReportLink(el){
       #serviceReportCard{display:block!important;border:0!important;box-shadow:none!important;max-width:900px!important;margin:0 auto!important}
       @media print{body{padding:0!important}}
     </style><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
-</head><body>${clone.outerHTML}<script id="cw-update-check">(function(){const CURRENT='167';function show(msg){const b=document.getElementById('cwUpdateBubble');if(!b)return;b.textContent=msg;b.classList.add('show');setTimeout(()=>b.classList.remove('show'),3000)}async function check(){try{const r=await fetch('version.json?cb='+Date.now(),{cache:'no-store'});if(!r.ok)return;const d=await r.json(),latest=String(d.build||'');if(!latest||latest===CURRENT)return;localStorage.setItem('cw_pending_update',latest);location.reload(true)}catch(e){}}document.addEventListener('DOMContentLoaded',()=>{const p=localStorage.getItem('cw_pending_update');if(p===CURRENT){localStorage.removeItem('cw_pending_update');show('Copier Wizard updated — Build '+CURRENT)}check()})})();<\/script>
-<script>document.addEventListener("DOMContentLoaded",()=>{const templateCodes=new Set((window.E52645_ERROR_CATALOG||[]).map(x=>String(x.code||"").toUpperCase()).filter(code=>/[XYZ]/.test(code)));document.querySelectorAll(".manual-index-item").forEach(el=>{const strong=el.querySelector("strong"),code=(strong?.textContent||"").trim().toUpperCase();if(!templateCodes.has(code)||el.querySelector(".variable-template-badge"))return;const badge=document.createElement("span");badge.className="variable-template-badge";badge.textContent="VARIABLE CODE";strong.appendChild(badge);});});<\/script>
+</head><body>${clone.outerHTML}
+
 </body></html>`;
     const blob=new Blob([html],{type:"text/html"});
     const url=URL.createObjectURL(blob);
@@ -2410,7 +2429,7 @@ function searchErrorCodes(value){
     if(!seen.has(key)){seen.add(key);unique.push(item);}
   }
   box.innerHTML=unique.slice(0,8).map((item,i)=>
-    `<button class="lookup-result" onclick="selectErrorLookup(${i})">
+    `<button class="lookup-result" onclick="event.preventDefault();event.stopPropagation();selectErrorLookup(${i})">
       <strong>${escapeHtml(item.code)}</strong>
       ${item.description?`<br><span>${escapeHtml(item.description)}</span>`:""}
     </button>`).join("");
@@ -2472,7 +2491,7 @@ function searchAlphabeticalMessages(value){
     ' possible documented message'+(matches.length===1?'':'s')+
     ' found.</strong> Select the one that matches the printer display.</div>'+
     matches.map((item,i)=>
-      `<button type="button" class="lookup-result" onclick="selectMessageLookup(${i})">
+      `<button type="button" class="lookup-result" onclick="event.preventDefault();event.stopPropagation();selectMessageLookup(${i})">
         <strong>${escapeHtml(item.message||item.title||"")}</strong>
         ${item.code?`<br><span>Documented code: ${escapeHtml(item.code)}</span>`:""}
         ${item.description?`<br><span>${escapeHtml(item.description)}</span>`:""}
@@ -4565,7 +4584,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='167';
+  const CURRENT='168';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;
@@ -4854,98 +4873,4 @@ document.addEventListener("DOMContentLoaded",function(){
 })();
 </script>
 
-<script id="cw-machine-selection-flow-v162">
-(function(){
-  function el(id){ return document.getElementById(id); }
-  function clearSelect(id){
-    const x=el(id); if(!x)return;
-    x.value="";
-    x.dispatchEvent(new Event("change",{bubbles:true}));
-  }
-  function focusNext(id){
-    const x=el(id);
-    if(!x)return;
-    setTimeout(function(){
-      x.focus({preventScroll:true});
-      if(x.showPicker) { try{x.showPicker();}catch(e){} }
-    },30);
-  }
-
-  const type=el("machineType"), family=el("machineFamily"),
-        model=el("model"), product=el("productNumber"),
-        fs=el("firmwareLevel");
-
-  if(type){
-    type.addEventListener("change",function(){
-      clearSelect("machineFamily");
-      clearSelect("model");
-      clearSelect("productNumber");
-      clearSelect("firmwareLevel");
-      if(type.value) focusNext("machineFamily");
-    });
-  }
-  if(family){
-    family.addEventListener("change",function(){
-      clearSelect("model");
-      clearSelect("productNumber");
-      clearSelect("firmwareLevel");
-      if(family.value) focusNext("model");
-    });
-  }
-  if(model){
-    model.addEventListener("change",function(){
-      clearSelect("productNumber");
-      clearSelect("firmwareLevel");
-      if(model.value) focusNext("productNumber");
-    });
-  }
-  if(product){
-    product.addEventListener("change",function(){
-      // Product number is optional. If the user makes a selection, move to
-      // FutureSmart only when the existing UI makes that field applicable.
-      if(product.value && fs && !fs.disabled && fs.offsetParent!==null)
-        focusNext("firmwareLevel");
-    });
-  }
-})();
-</script>
-
-<script id="cw-machine-selection-flow-v167">
-(function(){
-  function focusNext(id){
-    const x=document.getElementById(id);
-    if(!x) return;
-    setTimeout(function(){
-      x.focus({preventScroll:true});
-      if(typeof x.showPicker==="function"){try{x.showPicker();}catch(e){}}
-    },30);
-  }
-
-  const type=document.getElementById("machineType");
-  const family=document.getElementById("machineFamily");
-  const model=document.getElementById("model");
-  const product=document.getElementById("product");
-  const fs=document.getElementById("firmwareLevel");
-
-  if(type) type.addEventListener("change",function(){
-    // The native onchange already populates Family. We only move focus forward.
-    if(this.value) focusNext("machineFamily");
-  });
-
-  if(family) family.addEventListener("change",function(){
-    if(this.value) focusNext("model");
-  });
-
-  if(model) model.addEventListener("change",function(){
-    if(this.value) focusNext("product");
-  });
-
-  if(product) product.addEventListener("change",function(){
-    // Product Number is optional; only advance to FutureSmart when the existing
-    // UI says the field is applicable and visible.
-    if(this.value && fs && !fs.disabled && fs.offsetParent!==null)
-      focusNext("firmwareLevel");
-  });
-})();
-</script>
 </body></html>
