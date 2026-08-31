@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 170</title>
+<title>Copier Wizard — Build 176</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -475,7 +475,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <h2>2. What's wrong?</h2>
 <p style="margin-top:0">Start by telling the app what you know.</p>
 <h3 style="margin-bottom:8px">Do you have an error code?</h3>
-<div class="lookup-choice-grid" id="lookupChoiceGrid"><div class="lookup-choice-with-browse"><button class="lookup-choice" onclick="showLookup('error')"><strong>Numerical Error Code</strong><span>For codes such as 53.B0.05 or 65.80.A0</span></button><button class="lookup-browse-link" type="button" onclick="showBrowseAll('errors')">Browse All Numerical Error Codes</button></div><div class="lookup-choice-with-browse"><button class="lookup-choice" onclick="showLookup('message')"><strong>Alphabetical Message</strong><span>For messages shown on the control panel</span></button><button class="lookup-browse-link" type="button" onclick="showBrowseAll('messages')">Browse All Alphabetical Messages</button></div><button class="lookup-choice" onclick="showPartLookup()"><strong>Parts Lookup</strong><span>Find a documented part for the verified machine</span></button></div><div class="part-lookup-panel lookup-hidden" id="partLookupPanel" style="display:none"><h3>Parts Lookup</h3><div class="status" id="partLookupMachine"></div><label for="partLookupQuery">What part are you looking for?</label><input autocomplete="off" class="lookup-input" id="partLookupQuery" placeholder="Example: formatter, fuser, roller, LVPS, or part number"/><button class="lookup-enter" id="searchPartsBtn" onclick="runVerifiedPartLookup()" type="button">Search Parts</button><div class="lookup-results" id="partLookupResults"></div><button class="primary" id="partLookupFinishBtn" type="button">Finish</button><button class="secondary" id="partLookupBackBtn" onclick="hidePartLookup()" type="button">← Back</button></div><div class="lookup-panel lookup-hidden" id="errorLookupPanel"><h3>Enter Numerical Error Code</h3><input autocomplete="off" class="lookup-input" id="errorCodeLookup" placeholder="Example: 53.B0.05"/><button class="lookup-enter" onclick="return window.cwSubmitErrorLookup(event)" type="button">Enter Error Code</button><div class="lookup-help">Enter the code exactly as shown on the machine.</div><div class="lookup-results" id="errorCodeResults"></div></div><div class="lookup-panel lookup-hidden" id="messageLookupPanel"><h3>Enter Alphabetical Message</h3><input autocomplete="off" class="lookup-input" id="messageLookup" placeholder="Example: Bad optional tray connection"/><button class="lookup-enter" onclick="submitMessageLookup(event)" type="button">Enter Message</button><div class="lookup-help">You can enter the complete message or just enough to find it.</div><div class="lookup-results" id="messageResults"></div></div><div class="lookup-divider" id="diagnosticChoiceDivider">or</div><button id="noErrorChoiceBtn" onclick="startSymptomDiagnosis()">I don't have an error code or message</button>
+<div class="lookup-choice-grid" id="lookupChoiceGrid"><div class="lookup-choice-with-browse"><button class="lookup-choice" onclick="showLookup('error')"><strong>Numerical Error Code</strong><span>For codes such as 53.B0.05 or 65.80.A0</span></button><button class="lookup-browse-link" type="button" onclick="showBrowseAll('errors')">Browse All Numerical Error Codes</button></div><div class="lookup-choice-with-browse"><button class="lookup-choice" onclick="showLookup('message')"><strong>Alphabetical Message</strong><span>For messages shown on the control panel</span></button><button class="lookup-browse-link" type="button" onclick="showBrowseAll('messages')">Browse All Alphabetical Messages</button></div><button class="lookup-choice" onclick="showPartLookup()"><strong>Parts Lookup</strong><span>Find a documented part for the verified machine</span></button></div><div class="part-lookup-panel lookup-hidden" id="partLookupPanel" style="display:none"><h3>Parts Lookup</h3><div class="status" id="partLookupMachine"></div><label for="partLookupQuery">What part are you looking for?</label><input autocomplete="off" class="lookup-input" id="partLookupQuery" placeholder="Example: formatter, fuser, roller, LVPS, or part number"/><button class="lookup-enter" id="searchPartsBtn" onclick="runVerifiedPartLookup()" type="button">Search Parts</button><div class="lookup-results" id="partLookupResults"></div><button class="primary" id="partLookupFinishBtn" type="button">Finish</button><button class="secondary" id="partLookupBackBtn" onclick="hidePartLookup()" type="button">← Back</button></div><div class="lookup-panel lookup-hidden" id="errorLookupPanel"><h3>Enter Numerical Error Code</h3><input autocomplete="off" class="lookup-input" id="errorCodeLookup" placeholder="Example: 53.B0.05"/><button class="lookup-enter" onclick="event.preventDefault(); beginErrorCodeDiagnosis(document.getElementById('errorCodeLookup').value); return false;" type="button">Enter Error Code</button><div class="lookup-help">Enter the code exactly as shown on the machine.</div><div class="lookup-results" id="errorCodeResults"></div></div><div class="lookup-panel lookup-hidden" id="messageLookupPanel"><h3>Enter Alphabetical Message</h3><input autocomplete="off" class="lookup-input" id="messageLookup" placeholder="Example: Bad optional tray connection"/><button class="lookup-enter" onclick="submitMessageLookup(event)" type="button">Enter Message</button><div class="lookup-help">You can enter the complete message or just enough to find it.</div><div class="lookup-results" id="messageResults"></div></div><div class="lookup-divider" id="diagnosticChoiceDivider">or</div><button id="noErrorChoiceBtn" onclick="startSymptomDiagnosis()">I don't have an error code or message</button>
 <!-- Variable/template error-code completion -->
 <div class="panel hidden" id="templateErrorChooser" style="margin-top:16px;">
 <h3>Variable Error Code</h3>
@@ -577,7 +577,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 170</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
+<footer><strong>Copier Wizard — Build 176</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -916,6 +916,20 @@ function preparePrintableReportLink(el){
     </style><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 </head><body>${clone.outerHTML}
 
+
+<script id="cw-error-code-entry-fix-v176">
+(function(){
+  document.addEventListener("keydown",function(e){
+    if(e.key !== "Enter" || !e.target || e.target.id !== "errorCodeLookup") return;
+    e.preventDefault();
+    e.stopPropagation();
+    var input=document.getElementById("errorCodeLookup");
+    if(input && typeof beginErrorCodeDiagnosis==="function"){
+      beginErrorCodeDiagnosis(input.value);
+    }
+  }, true);
+})();
+</script>
 </body></html>`;
     const blob=new Blob([html],{type:"text/html"});
     const url=URL.createObjectURL(blob);
@@ -1198,6 +1212,20 @@ header.cw-header > #cw-home-btn:active{
       <strong>Save as PDF:</strong> the button opens the normal browser print dialog; choose <strong>Save as PDF</strong> there.
     </div>
     ${clone.outerHTML}
+
+<script id="cw-error-code-entry-fix-v176">
+(function(){
+  document.addEventListener("keydown",function(e){
+    if(e.key !== "Enter" || !e.target || e.target.id !== "errorCodeLookup") return;
+    e.preventDefault();
+    e.stopPropagation();
+    var input=document.getElementById("errorCodeLookup");
+    if(input && typeof beginErrorCodeDiagnosis==="function"){
+      beginErrorCodeDiagnosis(input.value);
+    }
+  }, true);
+})();
+</script>
 </body></html>`;
 
     const blob=new Blob([html],{type:"text/html;charset=utf-8"});
@@ -4895,55 +4923,17 @@ document.addEventListener("DOMContentLoaded",function(){
 })();
 </script>
 
-
-<script id="cw-error-code-final-v170">
+<script id="cw-error-code-entry-fix-v176">
 (function(){
-  function run(code){
-    const input=document.getElementById("errorCodeLookup");
-    const value=String(code||input?.value||"").trim();
-    if(!value){ input?.focus(); return false; }
-    try{ input?.blur(); }catch(e){}
-    try{
-      if(typeof beginErrorCodeDiagnosis!=="function") throw new Error("Diagnostic engine did not initialize");
-      beginErrorCodeDiagnosis(value);
-    }catch(err){
-      console.error("Copier Wizard error-code routing failed:",err);
-      const card=document.getElementById("resultCard");
-      const result=document.getElementById("result");
-      if(card && result){
-        result.innerHTML=`<h2>Error-Code Routing Error</h2>
-          <div class="status danger">The diagnostic engine could not open the documented path for <strong>${typeof escapeHtml==='function'?escapeHtml(value):value}</strong>.</div>
-          <p>The error was caught instead of silently doing nothing.</p>
-          <button type="button" onclick="window.cwSubmitErrorLookup()">Try Again</button>`;
-        card.classList.remove("hidden");
-        setTimeout(function(){card.scrollIntoView({behavior:"smooth",block:"start"});},0);
-      }
-    }
-    return false;
-  }
-  window.cwSubmitErrorLookup=function(e){
-    if(e){e.preventDefault();e.stopPropagation();}
-    return run();
-  };
-  window.cwSelectErrorLookup=function(index){
-    try{
-      const item=(window._errorLookupMatches||[])[index];
-      if(!item)return false;
-      const input=document.getElementById("errorCodeLookup");
-      if(input)input.value=item.code;
-      const code=typeof extractErrorCodeAliases==='function' ? (extractErrorCodeAliases(item.code)[0]||item.code) : item.code;
-      return run(code);
-    }catch(err){
-      console.error("Copier Wizard error-code selection failed:",err);
-      return run();
-    }
-  };
   document.addEventListener("keydown",function(e){
-    if(e.key!=="Enter")return;
-    if(e.target && e.target.id==="errorCodeLookup"){
-      e.preventDefault();e.stopImmediatePropagation();window.cwSubmitErrorLookup(e);
+    if(e.key !== "Enter" || !e.target || e.target.id !== "errorCodeLookup") return;
+    e.preventDefault();
+    e.stopPropagation();
+    var input=document.getElementById("errorCodeLookup");
+    if(input && typeof beginErrorCodeDiagnosis==="function"){
+      beginErrorCodeDiagnosis(input.value);
     }
-  },true);
+  }, true);
 })();
 </script>
 </body></html>
