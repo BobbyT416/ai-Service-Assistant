@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 150</title>
+<title>Copier Wizard — Build 151</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -450,7 +450,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <h2>2. What's wrong?</h2>
 <p style="margin-top:0">Start by telling the app what you know.</p>
 <h3 style="margin-bottom:8px">Do you have an error code?</h3>
-<div class="lookup-choice-grid" id="lookupChoiceGrid"><button class="lookup-choice" onclick="showLookup('error')"><strong>Numerical Error Code</strong><span>For codes such as 53.B0.05 or 65.80.A0</span></button><button class="lookup-choice" onclick="showLookup('message')"><strong>Alphabetical Message</strong><span>For messages shown on the control panel</span></button><button class="lookup-choice" onclick="showPartLookup()"><strong>Parts Lookup</strong><span>Find a documented part for the verified machine</span></button></div><div class="part-lookup-panel lookup-hidden" id="partLookupPanel" style="display:none"><h3>Parts Lookup</h3><div class="status" id="partLookupMachine"></div><label for="partLookupQuery">What part are you looking for?</label><input autocomplete="off" class="lookup-input" id="partLookupQuery" placeholder="Example: formatter, fuser, roller, LVPS, or part number"/><button class="lookup-enter" id="searchPartsBtn" onclick="runVerifiedPartLookup()" type="button">Search Parts</button><div class="lookup-results" id="partLookupResults"></div><button class="primary" id="partLookupFinishBtn" type="button">Finish</button><button class="secondary" id="partLookupBackBtn" onclick="hidePartLookup()" type="button">← Back</button></div><div class="lookup-panel lookup-hidden" id="errorLookupPanel"><h3>Enter Numerical Error Code</h3><input autocomplete="off" class="lookup-input" id="errorCodeLookup" placeholder="Example: 53.B0.05"/><button class="lookup-enter" onclick="submitErrorLookup(event)" type="button">Enter Error Code</button><div class="lookup-help">Enter the code exactly as shown on the machine.</div><div class="lookup-results" id="errorCodeResults"></div></div><div class="lookup-panel lookup-hidden" id="messageLookupPanel"><h3>Enter Alphabetical Message</h3><input autocomplete="off" class="lookup-input" id="messageLookup" placeholder="Example: Bad optional tray connection"/><button class="lookup-enter" onclick="submitMessageLookup(event)" type="button">Enter Message</button><div class="lookup-help">You can enter the complete message or just enough to find it.</div><div class="lookup-results" id="messageResults"></div></div><div class="lookup-divider">or</div><button onclick="startSymptomDiagnosis()">I don't have an error code or message</button><button class="secondary" onclick="showManualCoverage()" type="button">Browse All Manual Troubleshooting</button>
+<div class="lookup-choice-grid" id="lookupChoiceGrid"><button class="lookup-choice" onclick="showLookup('error')"><strong>Numerical Error Code</strong><span>For codes such as 53.B0.05 or 65.80.A0</span></button><button class="lookup-choice" onclick="showLookup('message')"><strong>Alphabetical Message</strong><span>For messages shown on the control panel</span></button><button class="lookup-choice" onclick="showPartLookup()"><strong>Parts Lookup</strong><span>Find a documented part for the verified machine</span></button></div><div class="part-lookup-panel lookup-hidden" id="partLookupPanel" style="display:none"><h3>Parts Lookup</h3><div class="status" id="partLookupMachine"></div><label for="partLookupQuery">What part are you looking for?</label><input autocomplete="off" class="lookup-input" id="partLookupQuery" placeholder="Example: formatter, fuser, roller, LVPS, or part number"/><button class="lookup-enter" id="searchPartsBtn" onclick="runVerifiedPartLookup()" type="button">Search Parts</button><div class="lookup-results" id="partLookupResults"></div><button class="primary" id="partLookupFinishBtn" type="button">Finish</button><button class="secondary" id="partLookupBackBtn" onclick="hidePartLookup()" type="button">← Back</button></div><div class="lookup-panel lookup-hidden" id="errorLookupPanel"><h3>Enter Numerical Error Code</h3><input autocomplete="off" class="lookup-input" id="errorCodeLookup" placeholder="Example: 53.B0.05"/><button class="lookup-enter" onclick="submitErrorLookup(event)" type="button">Enter Error Code</button><div class="lookup-help">Enter the code exactly as shown on the machine.</div><div class="lookup-results" id="errorCodeResults"></div></div><div class="lookup-panel lookup-hidden" id="messageLookupPanel"><h3>Enter Alphabetical Message</h3><input autocomplete="off" class="lookup-input" id="messageLookup" placeholder="Example: Bad optional tray connection"/><button class="lookup-enter" onclick="submitMessageLookup(event)" type="button">Enter Message</button><div class="lookup-help">You can enter the complete message or just enough to find it.</div><div class="lookup-results" id="messageResults"></div></div><div class="lookup-divider" id="diagnosticChoiceDivider">or</div><button id="noErrorChoiceBtn" onclick="startSymptomDiagnosis()">I don't have an error code or message</button><button id="browseManualTroubleshootingBtn" class="secondary" onclick="showManualCoverage()" type="button">Browse All Manual Troubleshooting</button>
 <!-- Variable/template error-code completion -->
 <div class="panel hidden" id="templateErrorChooser" style="margin-top:16px;">
 <h3>Variable Error Code</h3>
@@ -552,7 +552,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 150</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
+<footer><strong>Copier Wizard — Build 151</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -895,7 +895,7 @@ function preparePrintableReportLink(el){
 
 
 
-<script id="cw-Build 150-selection">
+<script id="cw-Build 151-selection">
 document.addEventListener("DOMContentLoaded",function(){
   const type=document.getElementById("machineType");
   if(type) type.addEventListener("change",function(){machineTypeChanged(this.value);});
@@ -964,7 +964,7 @@ function openPrintableServiceReport(){
       .external-report-note{max-width:900px;margin:0 auto 18px;color:#4b5563;font-size:13px}
       @media print{body{padding:0!important}.no-print,.external-report-toolbar,.external-report-note{display:none!important}}
     
-/* Build 150: keep Copier Wizard branding visually static. */
+/* Build 151: keep Copier Wizard branding visually static. */
 .cw-header .cw-brand,
 .cw-header .cw-brand img,
 .cw-header .cw-brand > div,
@@ -983,7 +983,7 @@ function openPrintableServiceReport(){
   mix-blend-mode: normal !important;
 }
 
-/* Build 150: Browse-all entries show compact titles; troubleshooting details
+/* Build 151: Browse-all entries show compact titles; troubleshooting details
    are revealed only after selecting an entry. */
 .browse-all-item .troubleshooting-steps,
 .browse-all-item .steps,
@@ -994,7 +994,7 @@ function openPrintableServiceReport(){
 .browse-all-item.is-selected .solution,
 .browse-all-item.is-selected .detail { display:block !important; }
 
-/* Build 150: compact Home control, matching the original house-only button. */
+/* Build 151: compact Home control, matching the original house-only button. */
 .header-home.compact-home{
   width:32px !important;
   min-width:32px !important;
@@ -1010,7 +1010,7 @@ function openPrintableServiceReport(){
   border-radius:8px !important;
 }
 
-/* Build 150: tiny Home icon lives inside the header brand row. */
+/* Build 151: tiny Home icon lives inside the header brand row. */
 .cw-brand{position:relative;}
 .header-home.compact-home{
   appearance:none !important;
@@ -1037,10 +1037,10 @@ function openPrintableServiceReport(){
 }
 .header-home.compact-home:hover{background:rgba(255,255,255,.12) !important;}
 
-/* Build 150: once a part search returns results, only Finish remains below it. */
+/* Build 151: once a part search returns results, only Finish remains below it. */
 #partLookupFinishBtn{width:100% !important;margin-top:16px !important;display:none;}
 
-/* Build 150: compact Home control. */
+/* Build 151: compact Home control. */
 .cw-header{
   display:flex !important;
   flex-direction:row !important;
@@ -1102,7 +1102,7 @@ function openPrintableServiceReport(){
   }
 }
 
-/* Build 150: Home is a tiny icon positioned in the header corner. */
+/* Build 151: Home is a tiny icon positioned in the header corner. */
 header.cw-header{position:relative !important;}
 header.cw-header #cw-home-btn.header-home.compact-home{
  appearance:none !important; -webkit-appearance:none !important;
@@ -1123,7 +1123,7 @@ header.cw-header #cw-home-btn.header-home.compact-home:active{
 
 
 
-/* Build 150: Home is a tiny standalone icon in the header corner. */
+/* Build 151: Home is a tiny standalone icon in the header corner. */
 header.cw-header{position:relative !important;}
 header.cw-header > #cw-home-btn{
   appearance:none !important;
@@ -4537,7 +4537,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='150';
+  const CURRENT='151';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;
@@ -4761,6 +4761,146 @@ document.addEventListener("DOMContentLoaded",function(){
       new MutationObserver(syncPartsState).observe(box,{childList:true,subtree:true,characterData:true});
     }
     syncPartsState();
+  });
+})();
+</script>
+
+<script id="cw-clean-diagnostic-navigation">
+(function(){
+  function el(id){ return document.getElementById(id); }
+
+  function clearPathState(){
+    [
+      "errorLookupPanel",
+      "messageLookupPanel",
+      "partLookupPanel",
+      "problemCategories",
+      "manualCoveragePanel",
+      "resultCard",
+      "errorCodeEntry",
+      "otherEntry"
+    ].forEach(function(id){
+      const x=el(id);
+      if(!x)return;
+      x.classList.add("hidden");
+      x.classList.add("lookup-hidden");
+      if(id==="partLookupPanel") x.style.display="none";
+      if(id==="manualCoveragePanel") x.style.display="";
+    });
+
+    ["errorCodeResults","messageResults","partLookupResults","result"].forEach(function(id){
+      const x=el(id);
+      if(x) x.innerHTML="";
+    });
+
+    const choices=el("lookupChoiceGrid");
+    if(choices) choices.style.display="none";
+
+    ["diagnosticChoiceDivider","noErrorChoiceBtn","browseManualTroubleshootingBtn"].forEach(function(id){
+      const x=el(id);
+      if(x) x.style.display="none";
+    });
+  }
+
+  function addBackButton(panelId){
+    const panel=el(panelId);
+    if(!panel || panel.querySelector(".diagnostic-path-back")) return;
+    const b=document.createElement("button");
+    b.type="button";
+    b.className="secondary diagnostic-path-back";
+    b.textContent="← Back to Diagnostic Choices";
+    b.addEventListener("click",function(){
+      showChoices();
+    });
+    panel.insertBefore(b,panel.firstChild);
+  }
+
+  function showChoices(){
+    clearPathState();
+
+    const choices=el("lookupChoiceGrid");
+    if(choices) choices.style.display="";
+
+    ["diagnosticChoiceDivider","noErrorChoiceBtn","browseManualTroubleshootingBtn"].forEach(function(id){
+      const x=el(id);
+      if(x) x.style.display="";
+    });
+
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+
+  // Replace the loose two-panel toggle with an exclusive path selector.
+  const originalShowLookup=window.showLookup;
+  window.showLookup=function(which){
+    clearPathState();
+
+    const panelId=which==="error" ? "errorLookupPanel" : "messageLookupPanel";
+    const panel=el(panelId);
+    if(panel){
+      panel.classList.remove("hidden");
+      panel.classList.remove("lookup-hidden");
+      panel.style.display="";
+      addBackButton(panelId);
+    }
+
+    const input=el(which==="error" ? "errorCodeLookup" : "messageLookup");
+    if(input) input.focus();
+  };
+
+  // Parts Lookup already had some hiding logic, but the choices below it were
+  // still visible. Make it a true exclusive path.
+  const originalShowPartLookup=window.showPartLookup;
+  window.showPartLookup=function(){
+    clearPathState();
+    if(typeof originalShowPartLookup==="function"){
+      originalShowPartLookup();
+    }
+    const panel=el("partLookupPanel");
+    if(panel){
+      panel.classList.remove("hidden");
+      panel.classList.remove("lookup-hidden");
+      panel.style.display="block";
+      addBackButton("partLookupPanel");
+    }
+  };
+
+  // "No error code/message" is its own path. Once selected, the three lookup
+  // choices disappear completely until the user explicitly goes back.
+  const originalStartSymptomDiagnosis=window.startSymptomDiagnosis;
+  window.startSymptomDiagnosis=function(label,kind){
+    clearPathState();
+    if(typeof originalStartSymptomDiagnosis==="function"){
+      originalStartSymptomDiagnosis(label,kind);
+    }
+    const categories=el("problemCategories");
+    if(categories){
+      categories.classList.remove("hidden");
+      categories.classList.remove("lookup-hidden");
+      addBackButton("problemCategories");
+    }
+  };
+
+  // Manual browser is also exclusive; it should not leave the original
+  // diagnostic choices underneath it.
+  const originalShowManualCoverage=window.showManualCoverage;
+  window.showManualCoverage=function(){
+    clearPathState();
+    if(typeof originalShowManualCoverage==="function"){
+      originalShowManualCoverage();
+    }
+    const panel=el("manualCoveragePanel");
+    if(panel){
+      panel.classList.remove("hidden");
+      panel.classList.remove("lookup-hidden");
+      panel.style.display="";
+      addBackButton("manualCoveragePanel");
+    }
+    panel && panel.scrollIntoView({behavior:"smooth",block:"start"});
+  };
+
+  document.addEventListener("DOMContentLoaded",function(){
+    // Start in the clean top-level choice state.
+    showChoices();
   });
 })();
 </script>
