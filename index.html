@@ -4,10 +4,10 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 158</title>
+<title>Copier Wizard — Build 159</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
-header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
+header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
 main{max-width:900px;margin:28px auto;padding:0 18px}.card{background:white;border-radius:12px;padding:24px;margin-bottom:18px;box-shadow:0 2px 8px #0001}
 label{display:block;font-weight:700;margin:14px 0 6px}select,input,button{width:100%;padding:12px;border:1px solid #c7ced6;border-radius:8px;font-size:16px}
 button{background:#1f5f8b;color:white;border:0;font-weight:700;cursor:pointer;margin-top:18px}button.secondary{background:#e9edf1;color:#18212b}button:disabled{opacity:.5;cursor:not-allowed}
@@ -415,7 +415,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 </script>
 </head>
 <body>
-<header class="cw-header"><div class="cw-brand"><img alt="Copier Wizard logo" src="icon-192.png"/><div><h1>Copier Wizard</h1><p>Intelligent Diagnostics for Copiers &amp; Printers</p></div></div></header>
+<header class="cw-header"><div class="cw-brand"><a class="cw-logo-home" href="#" aria-label="Copier Wizard Home" title="Copier Wizard Home" onclick="startOverDiagnostic();return false;"><img alt="Copier Wizard logo" src="icon-192.png"/></a><div><h1>Copier Wizard</h1><p>Intelligent Diagnostics for Copiers &amp; Printers</p></div></div></header>
 <div aria-live="polite" id="cwUpdateBubble" role="status"></div><main>
 <section class="card" id="selectCard">
 <h2>1. Select Equipment</h2>
@@ -552,7 +552,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 158</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
+<footer><strong>Copier Wizard — Build 159</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -889,12 +889,12 @@ function preparePrintableReportLink(el){
       #serviceReportCard{display:block!important;border:0!important;box-shadow:none!important;max-width:900px!important;margin:0 auto!important}
       @media print{body{padding:0!important}}
     </style><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
-</head><body>${clone.outerHTML}<script id="cw-update-check">(function(){const CURRENT='120';function show(msg){const b=document.getElementById('cwUpdateBubble');if(!b)return;b.textContent=msg;b.classList.add('show');setTimeout(()=>b.classList.remove('show'),3000)}async function check(){try{const r=await fetch('version.json?cb='+Date.now(),{cache:'no-store'});if(!r.ok)return;const d=await r.json(),latest=String(d.build||'');if(!latest||latest===CURRENT)return;localStorage.setItem('cw_pending_update',latest);location.reload(true)}catch(e){}}document.addEventListener('DOMContentLoaded',()=>{const p=localStorage.getItem('cw_pending_update');if(p===CURRENT){localStorage.removeItem('cw_pending_update');show('Copier Wizard updated — Build '+CURRENT)}check()})})();<\/script>
+</head><body>${clone.outerHTML}<script id="cw-update-check">(function(){const CURRENT='159';function show(msg){const b=document.getElementById('cwUpdateBubble');if(!b)return;b.textContent=msg;b.classList.add('show');setTimeout(()=>b.classList.remove('show'),3000)}async function check(){try{const r=await fetch('version.json?cb='+Date.now(),{cache:'no-store'});if(!r.ok)return;const d=await r.json(),latest=String(d.build||'');if(!latest||latest===CURRENT)return;localStorage.setItem('cw_pending_update',latest);location.reload(true)}catch(e){}}document.addEventListener('DOMContentLoaded',()=>{const p=localStorage.getItem('cw_pending_update');if(p===CURRENT){localStorage.removeItem('cw_pending_update');show('Copier Wizard updated — Build '+CURRENT)}check()})})();<\/script>
 <script>document.addEventListener("DOMContentLoaded",()=>{const templateCodes=new Set((window.E52645_ERROR_CATALOG||[]).map(x=>String(x.code||"").toUpperCase()).filter(code=>/[XYZ]/.test(code)));document.querySelectorAll(".manual-index-item").forEach(el=>{const strong=el.querySelector("strong"),code=(strong?.textContent||"").trim().toUpperCase();if(!templateCodes.has(code)||el.querySelector(".variable-template-badge"))return;const badge=document.createElement("span");badge.className="variable-template-badge";badge.textContent="VARIABLE CODE";strong.appendChild(badge);});});<\/script>
 
 
 
-<script id="cw-Build 158-selection">
+<script id="cw-Build 159-selection">
 document.addEventListener("DOMContentLoaded",function(){
   const type=document.getElementById("machineType");
   if(type) type.addEventListener("change",function(){machineTypeChanged(this.value);});
@@ -963,7 +963,7 @@ function openPrintableServiceReport(){
       .external-report-note{max-width:900px;margin:0 auto 18px;color:#4b5563;font-size:13px}
       @media print{body{padding:0!important}.no-print,.external-report-toolbar,.external-report-note{display:none!important}}
     
-/* Build 158: keep Copier Wizard branding visually static. */
+/* Build 159: keep Copier Wizard branding visually static. */
 .cw-header .cw-brand,
 .cw-header .cw-brand img,
 .cw-header .cw-brand > div,
@@ -982,7 +982,7 @@ function openPrintableServiceReport(){
   mix-blend-mode: normal !important;
 }
 
-/* Build 158: Browse-all entries show compact titles; troubleshooting details
+/* Build 159: Browse-all entries show compact titles; troubleshooting details
    are revealed only after selecting an entry. */
 .browse-all-item .troubleshooting-steps,
 .browse-all-item .steps,
@@ -993,7 +993,7 @@ function openPrintableServiceReport(){
 .browse-all-item.is-selected .solution,
 .browse-all-item.is-selected .detail { display:block !important; }
 
-/* Build 158: compact Home control, matching the original house-only button. */
+/* Build 159: compact Home control, matching the original house-only button. */
 .header-home.compact-home{
   width:32px !important;
   min-width:32px !important;
@@ -1009,7 +1009,7 @@ function openPrintableServiceReport(){
   border-radius:8px !important;
 }
 
-/* Build 158: tiny Home icon lives inside the header brand row. */
+/* Build 159: tiny Home icon lives inside the header brand row. */
 .cw-brand{position:relative;}
 .header-home.compact-home{
   appearance:none !important;
@@ -1036,10 +1036,10 @@ function openPrintableServiceReport(){
 }
 .header-home.compact-home:hover{background:rgba(255,255,255,.12) !important;}
 
-/* Build 158: once a part search returns results, only Finish remains below it. */
+/* Build 159: once a part search returns results, only Finish remains below it. */
 #partLookupFinishBtn{width:100% !important;margin-top:16px !important;display:none;}
 
-/* Build 158: compact Home control. */
+/* Build 159: compact Home control. */
 .cw-header{
   display:flex !important;
   flex-direction:row !important;
@@ -1101,7 +1101,7 @@ function openPrintableServiceReport(){
   }
 }
 
-/* Build 158: Home is a tiny icon positioned in the header corner. */
+/* Build 159: Home is a tiny icon positioned in the header corner. */
 header.cw-header{position:relative !important;}
 header.cw-header #cw-home-btn.header-home.compact-home{
  appearance:none !important; -webkit-appearance:none !important;
@@ -1122,7 +1122,7 @@ header.cw-header #cw-home-btn.header-home.compact-home:active{
 
 
 
-/* Build 158: Home is a tiny standalone icon in the header corner. */
+/* Build 159: Home is a tiny standalone icon in the header corner. */
 header.cw-header{position:relative !important;}
 header.cw-header > #cw-home-btn{
   appearance:none !important;
@@ -1255,11 +1255,21 @@ function startOverDiagnostic(){
     if(el) el.value="";
   });
 
-  const selectsToReset=["model","firmwareLevel","problemCategory"];
+  const selectsToReset=["machineType","machineFamily","model","product","firmwareLevel","problemCategory"];
   selectsToReset.forEach(id=>{
     const el=document.getElementById(id);
     if(el) el.selectedIndex=0;
   });
+  const familyEl=document.getElementById("machineFamily");
+  const modelEl=document.getElementById("model");
+  const productEl=document.getElementById("product");
+  if(familyEl){familyEl.innerHTML='<option value="">Select a printer type first...</option>';familyEl.disabled=true;}
+  if(modelEl){modelEl.innerHTML='<option value="">Select a family first...</option>';modelEl.disabled=true;}
+  if(productEl){productEl.innerHTML='<option value="">Product Number</option>';productEl.disabled=true;}
+  const fwSection=document.getElementById("firmwareSection");
+  const fwEl=document.getElementById("firmwareLevel");
+  if(fwSection) fwSection.classList.add("hidden");
+  if(fwEl) fwEl.innerHTML='<option value="">Select FutureSmart level...</option>';
 
   const textToClear=["modelHint","firmwareHint","verify"];
   textToClear.forEach(id=>{
@@ -1742,7 +1752,7 @@ function e52645DiagnosticPath(testName){
  const fw=(document.getElementById("firmwareLevel")||{}).value || "";
  const root=fw==="FS4PLUS" ? "Support Tools → Troubleshooting → Diagnostic Tests" :
             fw==="FS3" ? "Administration → Troubleshooting → Diagnostic Tests" :
-            "Select FutureSmart 3 or FutureSmart 4 or higher first";
+            "Troubleshooting → Diagnostic Tests";
  return testName ? root+" → "+testName : root;
 }
 
@@ -1917,18 +1927,8 @@ function configureProductNumberForModel(model){
   }
 }
 function productNumberSelectionChanged(value){
-  const model=(document.getElementById("model")||{}).value||"",hint=document.getElementById("productHint");
-  if(!hint)return;
-  if(!value){
-    hint.textContent=model
-      ?"Optional. If you use Parts Lookup, select the exact product number shown on the machine."
-      :"Select a model first.";
-    return;
-  }
-  const item=(productNumberCatalog[productCatalogKey(model)]||[]).find(x=>x.product===value);
-  hint.innerHTML=item
-    ?"<strong>Product selected:</strong> "+escapeHtml(item.product)+" — "+escapeHtml(item.model)+"."
-    :"";
+  const hint=document.getElementById("productHint");
+  if(hint) hint.textContent="";
 }
 
 const firmwarePolicy={
@@ -1944,8 +1944,8 @@ const firmwarePolicy={
 function firmwareOptionsForModel(model){const s=String(model||"").toUpperCase();const keys=Object.keys(firmwarePolicy).sort((a,b)=>b.length-a.length);for(const k of keys){if(s===k.toUpperCase()||s.includes(k.toUpperCase()))return firmwarePolicy[k];}return [];}
 function firmwareLabel(v){return v==='FS3'?'FutureSmart 3':v==='FS4'?'FutureSmart 4':v==='FS5'?'FutureSmart 5':v;}
 function configureFirmwareForModel(model){const section=document.getElementById('firmwareSection'),fw=document.getElementById('firmwareLevel'),hint=document.getElementById('firmwareHint');if(!section||!fw)return [];const opts=firmwareOptionsForModel(model);fw.innerHTML='<option value="">Select FutureSmart level...</option>';fw.value='';if(!opts.length){section.classList.add('hidden');if(hint)hint.textContent='';return opts;}opts.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=firmwareLabel(v);fw.appendChild(o);});section.classList.remove('hidden');if(opts.length===1){fw.value=opts[0];if(hint)hint.innerHTML='<strong>Firmware:</strong> '+escapeHtml(firmwareLabel(opts[0]))+' is the only supported FutureSmart level listed for this model.';}else if(hint)hint.innerHTML='<strong>Firmware:</strong> select the FutureSmart level currently installed on the verified machine.';return opts;}
-function modelSelectionChanged(model){const hint=document.getElementById('modelHint');if(!hint)return;const type=(document.getElementById('machineType')||{}).value||'',familyId=(document.getElementById('machineFamily')||{}).value||'',family=machineSelectionFamilies[type]?.[familyId];if(!model){hint.textContent='';configureFirmwareForModel('');return;}hint.innerHTML='<strong>Model selected:</strong> '+escapeHtml(model)+(family?.supported?'. This family is enabled in Copier Wizard.':'. Documentation is loaded for this family; the guided workflow may still be under development.')+(family?.docs?' <span class="source-note">Documentation: '+escapeHtml(family.docs)+'.</span>':'');configureProductNumberForModel(model);configureFirmwareForModel(model);}
-function firmwareSelectionChanged(fw){const hint=document.getElementById('firmwareHint');if(hint)hint.innerHTML=fw?'<strong>Firmware selected:</strong> '+escapeHtml(firmwareLabel(fw))+'. Click <strong>Verify Machine</strong>.':'';}
+function modelSelectionChanged(model){const hint=document.getElementById('modelHint');if(!hint)return;const type=(document.getElementById('machineType')||{}).value||'',familyId=(document.getElementById('machineFamily')||{}).value||'',family=machineSelectionFamilies[type]?.[familyId];if(!model){hint.textContent='';configureFirmwareForModel('');return;}hint.innerHTML=family?.docs?'<span class="source-note">Documentation: '+escapeHtml(family.docs)+'.</span>':'';configureProductNumberForModel(model);configureFirmwareForModel(model);}
+function firmwareSelectionChanged(fw){const hint=document.getElementById('firmwareHint');if(hint)hint.textContent='';}
 function verifyModel(){const m=document.getElementById('model').value,productEl=document.getElementById('product'),product=productEl?productEl.value:'',v=document.getElementById('verify'),type=(document.getElementById('machineType')||{}).value||'',familyId=(document.getElementById('machineFamily')||{}).value||'',family=machineSelectionFamilies[type]?.[familyId];if(!type){v.innerHTML='<div class="status danger"><strong>Step 1:</strong> Select Monochrome, Color, or PageWide.</div>';return;}if(!familyId||!family){v.innerHTML='<div class="status danger"><strong>Step 2:</strong> Select the machine family.</div>';return;}if(!m){v.innerHTML='<div class="status danger"><strong>Step 3:</strong> Select the machine model.</div>';return;}const opts=firmwareOptionsForModel(m),fwEl=document.getElementById('firmwareLevel'),fw=fwEl?fwEl.value:'';if(opts.length>1&&!fw){v.innerHTML='<div class="status warn"><strong>Machine selected.</strong><br>FutureSmart is applicable to this model. Select the installed FutureSmart level before continuing.</div>';if(fwEl)fwEl.focus();return;}if(opts.length===1&&fwEl)fwEl.value=opts[0];if(!family.supported){v.innerHTML='<div class="status"><strong>Documentation found — guided workflow not yet enabled</strong><br>HP '+escapeHtml(m)+' is organized under the '+escapeHtml(family.label)+'. The supporting documentation is present, but this family has not yet been enabled for guided troubleshooting in this build.</div>';return;}verifiedModel=m;currentMachineModel=m;window.verifiedProduct=product;setServiceReportProblem('');const selectedFw=fwEl?.value||'',fwText=selectedFw?firmwareLabel(selectedFw):'Firmware level not applicable',productText=product?product+' — '+escapeHtml((productNumberCatalog[productCatalogKey(m)]||[]).find(x=>x.product===product)?.model||m):'Product number not selected';v.innerHTML='<div class="status"><strong>✓ App Ready</strong><br>HP '+escapeHtml(m)+' verified.<br><strong>Product:</strong> '+escapeHtml(productText)+'<br>'+escapeHtml(fwText)+'</div>';document.getElementById('problemCard').classList.remove('hidden');}
 
 function backToErrorCodeEntry(){
