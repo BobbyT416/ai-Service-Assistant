@@ -415,16 +415,10 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 </script>
 
 <style id="cw-browse-actions-v163">
-.lookup-choice-with-browse{display:flex;flex-direction:column;gap:6px}
-.lookup-browse-link{
-  display:inline-flex;align-items:center;justify-content:flex-start;
-  width:max-content;max-width:100%;margin:0 0 2px 4px;padding:4px 8px;
-  border:0;background:transparent;color:#25658f;font-size:12px;
-  font-weight:600;cursor:pointer;border-radius:6px;text-decoration:none;
-}
-.lookup-browse-link:hover,.lookup-browse-link:focus-visible{
-  background:#eef3f7;text-decoration:underline;outline:none;
-}
+.lookup-choice-with-browse{display:flex;flex-direction:column;gap:5px}
+.lookup-browse-link{display:inline-flex;align-items:center;width:max-content;max-width:100%;margin:0 0 4px 6px;padding:4px 8px;border:0;background:transparent;color:#25658f;font-size:12px;font-weight:600;cursor:pointer;border-radius:6px}
+.lookup-browse-link:hover,.lookup-browse-link:focus-visible{background:#eef3f7;text-decoration:underline;outline:none}
+</style>
 </head>
 <body>
 <header class="cw-header"><div class="cw-brand"><a class="cw-logo-home" href="#" aria-label="Copier Wizard Home" title="Copier Wizard Home" onclick="startOverDiagnostic();return false;"><img alt="Copier Wizard logo" src="icon-192.png"/></a><div><h1>Copier Wizard</h1><p>Intelligent Diagnostics for Copiers &amp; Printers</p></div></div></header>
@@ -462,26 +456,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <h2>2. What's wrong?</h2>
 <p style="margin-top:0">Start by telling the app what you know.</p>
 <h3 style="margin-bottom:8px">Do you have an error code?</h3>
-<div class="lookup-choice-grid" id="lookupChoiceGrid">
-  <div class="lookup-choice-with-browse">
-    <button class="lookup-choice" onclick="showLookup('error')">
-      <strong>Numerical Error Code</strong>
-      <span>For codes such as 53.B0.05 or 65.80.A0</span>
-    </button>
-    <button class="lookup-browse-link" type="button" onclick="showBrowseAll('errors')">Browse All Numerical Error Codes</button>
-  </div>
-  <div class="lookup-choice-with-browse">
-    <button class="lookup-choice" onclick="showLookup('message')">
-      <strong>Alphabetical Message</strong>
-      <span>For messages shown on the control panel</span>
-    </button>
-    <button class="lookup-browse-link" type="button" onclick="showBrowseAll('messages')">Browse All Alphabetical Messages</button>
-  </div>
-  <button class="lookup-choice" onclick="showPartLookup()">
-    <strong>Parts Lookup</strong>
-    <span>Find a documented part for the verified machine</span>
-  </button>
-</div><div class="part-lookup-panel lookup-hidden" id="partLookupPanel" style="display:none"><h3>Parts Lookup</h3><div class="status" id="partLookupMachine"></div><label for="partLookupQuery">What part are you looking for?</label><input autocomplete="off" class="lookup-input" id="partLookupQuery" placeholder="Example: formatter, fuser, roller, LVPS, or part number"/><button class="lookup-enter" id="searchPartsBtn" onclick="runVerifiedPartLookup()" type="button">Search Parts</button><div class="lookup-results" id="partLookupResults"></div><button class="primary" id="partLookupFinishBtn" type="button">Finish</button><button class="secondary" id="partLookupBackBtn" onclick="hidePartLookup()" type="button">← Back</button></div><div class="lookup-panel lookup-hidden" id="errorLookupPanel"><h3>Enter Numerical Error Code</h3><input autocomplete="off" class="lookup-input" id="errorCodeLookup" placeholder="Example: 53.B0.05"/><button class="lookup-enter" onclick="submitErrorLookup(event)" type="button">Enter Error Code</button><div class="lookup-help">Enter the code exactly as shown on the machine.</div><div class="lookup-results" id="errorCodeResults"></div></div><div class="lookup-panel lookup-hidden" id="messageLookupPanel"><h3>Enter Alphabetical Message</h3><input autocomplete="off" class="lookup-input" id="messageLookup" placeholder="Example: Bad optional tray connection"/><button class="lookup-enter" onclick="submitMessageLookup(event)" type="button">Enter Message</button><div class="lookup-help">You can enter the complete message or just enough to find it.</div><div class="lookup-results" id="messageResults"></div></div><div class="lookup-divider" id="diagnosticChoiceDivider">or</div><button id="noErrorChoiceBtn" onclick="startSymptomDiagnosis()">I don't have an error code or message</button>
+<div class="lookup-choice-grid" id="lookupChoiceGrid"><div class="lookup-choice-with-browse"><button class="lookup-choice" onclick="showLookup('error')"><strong>Numerical Error Code</strong><span>For codes such as 53.B0.05 or 65.80.A0</span></button><button class="lookup-browse-link" type="button" onclick="showBrowseAll('errors')">Browse All Numerical Error Codes</button></div><div class="lookup-choice-with-browse"><button class="lookup-choice" onclick="showLookup('message')"><strong>Alphabetical Message</strong><span>For messages shown on the control panel</span></button><button class="lookup-browse-link" type="button" onclick="showBrowseAll('messages')">Browse All Alphabetical Messages</button></div><button class="lookup-choice" onclick="showPartLookup()"><strong>Parts Lookup</strong><span>Find a documented part for the verified machine</span></button></div><div class="part-lookup-panel lookup-hidden" id="partLookupPanel" style="display:none"><h3>Parts Lookup</h3><div class="status" id="partLookupMachine"></div><label for="partLookupQuery">What part are you looking for?</label><input autocomplete="off" class="lookup-input" id="partLookupQuery" placeholder="Example: formatter, fuser, roller, LVPS, or part number"/><button class="lookup-enter" id="searchPartsBtn" onclick="runVerifiedPartLookup()" type="button">Search Parts</button><div class="lookup-results" id="partLookupResults"></div><button class="primary" id="partLookupFinishBtn" type="button">Finish</button><button class="secondary" id="partLookupBackBtn" onclick="hidePartLookup()" type="button">← Back</button></div><div class="lookup-panel lookup-hidden" id="errorLookupPanel"><h3>Enter Numerical Error Code</h3><input autocomplete="off" class="lookup-input" id="errorCodeLookup" placeholder="Example: 53.B0.05"/><button class="lookup-enter" onclick="submitErrorLookup(event)" type="button">Enter Error Code</button><div class="lookup-help">Enter the code exactly as shown on the machine.</div><div class="lookup-results" id="errorCodeResults"></div></div><div class="lookup-panel lookup-hidden" id="messageLookupPanel"><h3>Enter Alphabetical Message</h3><input autocomplete="off" class="lookup-input" id="messageLookup" placeholder="Example: Bad optional tray connection"/><button class="lookup-enter" onclick="submitMessageLookup(event)" type="button">Enter Message</button><div class="lookup-help">You can enter the complete message or just enough to find it.</div><div class="lookup-results" id="messageResults"></div></div><div class="lookup-divider" id="diagnosticChoiceDivider">or</div><button id="noErrorChoiceBtn" onclick="startSymptomDiagnosis()">I don't have an error code or message</button>
 <!-- Variable/template error-code completion -->
 <div class="panel hidden" id="templateErrorChooser" style="margin-top:16px;">
 <h3>Variable Error Code</h3>
@@ -994,7 +969,7 @@ function openPrintableServiceReport(){
       .external-report-note{max-width:900px;margin:0 auto 18px;color:#4b5563;font-size:13px}
       @media print{body{padding:0!important}.no-print,.external-report-toolbar,.external-report-note{display:none!important}}
     
-/* Build 163: keep Copier Wizard branding visually static. */
+/* Build 162: keep Copier Wizard branding visually static. */
 .cw-header .cw-brand,
 .cw-header .cw-brand img,
 .cw-header .cw-brand > div,
@@ -1013,7 +988,7 @@ function openPrintableServiceReport(){
   mix-blend-mode: normal !important;
 }
 
-/* Build 163: Browse-all entries show compact titles; troubleshooting details
+/* Build 162: Browse-all entries show compact titles; troubleshooting details
    are revealed only after selecting an entry. */
 .browse-all-item .troubleshooting-steps,
 .browse-all-item .steps,
@@ -1024,7 +999,7 @@ function openPrintableServiceReport(){
 .browse-all-item.is-selected .solution,
 .browse-all-item.is-selected .detail { display:block !important; }
 
-/* Build 163: compact Home control, matching the original house-only button. */
+/* Build 162: compact Home control, matching the original house-only button. */
 .header-home.compact-home{
   width:32px !important;
   min-width:32px !important;
@@ -1040,7 +1015,7 @@ function openPrintableServiceReport(){
   border-radius:8px !important;
 }
 
-/* Build 163: tiny Home icon lives inside the header brand row. */
+/* Build 162: tiny Home icon lives inside the header brand row. */
 .cw-brand{position:relative;}
 .header-home.compact-home{
   appearance:none !important;
@@ -1067,10 +1042,10 @@ function openPrintableServiceReport(){
 }
 .header-home.compact-home:hover{background:rgba(255,255,255,.12) !important;}
 
-/* Build 163: once a part search returns results, only Finish remains below it. */
+/* Build 162: once a part search returns results, only Finish remains below it. */
 #partLookupFinishBtn{width:100% !important;margin-top:16px !important;display:none;}
 
-/* Build 163: compact Home control. */
+/* Build 162: compact Home control. */
 .cw-header{
   display:flex !important;
   flex-direction:row !important;
@@ -1132,7 +1107,7 @@ function openPrintableServiceReport(){
   }
 }
 
-/* Build 163: Home is a tiny icon positioned in the header corner. */
+/* Build 162: Home is a tiny icon positioned in the header corner. */
 header.cw-header{position:relative !important;}
 header.cw-header #cw-home-btn.header-home.compact-home{
  appearance:none !important; -webkit-appearance:none !important;
@@ -1153,7 +1128,7 @@ header.cw-header #cw-home-btn.header-home.compact-home:active{
 
 
 
-/* Build 163: Home is a tiny standalone icon in the header corner. */
+/* Build 162: Home is a tiny standalone icon in the header corner. */
 header.cw-header{position:relative !important;}
 header.cw-header > #cw-home-btn{
   appearance:none !important;
@@ -2146,6 +2121,15 @@ function getTrayFromErrorCode(code){
 
 
 window.E52645_ERROR_CATALOG = (typeof E52645_ERROR_CATALOG!=="undefined") ? E52645_ERROR_CATALOG : [];
+function showBrowseAll(type){
+  showManualCoverage();
+  setTimeout(function(){
+    const id=type==="messages"?"manualMessagesTab":"manualErrorsTab";
+    const tab=document.getElementById(id);
+    if(tab) tab.click();
+  },0);
+}
+
 function showManualCoverage(){const rootChoices=document.getElementById("lookupChoiceGrid");if(rootChoices)rootChoices.style.display="";
   const panel=document.getElementById("manualCoveragePanel");
   if(!panel) return;
@@ -2339,15 +2323,6 @@ function openManualMessageFromIndex(index){
   const input=document.getElementById("messageLookup");
   if(input) input.value=window.selectedMessage;
   diagnosticAnswer("alphabetical-message");
-}
-
-function showBrowseAll(type){
-  showManualCoverage();
-  setTimeout(function(){
-    const id=type==="messages"?"manualMessagesTab":"manualErrorsTab";
-    const tab=document.getElementById(id);
-    if(tab) tab.click();
-  },0);
 }
 
 function showLookup(which){
@@ -4592,7 +4567,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='163';
+  const CURRENT='158';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;
