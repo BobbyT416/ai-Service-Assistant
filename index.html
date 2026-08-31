@@ -895,7 +895,7 @@ function preparePrintableReportLink(el){
       #serviceReportCard{display:block!important;border:0!important;box-shadow:none!important;max-width:900px!important;margin:0 auto!important}
       @media print{body{padding:0!important}}
     </style><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
-</head><body>${clone.outerHTML}<script id="cw-update-check">(function(){const CURRENT='164';function show(msg){const b=document.getElementById('cwUpdateBubble');if(!b)return;b.textContent=msg;b.classList.add('show');setTimeout(()=>b.classList.remove('show'),3000)}async function check(){try{const r=await fetch('version.json?cb='+Date.now(),{cache:'no-store'});if(!r.ok)return;const d=await r.json(),latest=String(d.build||'');if(!latest||latest===CURRENT)return;localStorage.setItem('cw_pending_update',latest);location.reload(true)}catch(e){}}document.addEventListener('DOMContentLoaded',()=>{const p=localStorage.getItem('cw_pending_update');if(p===CURRENT){localStorage.removeItem('cw_pending_update');show('Copier Wizard updated — Build '+CURRENT)}check()})})();<\/script>
+</head><body>${clone.outerHTML}<script id="cw-update-check">(function(){const CURRENT='165';function show(msg){const b=document.getElementById('cwUpdateBubble');if(!b)return;b.textContent=msg;b.classList.add('show');setTimeout(()=>b.classList.remove('show'),3000)}async function check(){try{const r=await fetch('version.json?cb='+Date.now(),{cache:'no-store'});if(!r.ok)return;const d=await r.json(),latest=String(d.build||'');if(!latest||latest===CURRENT)return;localStorage.setItem('cw_pending_update',latest);location.reload(true)}catch(e){}}document.addEventListener('DOMContentLoaded',()=>{const p=localStorage.getItem('cw_pending_update');if(p===CURRENT){localStorage.removeItem('cw_pending_update');show('Copier Wizard updated — Build '+CURRENT)}check()})})();<\/script>
 <script>document.addEventListener("DOMContentLoaded",()=>{const templateCodes=new Set((window.E52645_ERROR_CATALOG||[]).map(x=>String(x.code||"").toUpperCase()).filter(code=>/[XYZ]/.test(code)));document.querySelectorAll(".manual-index-item").forEach(el=>{const strong=el.querySelector("strong"),code=(strong?.textContent||"").trim().toUpperCase();if(!templateCodes.has(code)||el.querySelector(".variable-template-badge"))return;const badge=document.createElement("span");badge.className="variable-template-badge";badge.textContent="VARIABLE CODE";strong.appendChild(badge);});});<\/script>
 
 
@@ -2140,7 +2140,10 @@ function showBrowseAll(type){
 function showManualCoverage(){const rootChoices=document.getElementById("lookupChoiceGrid");if(rootChoices)rootChoices.style.display="";
   const panel=document.getElementById("manualCoveragePanel");
   if(!panel) return;
-  panel.classList.remove("hidden");
+  // clearPaths() deliberately adds both hidden classes to every branch.
+  // The manual browser is a destination, so remove BOTH classes here.
+  panel.classList.remove("hidden","lookup-hidden");
+  panel.style.display="block";
 
   const errors=Array.isArray(window.E52645_ERROR_CATALOG) ? window.E52645_ERROR_CATALOG : (typeof E52645_ERROR_CATALOG!=="undefined" ? E52645_ERROR_CATALOG : []);
   const messages=Array.isArray(window.E52645_ALPHABETICAL_MESSAGES) ? window.E52645_ALPHABETICAL_MESSAGES : [];
@@ -4574,7 +4577,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='164';
+  const CURRENT='165';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;
