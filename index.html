@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 168</title>
+<title>Copier Wizard — Build 169</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -577,7 +577,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 168</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
+<footer><strong>Copier Wizard — Build 169</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -2362,8 +2362,16 @@ function beginErrorCodeDiagnosis(code){
   if(renderDocumentedErrorBranch(raw)){
     const resultCard=document.getElementById("resultCard");
     if(resultCard) resultCard.classList.remove("hidden");
-    const result=document.getElementById("result");
-    if(result) result.scrollIntoView({behavior:"smooth",block:"start"});
+    // Wait for layout to settle before scrolling. This prevents iOS/Safari
+    // from snapping the troubleshooting result back to document top.
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        const target=document.getElementById("resultCard");
+        if(!target) return;
+        const y=target.getBoundingClientRect().top + window.scrollY - 18;
+        window.scrollTo({top:Math.max(0,y),behavior:"smooth"});
+      });
+    });
     return;
   }
 
@@ -2379,14 +2387,24 @@ function beginErrorCodeDiagnosis(code){
     <button class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>`;
   const resultCard=document.getElementById("resultCard");
   if(resultCard) resultCard.classList.remove("hidden");
-  r.scrollIntoView({behavior:"smooth",block:"start"});
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      const target=document.getElementById("resultCard");
+      if(!target) return;
+      const y=target.getBoundingClientRect().top + window.scrollY - 18;
+      window.scrollTo({top:Math.max(0,y),behavior:"smooth"});
+    });
+  });
 }
 
 function submitErrorLookup(event){
-  if(event) event.preventDefault();
-  const code=(document.getElementById("errorCodeLookup")?.value||"").trim();
-  if(!code)return;
+  if(event){ event.preventDefault(); event.stopPropagation(); }
+  const input=document.getElementById("errorCodeLookup");
+  const code=(input?.value||"").trim();
+  if(!code) return false;
+  try{ input?.blur(); }catch(e){}
   beginErrorCodeDiagnosis(code);
+  return false;
 }
 function submitMessageLookup(event){
   if(event) event.preventDefault();
@@ -4584,7 +4602,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='168';
+  const CURRENT='169';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;
@@ -4873,4 +4891,34 @@ document.addEventListener("DOMContentLoaded",function(){
 })();
 </script>
 
+
+<script id="cw-error-code-navigation-v169">
+(function(){
+  function submitFromInput(){
+    const input=document.getElementById("errorCodeLookup");
+    const code=(input?.value||"").trim();
+    if(!code) return;
+    try{ input.blur(); }catch(e){}
+    beginErrorCodeDiagnosis(code);
+  }
+  document.addEventListener("click",function(e){
+    const button=e.target && e.target.closest ? e.target.closest("button") : null;
+    if(!button) return;
+    if(button.classList.contains("lookup-enter") && button.closest("#errorLookupPanel")){
+      e.preventDefault(); e.stopImmediatePropagation(); submitFromInput();
+    }
+  },true);
+  document.addEventListener("keydown",function(e){
+    if(e.key!=="Enter") return;
+    const input=e.target;
+    if(!input || input.id!=="errorCodeLookup") return;
+    e.preventDefault(); e.stopImmediatePropagation(); submitFromInput();
+  },true);
+  document.addEventListener("submit",function(e){
+    if(e.target && e.target.closest && e.target.closest("#errorLookupPanel")){
+      e.preventDefault(); e.stopImmediatePropagation(); submitFromInput();
+    }
+  },true);
+})();
+</script>
 </body></html>
