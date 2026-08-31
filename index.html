@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 172</title>
+<title>Copier Wizard — Build 173</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -577,7 +577,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 172</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
+<footer><strong>Copier Wizard — Build 173</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -915,83 +915,6 @@ function preparePrintableReportLink(el){
       @media print{body{padding:0!important}}
     </style><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 </head><body>${clone.outerHTML}
-
-
-<script id="cw-error-code-hard-fix-v172">
-(function(){
-  function showResultForCode(raw){
-    var code=String(raw||"").trim();
-    if(!code) return false;
-
-    var resultCard=document.getElementById("resultCard");
-    var result=document.getElementById("result");
-    var errorPanel=document.getElementById("errorLookupPanel");
-    if(!resultCard || !result) return false;
-
-    try{
-      if(errorPanel){
-        errorPanel.classList.add("hidden");
-        errorPanel.classList.add("lookup-hidden");
-        errorPanel.style.display="none";
-      }
-
-      // Use the documented catalog renderer directly.
-      if(typeof renderDocumentedErrorBranch==="function" && renderDocumentedErrorBranch(code)){
-        resultCard.classList.remove("hidden");
-        requestAnimationFrame(function(){
-          var y=resultCard.getBoundingClientRect().top + window.scrollY - 18;
-          window.scrollTo({top:Math.max(0,y),behavior:"smooth"});
-        });
-        return true;
-      }
-
-      // Fall back to the diagnostic engine if the documented renderer changes.
-      if(typeof diagnose==="function"){
-        var legacy=document.getElementById("problem");
-        if(legacy) legacy.value=code;
-        resultCard.classList.remove("hidden");
-        diagnose();
-        requestAnimationFrame(function(){
-          var y=resultCard.getBoundingClientRect().top + window.scrollY - 18;
-          window.scrollTo({top:Math.max(0,y),behavior:"smooth"});
-        });
-        return true;
-      }
-    }catch(err){
-      console.error("Copier Wizard hard error-code routing failed:",err);
-      result.innerHTML='<h2>Error-Code Routing Error</h2>'+
-        '<div class="status danger">The diagnostic path failed to open for <strong>'+
-        (typeof escapeHtml==="function"?escapeHtml(code):code)+'</strong>.</div>'+
-        '<p>'+ (typeof escapeHtml==="function"?escapeHtml(String(err.message||err)):String(err)) +'</p>';
-      resultCard.classList.remove("hidden");
-      return false;
-    }
-    return false;
-  }
-
-  document.addEventListener("DOMContentLoaded",function(){
-    var btn=document.querySelector('#errorLookupPanel button[onclick*="cwSubmitErrorLookup"]');
-    var input=document.getElementById("errorCodeLookup");
-    if(btn){
-      btn.type="button";
-      btn.onclick=function(e){
-        if(e){e.preventDefault();e.stopPropagation();}
-        return showResultForCode(input ? input.value : "");
-      };
-    }
-    if(input){
-      input.addEventListener("keydown",function(e){
-        if(e.key==="Enter"){
-          e.preventDefault();
-          e.stopImmediatePropagation();
-          showResultForCode(input.value);
-        }
-      },true);
-    }
-    window.cwHardSubmitErrorLookup=showResultForCode;
-  });
-})();
-</script>
 </body></html>`;
     const blob=new Blob([html],{type:"text/html"});
     const url=URL.createObjectURL(blob);
@@ -1274,82 +1197,6 @@ header.cw-header > #cw-home-btn:active{
       <strong>Save as PDF:</strong> the button opens the normal browser print dialog; choose <strong>Save as PDF</strong> there.
     </div>
     ${clone.outerHTML}
-
-<script id="cw-error-code-hard-fix-v172">
-(function(){
-  function showResultForCode(raw){
-    var code=String(raw||"").trim();
-    if(!code) return false;
-
-    var resultCard=document.getElementById("resultCard");
-    var result=document.getElementById("result");
-    var errorPanel=document.getElementById("errorLookupPanel");
-    if(!resultCard || !result) return false;
-
-    try{
-      if(errorPanel){
-        errorPanel.classList.add("hidden");
-        errorPanel.classList.add("lookup-hidden");
-        errorPanel.style.display="none";
-      }
-
-      // Use the documented catalog renderer directly.
-      if(typeof renderDocumentedErrorBranch==="function" && renderDocumentedErrorBranch(code)){
-        resultCard.classList.remove("hidden");
-        requestAnimationFrame(function(){
-          var y=resultCard.getBoundingClientRect().top + window.scrollY - 18;
-          window.scrollTo({top:Math.max(0,y),behavior:"smooth"});
-        });
-        return true;
-      }
-
-      // Fall back to the diagnostic engine if the documented renderer changes.
-      if(typeof diagnose==="function"){
-        var legacy=document.getElementById("problem");
-        if(legacy) legacy.value=code;
-        resultCard.classList.remove("hidden");
-        diagnose();
-        requestAnimationFrame(function(){
-          var y=resultCard.getBoundingClientRect().top + window.scrollY - 18;
-          window.scrollTo({top:Math.max(0,y),behavior:"smooth"});
-        });
-        return true;
-      }
-    }catch(err){
-      console.error("Copier Wizard hard error-code routing failed:",err);
-      result.innerHTML='<h2>Error-Code Routing Error</h2>'+
-        '<div class="status danger">The diagnostic path failed to open for <strong>'+
-        (typeof escapeHtml==="function"?escapeHtml(code):code)+'</strong>.</div>'+
-        '<p>'+ (typeof escapeHtml==="function"?escapeHtml(String(err.message||err)):String(err)) +'</p>';
-      resultCard.classList.remove("hidden");
-      return false;
-    }
-    return false;
-  }
-
-  document.addEventListener("DOMContentLoaded",function(){
-    var btn=document.querySelector('#errorLookupPanel button[onclick*="cwSubmitErrorLookup"]');
-    var input=document.getElementById("errorCodeLookup");
-    if(btn){
-      btn.type="button";
-      btn.onclick=function(e){
-        if(e){e.preventDefault();e.stopPropagation();}
-        return showResultForCode(input ? input.value : "");
-      };
-    }
-    if(input){
-      input.addEventListener("keydown",function(e){
-        if(e.key==="Enter"){
-          e.preventDefault();
-          e.stopImmediatePropagation();
-          showResultForCode(input.value);
-        }
-      },true);
-    }
-    window.cwHardSubmitErrorLookup=showResultForCode;
-  });
-})();
-</script>
 </body></html>`;
 
     const blob=new Blob([html],{type:"text/html;charset=utf-8"});
@@ -5096,82 +4943,6 @@ document.addEventListener("DOMContentLoaded",function(){
       e.preventDefault();e.stopImmediatePropagation();window.cwSubmitErrorLookup(e);
     }
   },true);
-})();
-</script>
-
-<script id="cw-error-code-hard-fix-v172">
-(function(){
-  function showResultForCode(raw){
-    var code=String(raw||"").trim();
-    if(!code) return false;
-
-    var resultCard=document.getElementById("resultCard");
-    var result=document.getElementById("result");
-    var errorPanel=document.getElementById("errorLookupPanel");
-    if(!resultCard || !result) return false;
-
-    try{
-      if(errorPanel){
-        errorPanel.classList.add("hidden");
-        errorPanel.classList.add("lookup-hidden");
-        errorPanel.style.display="none";
-      }
-
-      // Use the documented catalog renderer directly.
-      if(typeof renderDocumentedErrorBranch==="function" && renderDocumentedErrorBranch(code)){
-        resultCard.classList.remove("hidden");
-        requestAnimationFrame(function(){
-          var y=resultCard.getBoundingClientRect().top + window.scrollY - 18;
-          window.scrollTo({top:Math.max(0,y),behavior:"smooth"});
-        });
-        return true;
-      }
-
-      // Fall back to the diagnostic engine if the documented renderer changes.
-      if(typeof diagnose==="function"){
-        var legacy=document.getElementById("problem");
-        if(legacy) legacy.value=code;
-        resultCard.classList.remove("hidden");
-        diagnose();
-        requestAnimationFrame(function(){
-          var y=resultCard.getBoundingClientRect().top + window.scrollY - 18;
-          window.scrollTo({top:Math.max(0,y),behavior:"smooth"});
-        });
-        return true;
-      }
-    }catch(err){
-      console.error("Copier Wizard hard error-code routing failed:",err);
-      result.innerHTML='<h2>Error-Code Routing Error</h2>'+
-        '<div class="status danger">The diagnostic path failed to open for <strong>'+
-        (typeof escapeHtml==="function"?escapeHtml(code):code)+'</strong>.</div>'+
-        '<p>'+ (typeof escapeHtml==="function"?escapeHtml(String(err.message||err)):String(err)) +'</p>';
-      resultCard.classList.remove("hidden");
-      return false;
-    }
-    return false;
-  }
-
-  document.addEventListener("DOMContentLoaded",function(){
-    var btn=document.querySelector('#errorLookupPanel button[onclick*="cwSubmitErrorLookup"]');
-    var input=document.getElementById("errorCodeLookup");
-    if(btn){
-      btn.type="button";
-      btn.onclick=function(e){
-        if(e){e.preventDefault();e.stopPropagation();}
-        return showResultForCode(input ? input.value : "");
-      };
-    }
-    if(input){
-      input.addEventListener("keydown",function(e){
-        if(e.key==="Enter"){
-          e.preventDefault();
-          e.stopImmediatePropagation();
-          showResultForCode(input.value);
-        }
-      },true);
-    }
-    window.cwHardSubmitErrorLookup=showResultForCode;
-  });
 })();
 </script>
 </body></html>
