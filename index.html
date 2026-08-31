@@ -895,21 +895,9 @@ function preparePrintableReportLink(el){
       #serviceReportCard{display:block!important;border:0!important;box-shadow:none!important;max-width:900px!important;margin:0 auto!important}
       @media print{body{padding:0!important}}
     </style><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
-</head><body>${clone.outerHTML}<script id="cw-update-check">(function(){const CURRENT='166';function show(msg){const b=document.getElementById('cwUpdateBubble');if(!b)return;b.textContent=msg;b.classList.add('show');setTimeout(()=>b.classList.remove('show'),3000)}async function check(){try{const r=await fetch('version.json?cb='+Date.now(),{cache:'no-store'});if(!r.ok)return;const d=await r.json(),latest=String(d.build||'');if(!latest||latest===CURRENT)return;localStorage.setItem('cw_pending_update',latest);location.reload(true)}catch(e){}}document.addEventListener('DOMContentLoaded',()=>{const p=localStorage.getItem('cw_pending_update');if(p===CURRENT){localStorage.removeItem('cw_pending_update');show('Copier Wizard updated — Build '+CURRENT)}check()})})();<\/script>
+</head><body>${clone.outerHTML}<script id="cw-update-check">(function(){const CURRENT='167';function show(msg){const b=document.getElementById('cwUpdateBubble');if(!b)return;b.textContent=msg;b.classList.add('show');setTimeout(()=>b.classList.remove('show'),3000)}async function check(){try{const r=await fetch('version.json?cb='+Date.now(),{cache:'no-store'});if(!r.ok)return;const d=await r.json(),latest=String(d.build||'');if(!latest||latest===CURRENT)return;localStorage.setItem('cw_pending_update',latest);location.reload(true)}catch(e){}}document.addEventListener('DOMContentLoaded',()=>{const p=localStorage.getItem('cw_pending_update');if(p===CURRENT){localStorage.removeItem('cw_pending_update');show('Copier Wizard updated — Build '+CURRENT)}check()})})();<\/script>
 <script>document.addEventListener("DOMContentLoaded",()=>{const templateCodes=new Set((window.E52645_ERROR_CATALOG||[]).map(x=>String(x.code||"").toUpperCase()).filter(code=>/[XYZ]/.test(code)));document.querySelectorAll(".manual-index-item").forEach(el=>{const strong=el.querySelector("strong"),code=(strong?.textContent||"").trim().toUpperCase();if(!templateCodes.has(code)||el.querySelector(".variable-template-badge"))return;const badge=document.createElement("span");badge.className="variable-template-badge";badge.textContent="VARIABLE CODE";strong.appendChild(badge);});});<\/script>
-
-
-
-<script id="cw-Build 164-selection">
-document.addEventListener("DOMContentLoaded",function(){
-  const type=document.getElementById("machineType");
-  if(type) type.addEventListener("change",function(){machineTypeChanged(this.value);});
-});
-<\/script>
-
-
-
-<script id="cw-error-nav-v166">(function(){var f=window.openManualErrorFromIndex;if(typeof f!=="function")return;window.openManualErrorFromIndex=function(c){try{var p=document.getElementById("manualErrorBrowser");if(p)p.classList.remove("hidden","d-none");return f.call(this,c);}catch(e){console.error(e);return false;}};})();</script></body></html>`;
+</body></html>`;
     const blob=new Blob([html],{type:"text/html"});
     const url=URL.createObjectURL(blob);
     el.href=url;
@@ -1191,7 +1179,7 @@ header.cw-header > #cw-home-btn:active{
       <strong>Save as PDF:</strong> the button opens the normal browser print dialog; choose <strong>Save as PDF</strong> there.
     </div>
     ${clone.outerHTML}
-    <script id="cw-error-nav-v166">(function(){var f=window.openManualErrorFromIndex;if(typeof f!=="function")return;window.openManualErrorFromIndex=function(c){try{var p=document.getElementById("manualErrorBrowser");if(p)p.classList.remove("hidden","d-none");return f.call(this,c);}catch(e){console.error(e);return false;}};})();</script></body></html>`;
+</body></html>`;
 
     const blob=new Blob([html],{type:"text/html;charset=utf-8"});
     const url=URL.createObjectURL(blob);
@@ -2292,7 +2280,7 @@ function renderManualCoverageList(type){
     list.innerHTML=ranked.map(({item,index})=>{
       const hasSteps=Array.isArray(item.steps)&&item.steps.length>0;
       const hasParts=Array.isArray(item.parts)&&item.parts.length>0;
-      return `<button type="button" class="manual-index-item" onclick="openManualErrorFromIndex(${index})">
+      return `<button type="button" class="manual-index-item" onclick="event.preventDefault();event.stopPropagation();openManualErrorFromIndex(${index})">
         <strong>${escapeHtml(item.code)}</strong>
         ${item.desc?`<span>${escapeHtml(item.desc)}</span>`:""}
         <small>${hasSteps?"Documented procedure":"Informational / no technician procedure extracted"}${hasParts?" • Parts referenced":""}</small>
@@ -2308,7 +2296,7 @@ function renderManualCoverageList(type){
 
     list.innerHTML=ranked.map(({item,index})=>{
       const hasActions=Array.isArray(item.actions)&&item.actions.length>0;
-      return `<button type="button" class="manual-index-item" onclick="openManualMessageFromIndex(${index})">
+      return `<button type="button" class="manual-index-item" onclick="event.preventDefault();event.stopPropagation();openManualMessageFromIndex(${index})">
         <strong>${escapeHtml(item.message||"")}</strong>
         ${item.description?`<span>${escapeHtml(item.description)}</span>`:""}
         <small>${hasActions?"Documented action":"Informational / no action extracted"}</small>
@@ -4577,7 +4565,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='166';
+  const CURRENT='167';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;
@@ -4921,4 +4909,43 @@ document.addEventListener("DOMContentLoaded",function(){
   }
 })();
 </script>
-<script id="cw-error-nav-v166">(function(){var f=window.openManualErrorFromIndex;if(typeof f!=="function")return;window.openManualErrorFromIndex=function(c){try{var p=document.getElementById("manualErrorBrowser");if(p)p.classList.remove("hidden","d-none");return f.call(this,c);}catch(e){console.error(e);return false;}};})();</script></body></html>
+
+<script id="cw-machine-selection-flow-v167">
+(function(){
+  function focusNext(id){
+    const x=document.getElementById(id);
+    if(!x) return;
+    setTimeout(function(){
+      x.focus({preventScroll:true});
+      if(typeof x.showPicker==="function"){try{x.showPicker();}catch(e){}}
+    },30);
+  }
+
+  const type=document.getElementById("machineType");
+  const family=document.getElementById("machineFamily");
+  const model=document.getElementById("model");
+  const product=document.getElementById("product");
+  const fs=document.getElementById("firmwareLevel");
+
+  if(type) type.addEventListener("change",function(){
+    // The native onchange already populates Family. We only move focus forward.
+    if(this.value) focusNext("machineFamily");
+  });
+
+  if(family) family.addEventListener("change",function(){
+    if(this.value) focusNext("model");
+  });
+
+  if(model) model.addEventListener("change",function(){
+    if(this.value) focusNext("product");
+  });
+
+  if(product) product.addEventListener("change",function(){
+    // Product Number is optional; only advance to FutureSmart when the existing
+    // UI says the field is applicable and visible.
+    if(this.value && fs && !fs.disabled && fs.offsetParent!==null)
+      focusNext("firmwareLevel");
+  });
+})();
+</script>
+</body></html>
