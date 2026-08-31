@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 154</title>
+<title>Copier Wizard — Build 155</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -552,7 +552,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 154</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
+<footer><strong>Copier Wizard — Build 155</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -894,7 +894,7 @@ function preparePrintableReportLink(el){
 
 
 
-<script id="cw-Build 154-selection">
+<script id="cw-Build 155-selection">
 document.addEventListener("DOMContentLoaded",function(){
   const type=document.getElementById("machineType");
   if(type) type.addEventListener("change",function(){machineTypeChanged(this.value);});
@@ -963,7 +963,7 @@ function openPrintableServiceReport(){
       .external-report-note{max-width:900px;margin:0 auto 18px;color:#4b5563;font-size:13px}
       @media print{body{padding:0!important}.no-print,.external-report-toolbar,.external-report-note{display:none!important}}
     
-/* Build 154: keep Copier Wizard branding visually static. */
+/* Build 155: keep Copier Wizard branding visually static. */
 .cw-header .cw-brand,
 .cw-header .cw-brand img,
 .cw-header .cw-brand > div,
@@ -982,7 +982,7 @@ function openPrintableServiceReport(){
   mix-blend-mode: normal !important;
 }
 
-/* Build 154: Browse-all entries show compact titles; troubleshooting details
+/* Build 155: Browse-all entries show compact titles; troubleshooting details
    are revealed only after selecting an entry. */
 .browse-all-item .troubleshooting-steps,
 .browse-all-item .steps,
@@ -993,7 +993,7 @@ function openPrintableServiceReport(){
 .browse-all-item.is-selected .solution,
 .browse-all-item.is-selected .detail { display:block !important; }
 
-/* Build 154: compact Home control, matching the original house-only button. */
+/* Build 155: compact Home control, matching the original house-only button. */
 .header-home.compact-home{
   width:32px !important;
   min-width:32px !important;
@@ -1009,7 +1009,7 @@ function openPrintableServiceReport(){
   border-radius:8px !important;
 }
 
-/* Build 154: tiny Home icon lives inside the header brand row. */
+/* Build 155: tiny Home icon lives inside the header brand row. */
 .cw-brand{position:relative;}
 .header-home.compact-home{
   appearance:none !important;
@@ -1036,10 +1036,10 @@ function openPrintableServiceReport(){
 }
 .header-home.compact-home:hover{background:rgba(255,255,255,.12) !important;}
 
-/* Build 154: once a part search returns results, only Finish remains below it. */
+/* Build 155: once a part search returns results, only Finish remains below it. */
 #partLookupFinishBtn{width:100% !important;margin-top:16px !important;display:none;}
 
-/* Build 154: compact Home control. */
+/* Build 155: compact Home control. */
 .cw-header{
   display:flex !important;
   flex-direction:row !important;
@@ -1101,7 +1101,7 @@ function openPrintableServiceReport(){
   }
 }
 
-/* Build 154: Home is a tiny icon positioned in the header corner. */
+/* Build 155: Home is a tiny icon positioned in the header corner. */
 header.cw-header{position:relative !important;}
 header.cw-header #cw-home-btn.header-home.compact-home{
  appearance:none !important; -webkit-appearance:none !important;
@@ -1122,7 +1122,7 @@ header.cw-header #cw-home-btn.header-home.compact-home:active{
 
 
 
-/* Build 154: Home is a tiny standalone icon in the header corner. */
+/* Build 155: Home is a tiny standalone icon in the header corner. */
 header.cw-header{position:relative !important;}
 header.cw-header > #cw-home-btn{
   appearance:none !important;
@@ -4536,7 +4536,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='154';
+  const CURRENT='155';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;
@@ -4816,13 +4816,25 @@ document.addEventListener("DOMContentLoaded",function(){
     if(input) setTimeout(function(){input.focus();},0);
   };
 
-  window.startSymptomDiagnosis=function(){
+  const originalStartSymptomDiagnosis=window.startSymptomDiagnosis;
+  window.startSymptomDiagnosis=function(label,kind){
     clearDiagnosticPaths();
-    const categories=el("problemCategories");
-    if(categories){
-      categories.classList.remove("lookup-hidden");
-      categories.classList.remove("hidden");
-      categories.style.display="";
+
+    // No-error-code selection: show the symptom selector.
+    if(arguments.length===0 || !kind){
+      const categories=el("problemCategories");
+      if(categories){
+        categories.classList.remove("lookup-hidden");
+        categories.classList.remove("hidden");
+        categories.style.display="";
+      }
+      return;
+    }
+
+    // A selected symptom (noise, jam, power, boot, etc.) must continue into
+    // the actual diagnostic branch instead of stopping at the selector.
+    if(typeof originalStartSymptomDiagnosis==="function"){
+      return originalStartSymptomDiagnosis.apply(this,arguments);
     }
   };
 
