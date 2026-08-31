@@ -895,7 +895,7 @@ function preparePrintableReportLink(el){
       #serviceReportCard{display:block!important;border:0!important;box-shadow:none!important;max-width:900px!important;margin:0 auto!important}
       @media print{body{padding:0!important}}
     </style><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
-</head><body>${clone.outerHTML}<script id="cw-update-check">(function(){const CURRENT='165';function show(msg){const b=document.getElementById('cwUpdateBubble');if(!b)return;b.textContent=msg;b.classList.add('show');setTimeout(()=>b.classList.remove('show'),3000)}async function check(){try{const r=await fetch('version.json?cb='+Date.now(),{cache:'no-store'});if(!r.ok)return;const d=await r.json(),latest=String(d.build||'');if(!latest||latest===CURRENT)return;localStorage.setItem('cw_pending_update',latest);location.reload(true)}catch(e){}}document.addEventListener('DOMContentLoaded',()=>{const p=localStorage.getItem('cw_pending_update');if(p===CURRENT){localStorage.removeItem('cw_pending_update');show('Copier Wizard updated — Build '+CURRENT)}check()})})();<\/script>
+</head><body>${clone.outerHTML}<script id="cw-update-check">(function(){const CURRENT='166';function show(msg){const b=document.getElementById('cwUpdateBubble');if(!b)return;b.textContent=msg;b.classList.add('show');setTimeout(()=>b.classList.remove('show'),3000)}async function check(){try{const r=await fetch('version.json?cb='+Date.now(),{cache:'no-store'});if(!r.ok)return;const d=await r.json(),latest=String(d.build||'');if(!latest||latest===CURRENT)return;localStorage.setItem('cw_pending_update',latest);location.reload(true)}catch(e){}}document.addEventListener('DOMContentLoaded',()=>{const p=localStorage.getItem('cw_pending_update');if(p===CURRENT){localStorage.removeItem('cw_pending_update');show('Copier Wizard updated — Build '+CURRENT)}check()})})();<\/script>
 <script>document.addEventListener("DOMContentLoaded",()=>{const templateCodes=new Set((window.E52645_ERROR_CATALOG||[]).map(x=>String(x.code||"").toUpperCase()).filter(code=>/[XYZ]/.test(code)));document.querySelectorAll(".manual-index-item").forEach(el=>{const strong=el.querySelector("strong"),code=(strong?.textContent||"").trim().toUpperCase();if(!templateCodes.has(code)||el.querySelector(".variable-template-badge"))return;const badge=document.createElement("span");badge.className="variable-template-badge";badge.textContent="VARIABLE CODE";strong.appendChild(badge);});});<\/script>
 
 
@@ -909,7 +909,7 @@ document.addEventListener("DOMContentLoaded",function(){
 
 
 
-</body></html>`;
+<script id="cw-error-nav-v166">(function(){var f=window.openManualErrorFromIndex;if(typeof f!=="function")return;window.openManualErrorFromIndex=function(c){try{var p=document.getElementById("manualErrorBrowser");if(p)p.classList.remove("hidden","d-none");return f.call(this,c);}catch(e){console.error(e);return false;}};})();</script></body></html>`;
     const blob=new Blob([html],{type:"text/html"});
     const url=URL.createObjectURL(blob);
     el.href=url;
@@ -1191,7 +1191,7 @@ header.cw-header > #cw-home-btn:active{
       <strong>Save as PDF:</strong> the button opens the normal browser print dialog; choose <strong>Save as PDF</strong> there.
     </div>
     ${clone.outerHTML}
-    </body></html>`;
+    <script id="cw-error-nav-v166">(function(){var f=window.openManualErrorFromIndex;if(typeof f!=="function")return;window.openManualErrorFromIndex=function(c){try{var p=document.getElementById("manualErrorBrowser");if(p)p.classList.remove("hidden","d-none");return f.call(this,c);}catch(e){console.error(e);return false;}};})();</script></body></html>`;
 
     const blob=new Blob([html],{type:"text/html;charset=utf-8"});
     const url=URL.createObjectURL(blob);
@@ -4577,7 +4577,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='165';
+  const CURRENT='166';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;
@@ -4921,4 +4921,4 @@ document.addEventListener("DOMContentLoaded",function(){
   }
 })();
 </script>
-</body></html>
+<script id="cw-error-nav-v166">(function(){var f=window.openManualErrorFromIndex;if(typeof f!=="function")return;window.openManualErrorFromIndex=function(c){try{var p=document.getElementById("manualErrorBrowser");if(p)p.classList.remove("hidden","d-none");return f.call(this,c);}catch(e){console.error(e);return false;}};})();</script></body></html>
