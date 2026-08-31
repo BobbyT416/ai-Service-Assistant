@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 162</title>
+<title>Copier Wizard — Build 163</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -413,6 +413,18 @@ button:disabled{opacity:.55;cursor:not-allowed;}
   }catch(e){}
 })();
 </script>
+
+<style id="cw-browse-actions-v163">
+.lookup-choice-with-browse{display:flex;flex-direction:column;gap:6px}
+.lookup-browse-link{
+  display:inline-flex;align-items:center;justify-content:flex-start;
+  width:max-content;max-width:100%;margin:0 0 2px 4px;padding:4px 8px;
+  border:0;background:transparent;color:#25658f;font-size:12px;
+  font-weight:600;cursor:pointer;border-radius:6px;text-decoration:none;
+}
+.lookup-browse-link:hover,.lookup-browse-link:focus-visible{
+  background:#eef3f7;text-decoration:underline;outline:none;
+}
 </head>
 <body>
 <header class="cw-header"><div class="cw-brand"><a class="cw-logo-home" href="#" aria-label="Copier Wizard Home" title="Copier Wizard Home" onclick="startOverDiagnostic();return false;"><img alt="Copier Wizard logo" src="icon-192.png"/></a><div><h1>Copier Wizard</h1><p>Intelligent Diagnostics for Copiers &amp; Printers</p></div></div></header>
@@ -450,7 +462,26 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <h2>2. What's wrong?</h2>
 <p style="margin-top:0">Start by telling the app what you know.</p>
 <h3 style="margin-bottom:8px">Do you have an error code?</h3>
-<div class="lookup-choice-grid" id="lookupChoiceGrid"><button class="lookup-choice" onclick="showLookup('error')"><strong>Numerical Error Code</strong><span>For codes such as 53.B0.05 or 65.80.A0</span></button><button class="lookup-choice" onclick="showLookup('message')"><strong>Alphabetical Message</strong><span>For messages shown on the control panel</span></button><button class="lookup-choice" onclick="showPartLookup()"><strong>Parts Lookup</strong><span>Find a documented part for the verified machine</span></button></div><div class="part-lookup-panel lookup-hidden" id="partLookupPanel" style="display:none"><h3>Parts Lookup</h3><div class="status" id="partLookupMachine"></div><label for="partLookupQuery">What part are you looking for?</label><input autocomplete="off" class="lookup-input" id="partLookupQuery" placeholder="Example: formatter, fuser, roller, LVPS, or part number"/><button class="lookup-enter" id="searchPartsBtn" onclick="runVerifiedPartLookup()" type="button">Search Parts</button><div class="lookup-results" id="partLookupResults"></div><button class="primary" id="partLookupFinishBtn" type="button">Finish</button><button class="secondary" id="partLookupBackBtn" onclick="hidePartLookup()" type="button">← Back</button></div><div class="lookup-panel lookup-hidden" id="errorLookupPanel"><h3>Enter Numerical Error Code</h3><input autocomplete="off" class="lookup-input" id="errorCodeLookup" placeholder="Example: 53.B0.05"/><button class="lookup-enter" onclick="submitErrorLookup(event)" type="button">Enter Error Code</button><div class="lookup-help">Enter the code exactly as shown on the machine.</div><div class="lookup-results" id="errorCodeResults"></div></div><div class="lookup-panel lookup-hidden" id="messageLookupPanel"><h3>Enter Alphabetical Message</h3><input autocomplete="off" class="lookup-input" id="messageLookup" placeholder="Example: Bad optional tray connection"/><button class="lookup-enter" onclick="submitMessageLookup(event)" type="button">Enter Message</button><div class="lookup-help">You can enter the complete message or just enough to find it.</div><div class="lookup-results" id="messageResults"></div></div><div class="lookup-divider" id="diagnosticChoiceDivider">or</div><button id="noErrorChoiceBtn" onclick="startSymptomDiagnosis()">I don't have an error code or message</button><button id="browseManualTroubleshootingBtn" class="secondary" onclick="showManualCoverage()" type="button">Browse All Manual Troubleshooting</button>
+<div class="lookup-choice-grid" id="lookupChoiceGrid">
+  <div class="lookup-choice-with-browse">
+    <button class="lookup-choice" onclick="showLookup('error')">
+      <strong>Numerical Error Code</strong>
+      <span>For codes such as 53.B0.05 or 65.80.A0</span>
+    </button>
+    <button class="lookup-browse-link" type="button" onclick="showBrowseAll('errors')">Browse All Numerical Error Codes</button>
+  </div>
+  <div class="lookup-choice-with-browse">
+    <button class="lookup-choice" onclick="showLookup('message')">
+      <strong>Alphabetical Message</strong>
+      <span>For messages shown on the control panel</span>
+    </button>
+    <button class="lookup-browse-link" type="button" onclick="showBrowseAll('messages')">Browse All Alphabetical Messages</button>
+  </div>
+  <button class="lookup-choice" onclick="showPartLookup()">
+    <strong>Parts Lookup</strong>
+    <span>Find a documented part for the verified machine</span>
+  </button>
+</div><div class="part-lookup-panel lookup-hidden" id="partLookupPanel" style="display:none"><h3>Parts Lookup</h3><div class="status" id="partLookupMachine"></div><label for="partLookupQuery">What part are you looking for?</label><input autocomplete="off" class="lookup-input" id="partLookupQuery" placeholder="Example: formatter, fuser, roller, LVPS, or part number"/><button class="lookup-enter" id="searchPartsBtn" onclick="runVerifiedPartLookup()" type="button">Search Parts</button><div class="lookup-results" id="partLookupResults"></div><button class="primary" id="partLookupFinishBtn" type="button">Finish</button><button class="secondary" id="partLookupBackBtn" onclick="hidePartLookup()" type="button">← Back</button></div><div class="lookup-panel lookup-hidden" id="errorLookupPanel"><h3>Enter Numerical Error Code</h3><input autocomplete="off" class="lookup-input" id="errorCodeLookup" placeholder="Example: 53.B0.05"/><button class="lookup-enter" onclick="submitErrorLookup(event)" type="button">Enter Error Code</button><div class="lookup-help">Enter the code exactly as shown on the machine.</div><div class="lookup-results" id="errorCodeResults"></div></div><div class="lookup-panel lookup-hidden" id="messageLookupPanel"><h3>Enter Alphabetical Message</h3><input autocomplete="off" class="lookup-input" id="messageLookup" placeholder="Example: Bad optional tray connection"/><button class="lookup-enter" onclick="submitMessageLookup(event)" type="button">Enter Message</button><div class="lookup-help">You can enter the complete message or just enough to find it.</div><div class="lookup-results" id="messageResults"></div></div><div class="lookup-divider" id="diagnosticChoiceDivider">or</div><button id="noErrorChoiceBtn" onclick="startSymptomDiagnosis()">I don't have an error code or message</button>
 <!-- Variable/template error-code completion -->
 <div class="panel hidden" id="templateErrorChooser" style="margin-top:16px;">
 <h3>Variable Error Code</h3>
@@ -552,7 +583,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 162</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
+<footer><strong>Copier Wizard — Build 163</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -889,12 +920,12 @@ function preparePrintableReportLink(el){
       #serviceReportCard{display:block!important;border:0!important;box-shadow:none!important;max-width:900px!important;margin:0 auto!important}
       @media print{body{padding:0!important}}
     </style><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
-</head><body>${clone.outerHTML}<script id="cw-update-check">(function(){const CURRENT='160';function show(msg){const b=document.getElementById('cwUpdateBubble');if(!b)return;b.textContent=msg;b.classList.add('show');setTimeout(()=>b.classList.remove('show'),3000)}async function check(){try{const r=await fetch('version.json?cb='+Date.now(),{cache:'no-store'});if(!r.ok)return;const d=await r.json(),latest=String(d.build||'');if(!latest||latest===CURRENT)return;localStorage.setItem('cw_pending_update',latest);location.reload(true)}catch(e){}}document.addEventListener('DOMContentLoaded',()=>{const p=localStorage.getItem('cw_pending_update');if(p===CURRENT){localStorage.removeItem('cw_pending_update');show('Copier Wizard updated — Build '+CURRENT)}check()})})();<\/script>
+</head><body>${clone.outerHTML}<script id="cw-update-check">(function(){const CURRENT='163';function show(msg){const b=document.getElementById('cwUpdateBubble');if(!b)return;b.textContent=msg;b.classList.add('show');setTimeout(()=>b.classList.remove('show'),3000)}async function check(){try{const r=await fetch('version.json?cb='+Date.now(),{cache:'no-store'});if(!r.ok)return;const d=await r.json(),latest=String(d.build||'');if(!latest||latest===CURRENT)return;localStorage.setItem('cw_pending_update',latest);location.reload(true)}catch(e){}}document.addEventListener('DOMContentLoaded',()=>{const p=localStorage.getItem('cw_pending_update');if(p===CURRENT){localStorage.removeItem('cw_pending_update');show('Copier Wizard updated — Build '+CURRENT)}check()})})();<\/script>
 <script>document.addEventListener("DOMContentLoaded",()=>{const templateCodes=new Set((window.E52645_ERROR_CATALOG||[]).map(x=>String(x.code||"").toUpperCase()).filter(code=>/[XYZ]/.test(code)));document.querySelectorAll(".manual-index-item").forEach(el=>{const strong=el.querySelector("strong"),code=(strong?.textContent||"").trim().toUpperCase();if(!templateCodes.has(code)||el.querySelector(".variable-template-badge"))return;const badge=document.createElement("span");badge.className="variable-template-badge";badge.textContent="VARIABLE CODE";strong.appendChild(badge);});});<\/script>
 
 
 
-<script id="cw-Build 162-selection">
+<script id="cw-Build 163-selection">
 document.addEventListener("DOMContentLoaded",function(){
   const type=document.getElementById("machineType");
   if(type) type.addEventListener("change",function(){machineTypeChanged(this.value);});
@@ -963,7 +994,7 @@ function openPrintableServiceReport(){
       .external-report-note{max-width:900px;margin:0 auto 18px;color:#4b5563;font-size:13px}
       @media print{body{padding:0!important}.no-print,.external-report-toolbar,.external-report-note{display:none!important}}
     
-/* Build 162: keep Copier Wizard branding visually static. */
+/* Build 163: keep Copier Wizard branding visually static. */
 .cw-header .cw-brand,
 .cw-header .cw-brand img,
 .cw-header .cw-brand > div,
@@ -982,7 +1013,7 @@ function openPrintableServiceReport(){
   mix-blend-mode: normal !important;
 }
 
-/* Build 162: Browse-all entries show compact titles; troubleshooting details
+/* Build 163: Browse-all entries show compact titles; troubleshooting details
    are revealed only after selecting an entry. */
 .browse-all-item .troubleshooting-steps,
 .browse-all-item .steps,
@@ -993,7 +1024,7 @@ function openPrintableServiceReport(){
 .browse-all-item.is-selected .solution,
 .browse-all-item.is-selected .detail { display:block !important; }
 
-/* Build 162: compact Home control, matching the original house-only button. */
+/* Build 163: compact Home control, matching the original house-only button. */
 .header-home.compact-home{
   width:32px !important;
   min-width:32px !important;
@@ -1009,7 +1040,7 @@ function openPrintableServiceReport(){
   border-radius:8px !important;
 }
 
-/* Build 162: tiny Home icon lives inside the header brand row. */
+/* Build 163: tiny Home icon lives inside the header brand row. */
 .cw-brand{position:relative;}
 .header-home.compact-home{
   appearance:none !important;
@@ -1036,10 +1067,10 @@ function openPrintableServiceReport(){
 }
 .header-home.compact-home:hover{background:rgba(255,255,255,.12) !important;}
 
-/* Build 162: once a part search returns results, only Finish remains below it. */
+/* Build 163: once a part search returns results, only Finish remains below it. */
 #partLookupFinishBtn{width:100% !important;margin-top:16px !important;display:none;}
 
-/* Build 162: compact Home control. */
+/* Build 163: compact Home control. */
 .cw-header{
   display:flex !important;
   flex-direction:row !important;
@@ -1101,7 +1132,7 @@ function openPrintableServiceReport(){
   }
 }
 
-/* Build 162: Home is a tiny icon positioned in the header corner. */
+/* Build 163: Home is a tiny icon positioned in the header corner. */
 header.cw-header{position:relative !important;}
 header.cw-header #cw-home-btn.header-home.compact-home{
  appearance:none !important; -webkit-appearance:none !important;
@@ -1122,7 +1153,7 @@ header.cw-header #cw-home-btn.header-home.compact-home:active{
 
 
 
-/* Build 162: Home is a tiny standalone icon in the header corner. */
+/* Build 163: Home is a tiny standalone icon in the header corner. */
 header.cw-header{position:relative !important;}
 header.cw-header > #cw-home-btn{
   appearance:none !important;
@@ -2308,6 +2339,15 @@ function openManualMessageFromIndex(index){
   const input=document.getElementById("messageLookup");
   if(input) input.value=window.selectedMessage;
   diagnosticAnswer("alphabetical-message");
+}
+
+function showBrowseAll(type){
+  showManualCoverage();
+  setTimeout(function(){
+    const id=type==="messages"?"manualMessagesTab":"manualErrorsTab";
+    const tab=document.getElementById(id);
+    if(tab) tab.click();
+  },0);
 }
 
 function showLookup(which){
@@ -4552,7 +4592,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='158';
+  const CURRENT='163';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;
