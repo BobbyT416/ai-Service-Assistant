@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 161</title>
+<title>Copier Wizard — Build 162</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -552,7 +552,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 161</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
+<footer><strong>Copier Wizard — Build 162</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -894,7 +894,7 @@ function preparePrintableReportLink(el){
 
 
 
-<script id="cw-Build 161-selection">
+<script id="cw-Build 162-selection">
 document.addEventListener("DOMContentLoaded",function(){
   const type=document.getElementById("machineType");
   if(type) type.addEventListener("change",function(){machineTypeChanged(this.value);});
@@ -963,7 +963,7 @@ function openPrintableServiceReport(){
       .external-report-note{max-width:900px;margin:0 auto 18px;color:#4b5563;font-size:13px}
       @media print{body{padding:0!important}.no-print,.external-report-toolbar,.external-report-note{display:none!important}}
     
-/* Build 161: keep Copier Wizard branding visually static. */
+/* Build 162: keep Copier Wizard branding visually static. */
 .cw-header .cw-brand,
 .cw-header .cw-brand img,
 .cw-header .cw-brand > div,
@@ -982,7 +982,7 @@ function openPrintableServiceReport(){
   mix-blend-mode: normal !important;
 }
 
-/* Build 161: Browse-all entries show compact titles; troubleshooting details
+/* Build 162: Browse-all entries show compact titles; troubleshooting details
    are revealed only after selecting an entry. */
 .browse-all-item .troubleshooting-steps,
 .browse-all-item .steps,
@@ -993,7 +993,7 @@ function openPrintableServiceReport(){
 .browse-all-item.is-selected .solution,
 .browse-all-item.is-selected .detail { display:block !important; }
 
-/* Build 161: compact Home control, matching the original house-only button. */
+/* Build 162: compact Home control, matching the original house-only button. */
 .header-home.compact-home{
   width:32px !important;
   min-width:32px !important;
@@ -1009,7 +1009,7 @@ function openPrintableServiceReport(){
   border-radius:8px !important;
 }
 
-/* Build 161: tiny Home icon lives inside the header brand row. */
+/* Build 162: tiny Home icon lives inside the header brand row. */
 .cw-brand{position:relative;}
 .header-home.compact-home{
   appearance:none !important;
@@ -1036,10 +1036,10 @@ function openPrintableServiceReport(){
 }
 .header-home.compact-home:hover{background:rgba(255,255,255,.12) !important;}
 
-/* Build 161: once a part search returns results, only Finish remains below it. */
+/* Build 162: once a part search returns results, only Finish remains below it. */
 #partLookupFinishBtn{width:100% !important;margin-top:16px !important;display:none;}
 
-/* Build 161: compact Home control. */
+/* Build 162: compact Home control. */
 .cw-header{
   display:flex !important;
   flex-direction:row !important;
@@ -1101,7 +1101,7 @@ function openPrintableServiceReport(){
   }
 }
 
-/* Build 161: Home is a tiny icon positioned in the header corner. */
+/* Build 162: Home is a tiny icon positioned in the header corner. */
 header.cw-header{position:relative !important;}
 header.cw-header #cw-home-btn.header-home.compact-home{
  appearance:none !important; -webkit-appearance:none !important;
@@ -1122,7 +1122,7 @@ header.cw-header #cw-home-btn.header-home.compact-home:active{
 
 
 
-/* Build 161: Home is a tiny standalone icon in the header corner. */
+/* Build 162: Home is a tiny standalone icon in the header corner. */
 header.cw-header{position:relative !important;}
 header.cw-header > #cw-home-btn{
   appearance:none !important;
@@ -4838,6 +4838,62 @@ document.addEventListener("DOMContentLoaded",function(){
     clearPaths:clearPaths,
     version:"161"
   };
+})();
+</script>
+
+<script id="cw-machine-selection-flow-v162">
+(function(){
+  function el(id){ return document.getElementById(id); }
+  function clearSelect(id){
+    const x=el(id); if(!x)return;
+    x.value="";
+    x.dispatchEvent(new Event("change",{bubbles:true}));
+  }
+  function focusNext(id){
+    const x=el(id);
+    if(!x)return;
+    setTimeout(function(){
+      x.focus({preventScroll:true});
+      if(x.showPicker) { try{x.showPicker();}catch(e){} }
+    },30);
+  }
+
+  const type=el("machineType"), family=el("machineFamily"),
+        model=el("model"), product=el("productNumber"),
+        fs=el("firmwareLevel");
+
+  if(type){
+    type.addEventListener("change",function(){
+      clearSelect("machineFamily");
+      clearSelect("model");
+      clearSelect("productNumber");
+      clearSelect("firmwareLevel");
+      if(type.value) focusNext("machineFamily");
+    });
+  }
+  if(family){
+    family.addEventListener("change",function(){
+      clearSelect("model");
+      clearSelect("productNumber");
+      clearSelect("firmwareLevel");
+      if(family.value) focusNext("model");
+    });
+  }
+  if(model){
+    model.addEventListener("change",function(){
+      clearSelect("productNumber");
+      clearSelect("firmwareLevel");
+      if(model.value) focusNext("productNumber");
+    });
+  }
+  if(product){
+    product.addEventListener("change",function(){
+      // Product number is optional. If the user makes a selection, move to
+      // FutureSmart only when the existing UI makes that field applicable.
+      if(product.value && fs && !fs.disabled && fs.offsetParent!==null)
+        focusNext("firmwareLevel");
+    });
+  }
 })();
 </script>
 </body></html>
