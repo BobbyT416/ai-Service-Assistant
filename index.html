@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 179</title>
+<title>Copier Wizard — Build 180</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -577,7 +577,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 179</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
+<footer><strong>Copier Wizard — Build 180</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -2613,51 +2613,12 @@ function renderDocumentedErrorBranch(raw){
   const steps=Array.isArray(x.steps) ? x.steps.map(String).filter(v=>v.trim()) : [];
 
   if(steps.length){
-    html+=`<h3>Documented Troubleshooting Procedure</h3>
+    html+=`<h3>Technician Troubleshooting</h3>
       <div class="status">
-        Complete the documented checks in the order presented.
-        Check each item after you perform it.
+        Complete each documented step in order. The next step is shown only after you confirm that you completed the current step.
       </div>
-      <div id="documentedStepList" class="documented-step-list">`;
-
-    steps.forEach((step,i)=>{
-      const testInfo=extractDiagnosticTestReference(step);
-      html+=`<div class="documented-step" data-step="${i}"
-        style="padding:12px;margin:8px 0;border:1px solid #d8e0e7;border-radius:9px;background:#fff;">
-        <label style="display:flex;gap:12px;align-items:flex-start;">
-          <input type="checkbox" class="documented-step-check" data-step="${i}"
-            style="margin-top:4px;width:18px;height:18px;">
-          <span><strong>Step ${i+1}</strong><br>${escapeHtml(step)}</span>
-        </label>`;
-
-      if(testInfo){
-        html+=`<div class="diagnostic-navigation">
-          <label style="display:block;margin-top:10px;">
-            <strong>Test result:</strong>
-            <select class="diagnostic-test-result" data-step="${i}" style="margin-left:8px;padding:6px;">
-              <option value="">Not recorded</option>
-              <option value="pass">Passed</option>
-              <option value="fail">Failed</option>
-            </select>
-          </label>
-          <strong>Diagnostic test referenced by this step</strong>
-          <div style="margin-top:5px;">${escapeHtml(testInfo.testName)}</div>
-          <button type="button" class="secondary diagnostic-nav-btn"
-            onclick="showDiagnosticNavigation('${escapeHtml(testInfo.testName).replace(/'/g,"&#39;")}')">
-            How to get to this test
-          </button>
-        </div>`;
-      }
-      html+='</div>';
-    });
-
-    html+=`</div>
-      <button type="button" id="documentedStepsComplete" disabled
-        onclick="documentedStepsCompleted()">
-        Continue After Documented Checks
-      </button>
-      <p class="muted">The checklist records what the technician performed. It does not
-      assume that a test passed simply because the step was completed.</p>`;
+      <div id="documentedStepList" class="documented-step-list"></div>
+      <div id="documentedStepProgress" class="muted" style="margin-top:10px;"></div>`;
   }else{
     html+=`<div class="status warn">
       The supplied manual identifies this condition but no documented procedure
@@ -2666,11 +2627,13 @@ function renderDocumentedErrorBranch(raw){
   }
 
   if(Array.isArray(x.parts) && x.parts.length){
-    html+=`<h3>Parts Specifically Mentioned by the Manual</h3>
+    html+=`<div id="documentedPartsSection" class="hidden">
+      <h3>Parts Specifically Mentioned by the Manual</h3>
       <div class="status">Only parts explicitly associated with this documented entry are shown.</div>
       <ul class="documented-parts">`+
       x.parts.map(v=>`<li>${escapeHtml(v)}</li>`).join("")+
-      `</ul>`;
+      `</ul>
+    </div>`;
   }
 
   html+=`<div id="documentedOutcome" class="hidden" style="margin-top:18px;">
@@ -2687,17 +2650,70 @@ function renderDocumentedErrorBranch(raw){
   <button type="button" class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>`;
 
   r.innerHTML=html;
-  document.getElementById("resultCard").classList.remove("hidden");
+  const resultCard=document.getElementById("resultCard");
+  if(resultCard) resultCard.classList.remove("hidden");
 
-  const checks=[...r.querySelectorAll(".documented-step-check")];
-  const next=r.querySelector("#documentedStepsComplete");
-  const refresh=()=>{
-    if(next) next.disabled=checks.length ? !checks.every(c=>c.checked) : false;
-  };
-  checks.forEach(c=>c.addEventListener("change",refresh));
-  refresh();
+  if(steps.length){
+    window.cwDocumentedSteps=steps;
+    window.cwDocumentedStepIndex=0;
+    window.cwDocumentedStepShow=function(index){
+      const list=document.getElementById("documentedStepList");
+      const progress=document.getElementById("documentedStepProgress");
+      if(!list) return;
 
-  window.scrollTo({top:document.getElementById("resultCard").offsetTop-20,behavior:"smooth"});
+      window.cwDocumentedStepIndex=index;
+
+      if(index>=window.cwDocumentedSteps.length){
+        list.innerHTML=`<div class="status">
+          <strong>All documented troubleshooting steps completed.</strong><br>
+          Review the result below and tell Copier Wizard what happened.
+        </div>`;
+        if(progress) progress.textContent="All documented steps completed.";
+        const outcome=document.getElementById("documentedOutcome");
+        if(outcome) outcome.classList.remove("hidden");
+        const parts=document.getElementById("documentedPartsSection");
+        if(parts) parts.classList.remove("hidden");
+        return;
+      }
+
+      const step=window.cwDocumentedSteps[index];
+      const testInfo=extractDiagnosticTestReference(step);
+      let stepHtml=`<div class="documented-step" style="padding:16px;margin:10px 0;border:1px solid #d8e0e7;border-radius:9px;background:#fff;">
+        <div class="muted">Step ${index+1} of ${window.cwDocumentedSteps.length}</div>
+        <h4 style="margin:8px 0 10px;">Step ${index+1}</h4>
+        <div style="font-size:1.05rem;line-height:1.5;">${escapeHtml(step)}</div>`;
+
+      if(testInfo){
+        stepHtml+=`<div class="diagnostic-navigation" style="margin-top:14px;">
+          <strong>Diagnostic test referenced by this step</strong>
+          <div style="margin-top:5px;">${escapeHtml(testInfo.testName)}</div>
+          <button type="button" class="secondary diagnostic-nav-btn"
+            onclick="showDiagnosticNavigation('${escapeHtml(testInfo.testName).replace(/'/g,"&#39;")}')">
+            How to get to this test
+          </button>
+        </div>`;
+      }
+
+      stepHtml+=`<div style="margin-top:18px;">
+        <button type="button" onclick="cwDocumentedStepCompleted()">
+          ✓ Step Completed — Continue
+        </button>
+      </div></div>`;
+      list.innerHTML=stepHtml;
+      if(progress) progress.textContent=`Step ${index+1} of ${window.cwDocumentedSteps.length}`;
+      const outcome=document.getElementById("documentedOutcome");
+      if(outcome) outcome.classList.add("hidden");
+    };
+    window.cwDocumentedStepCompleted=function(){
+      window.cwDocumentedStepShow(window.cwDocumentedStepIndex+1);
+      const target=document.getElementById("resultCard");
+      if(target) target.scrollIntoView({behavior:"smooth",block:"start"});
+    };
+    window.cwDocumentedStepShow(0);
+  }
+
+  const target=document.getElementById("resultCard");
+  if(target) target.scrollIntoView({behavior:"smooth",block:"start"});
   return true;
 }
 
