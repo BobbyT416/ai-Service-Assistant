@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 178</title>
+<title>Copier Wizard — Build 179</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -577,7 +577,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 178</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
+<footer><strong>Copier Wizard — Build 179</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -2352,98 +2352,53 @@ function showLookup(which){
 }
 function beginErrorCodeDiagnosis(code){
   const raw=String(code||"").trim();
-  if(!raw) return false;
+  if(!raw) return;
+  serviceReportContext.errorCode=raw;
+  setServiceReportProblem("Error code "+raw);
 
-  // This is the single entry point used by both direct error-code entry
-  // and Browse All. Keep the machine-family/model-selection code completely
-  // outside this function.
-  try{
-    serviceReportContext.errorCode=raw;
-    setServiceReportProblem("Error code "+raw);
-
-    const hit=findDocumentedError(raw);
-    const r=document.getElementById("result");
-    const card=document.getElementById("resultCard");
-    if(!r || !card) return false;
-
-    if(hit){
-      // First use the full documented renderer.
-      try{
-        if(renderDocumentedErrorBranch(raw)){
-          card.classList.remove("hidden");
-          requestAnimationFrame(function(){
-            const target=document.getElementById("resultCard");
-            if(target) target.scrollIntoView({behavior:"smooth",block:"start"});
-          });
-          return true;
-        }
-      }catch(rendererError){
-        // Fall through to the safe renderer below. Never expose the
-        // implementation error to the technician.
-      }
-
-      // Safe global fallback: render the verified catalog entry directly.
-      const item=hit.item||{};
-      const codeText=normalizeErrorCode(raw);
-      const steps=Array.isArray(item.steps)?item.steps.map(String).filter(x=>x.trim()):[];
-      const summary=Array.isArray(item.summary)?item.summary.map(String).filter(x=>x.trim()):[];
-      let html='<div class="pill">HP E52645</div><div class="pill">Model verified</div>';
-      html+='<h2>Documented Error — '+escapeHtml(codeText)+'</h2>';
-      html+='<div class="status"><strong>✓ Found in the supplied HP documentation.</strong><br>'+
-        escapeHtml(item.desc||"Documented error condition.")+'</div>';
-      if(summary.length){
-        html+='<h3>What the manual says</h3><ul>'+summary.map(x=>'<li>'+escapeHtml(x)+'</li>').join("")+'</ul>';
-      }
-      if(steps.length){
-        html+='<h3>Documented Troubleshooting Procedure</h3><ol class="tech-steps">'+
-          steps.map(x=>'<li>'+escapeHtml(x)+'</li>').join("")+'</ol>';
-      }else{
-        html+='<div class="status warn">The supplied documentation identifies this condition but does not contain an extracted step-by-step procedure for this entry.</div>';
-      }
-      if(Array.isArray(item.parts)&&item.parts.length){
-        html+='<h3>Parts Mentioned by the Manual</h3><ul>'+
-          item.parts.map(x=>'<li>'+escapeHtml(String(x))+'</li>').join("")+'</ul>';
-      }
-      html+='<button type="button" class="secondary" onclick="backToErrorCodeEntry()">← Back to Error Code</button>'+
-            '<button type="button" class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>';
-      r.innerHTML=html;
-      card.classList.remove("hidden");
+  // Error-code entry must go through the verified E52645 error catalog.
+  // Do not route it through diagnosticAnswer("error"), because that is not
+  // a diagnostic branch and would leave the technician on the entry screen.
+  if(renderDocumentedErrorBranch(raw)){
+    const resultCard=document.getElementById("resultCard");
+    if(resultCard){
+      resultCard.classList.remove("hidden");
+      resultCard.classList.remove("lookup-hidden");
+      resultCard.style.display="";
+    }
+    // Wait for layout to settle before scrolling. This prevents iOS/Safari
+    // from snapping the troubleshooting result back to document top.
+    requestAnimationFrame(function(){
       requestAnimationFrame(function(){
         const target=document.getElementById("resultCard");
-        if(target) target.scrollIntoView({behavior:"smooth",block:"start"});
+        if(!target) return;
+        const y=target.getBoundingClientRect().top + window.scrollY - 18;
+        window.scrollTo({top:Math.max(0,y),behavior:"smooth"});
       });
-      return true;
-    }
+    });
+    return;
+  }
 
-    // Unknown code: never silently do nothing.
-    r.innerHTML='<div class="pill">HP E52645</div><div class="pill">Model verified</div>'+
-      '<h2>Error Code Not Verified</h2>'+
-      '<div class="status warn">The supplied E52645 documentation does not establish a verified diagnostic path for <strong>'+
-      escapeHtml(normalizeErrorCode(raw))+'</strong>.</div>'+
-      '<p>Check the code and enter it again, or use Browse All to review the documented error codes.</p>'+
-      '<button type="button" class="secondary" onclick="backToErrorCodeEntry()">← Back to Error Code</button>'+
-      '<button type="button" class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>';
-    card.classList.remove("hidden");
+  // If the code is not in the verified catalog, show an explicit verified-
+  // knowledge-base message instead of silently doing nothing.
+  const r=document.getElementById("result");
+  if(!r) return;
+  r.innerHTML=`<div class="pill">HP E52645</div><div class="pill">Model verified</div>
+    <h2>Error Code Not Verified</h2>
+    <div class="status warn">The supplied E52645 documentation does not establish a verified diagnostic path for <strong>${escapeHtml(raw)}</strong>.</div>
+    <p>The assistant will not invent a repair or substitute an Internet result for the manufacturer's documentation.</p>
+    <button class="secondary" onclick="backToErrorCodeEntry()">← Back to Error Code</button>
+    <button class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>`;
+  const resultCard=document.getElementById("resultCard");
+  if(resultCard) resultCard.classList.remove("hidden");
+  requestAnimationFrame(function(){
     requestAnimationFrame(function(){
       const target=document.getElementById("resultCard");
-      if(target) target.scrollIntoView({behavior:"smooth",block:"start"});
+      if(!target) return;
+      const y=target.getBoundingClientRect().top + window.scrollY - 18;
+      window.scrollTo({top:Math.max(0,y),behavior:"smooth"});
     });
-    return true;
-  }catch(err){
-    // Technician-safe failure: show a usable message, never JavaScript/code.
-    const r=document.getElementById("result"), card=document.getElementById("resultCard");
-    if(r && card){
-      r.innerHTML='<h2>Unable to Open Error Code</h2>'+
-        '<div class="status warn">The diagnostic information could not be opened. Please enter the error code again or return to Browse All.</div>'+
-        '<button type="button" class="secondary" onclick="backToErrorCodeEntry()">← Back to Error Code</button>';
-      card.classList.remove("hidden");
-      requestAnimationFrame(function(){
-        const target=document.getElementById("resultCard");
-        if(target) target.scrollIntoView({behavior:"smooth",block:"start"});
-      });
-    }
-    return false;
-  }
+  });
 }
 
 function submitErrorLookup(event){
