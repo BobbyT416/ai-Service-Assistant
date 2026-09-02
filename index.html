@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 185</title>
+<title>Copier Wizard — Build 186</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -577,7 +577,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 185</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
+<footer><strong>Copier Wizard — Build 186</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -1908,8 +1908,8 @@ function familySelectionChanged(familyId){
 
 const productNumberCatalog={
   "M607":[{product:"K0Q14A",model:"M607n"},{product:"K0Q15A",model:"M607dn"}],
-  "M608":[{product:"K0Q17A",model:"M608n"},{product:"K0Q18A",model:"M608dn"},{product:"K0Q19A",model:"M608x"}],
-  "M609":[{product:"K0Q21A",model:"M609dn"},{product:"K0Q22A",model:"M609x"}],
+  "M608":[{product:"K0Q17A",model:"M608n"},{product:"K0Q18A",model:"M608dn"},{product:"K0Q19A",model:"M608x"},{product:"M0P32A",model:"M608 series variant"}],
+  "M609":[{product:"K0Q20A",model:"M609n"},{product:"K0Q21A",model:"M609dn"},{product:"K0Q22A",model:"M609x"}],
   "M610":[{product:"7PS82A",model:"M610dn"}],
   "M611":[{product:"7PS84A",model:"M611dn"},{product:"7PS85A",model:"M611x"}],
   "M612":[{product:"7PS86A",model:"M612dn"},{product:"7PS87A",model:"M612x"}],
@@ -1917,10 +1917,34 @@ const productNumberCatalog={
   "E60065":[{product:"M0P35A",model:"E60065dn"},{product:"M0P36A",model:"E60065x"}],
   "E60075":[{product:"M0P39A",model:"E60075dn"},{product:"M0P40A",model:"E60075x"}],
   "M501":[{product:"J8H60A",model:"M501n"},{product:"J8H61A",model:"M501dn"}],
-  "M506":[{product:"F2A68A",model:"M506n"},{product:"F2A69A",model:"M506dn"},{product:"F2A70A",model:"M506x"}],
+  "M506":[{product:"F2A66A",model:"M506dnm"},{product:"F2A67A",model:"M506xm"},{product:"F2A68A",model:"M506n"},{product:"F2A69A",model:"M506dn"},{product:"F2A70A",model:"M506x"}],
   "M507":[{product:"1PV86A",model:"M507n"},{product:"1PV87A",model:"M507dn"},{product:"1PV88A",model:"M507x"},{product:"1PV89A",model:"M507dng"}],
-  "M527":[{product:"F2A76A",model:"M527dn"},{product:"F2A77A",model:"M527f"},{product:"F2A81A",model:"M527c"},{product:"F2A78A",model:"M527z"}],
-  "M528":[{product:"1PV64A",model:"M528dn"},{product:"1PV65A",model:"M528f"},{product:"1PV67A",model:"M528z"}]
+  "M527":[{product:"F2A76A",model:"M527dn"},{product:"F2A77A",model:"M527f"},{product:"F2A81A",model:"M527c"},{product:"F2A78A",model:"M527z"},{product:"F2A79A",model:"M527dnm"},{product:"F2A80A",model:"M527cm"}],
+  "M528":[{product:"1PV64A",model:"M528dn"},{product:"1PV65A",model:"M528f"},{product:"1PV66A",model:"M528z"},{product:"1PV67A",model:"M528z variant"}],
+  "E50045":[{product:"3GN19A",model:"E50045dw"}],
+  "E50145":[{product:"1PU51A",model:"E50145dn"},{product:"1PU52A",model:"E50145x"}],
+  "E52545":[{product:"3GY19A",model:"E52545dn"},{product:"3GY20A",model:"E52545c"}],
+  "E52645":[{product:"1PS54A",model:"E52645dn"},{product:"1PS55A",model:"Flow E52645c"}],
+  "E60155":[{product:"3GY09A",model:"E60155dn"}],
+  "E60165":[{product:"3GY10A",model:"E60165dn"}],
+  "E60175":[{product:"3GY12A",model:"E60175dn"}],
+  "E62555":[{product:"J8J66A",model:"E62555dn"}],
+  "E62565":[{product:"J8J73A",model:"E62565hs"},{product:"J8J74A",model:"E62565h"},{product:"J8J79A",model:"E62565z"}],
+  "E62575":[{product:"J8J80A",model:"E62575z"}],
+  "E62655":[{product:"3GY14A",model:"E62655dn"}],
+  "E62665":[{product:"3GY15A",model:"E62665hs"},{product:"3GY16A",model:"E62665h"},{product:"3GY17A",model:"E62665z"}],
+  "E62675":[{product:"3GY18A",model:"E62675z"}],
+  "E65050":[{product:"L3U55A",model:"E65050dn"}],
+  "E65060":[{product:"L3U56A",model:"E65060dn"}],
+  "E65150":[{product:"3GY03A",model:"E65150dn"}],
+  "E65160":[{product:"3GY04A",model:"E65160dn"}],
+  "E67550":[{product:"L3U66A",model:"E67550dh"}],
+  "E67560":[{product:"L3U70A",model:"E67560z"}],
+  "E67650":[{product:"3GY31A",model:"E67650dh"}],
+  "E67660":[{product:"3GY32A",model:"E67660z"}],
+  "E55650":[{product:"L3U44A",model:"E55650"}],
+  "E58650":[{product:"L3U42A",model:"E58650dn"},{product:"L3U43A",model:"E58650z"}],
+  "E75160":[{product:"J7Z06A",model:"E75160dn"}]
 };
 function productCatalogKey(model){
   const s=String(model||"").trim().toUpperCase();
@@ -4669,7 +4693,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='185';
+  const CURRENT='186';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;
