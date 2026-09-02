@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 199</title>
+<title>Copier Wizard — Build 200</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -438,6 +438,11 @@ button:disabled{opacity:.55;cursor:not-allowed;}
  opacity:1 !important;
 }
 </style>
+
+<style id="cw-browse-close-v200">
+.manual-coverage-header-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+#closeManualCoverageBtn{white-space:nowrap}
+</style>
 </head>
 <body>
 <header class="cw-header"><div class="cw-brand"><a class="cw-logo-home" href="#" aria-label="Copier Wizard Home" title="Copier Wizard Home" onclick="startOverDiagnostic();return false;"><img alt="Copier Wizard logo" src="icon-192.png"/></a><div><h1>Copier Wizard</h1><p>Intelligent Diagnostics for Copiers &amp; Printers</p></div></div></header>
@@ -577,7 +582,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 199</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
+<footer><strong>Copier Wizard — Build 200</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -2012,6 +2017,7 @@ function firmwareSelectionChanged(fw){const hint=document.getElementById('firmwa
 function verifyModel(){const m=document.getElementById('model').value,productEl=document.getElementById('product'),product=productEl?productEl.value:'',v=document.getElementById('verify'),type=(document.getElementById('machineType')||{}).value||'',familyId=(document.getElementById('machineFamily')||{}).value||'',family=machineSelectionFamilies[type]?.[familyId];if(!type){v.innerHTML='<div class="status danger"><strong>Step 1:</strong> Select Monochrome, Color, or PageWide.</div>';return;}if(!familyId||!family){v.innerHTML='<div class="status danger"><strong>Step 2:</strong> Select the machine family.</div>';return;}if(!m){v.innerHTML='<div class="status danger"><strong>Step 3:</strong> Select the machine model.</div>';return;}const productEntries=productNumberCatalog[productCatalogKey(m)]||[];const validProduct=product ? productEntries.some(x=>x.product===product) : true;if(product && !validProduct){v.innerHTML='<div class="status danger"><strong>Product Number Mismatch</strong><br>Selected machine model: <strong>'+escapeHtml(m)+'</strong><br>Entered Product Number: <strong>'+escapeHtml(product)+'</strong><br>This product number is not cataloged for the selected model. Verify the model and product number on the machine before continuing.</div>';return;}const opts=firmwareOptionsForModel(m),fwEl=document.getElementById('firmwareLevel'),fw=fwEl?fwEl.value:'';if(opts.length>1&&!fw){v.innerHTML='<div class="status warn"><strong>Machine selected.</strong><br>FutureSmart is applicable to this model. Select the installed FutureSmart level before continuing.</div>';if(fwEl)fwEl.focus();return;}if(opts.length===1&&fwEl)fwEl.value=opts[0];if(!family.supported){v.innerHTML='<div class="status"><strong>Documentation found — guided workflow not yet enabled</strong><br>HP '+escapeHtml(m)+' is organized under the '+escapeHtml(family.label)+'. The supporting documentation is present, but this family has not yet been enabled for guided troubleshooting in this build.</div>';return;}verifiedModel=m;currentMachineModel=m;window.verifiedProduct=product;setServiceReportProblem('');const selectedFw=fwEl?.value||'',fwText=selectedFw?firmwareLabel(selectedFw):'Firmware level not applicable',productText=product?product+' — '+escapeHtml((productNumberCatalog[productCatalogKey(m)]||[]).find(x=>x.product===product)?.model||m):'Product number not selected';v.innerHTML='<div class="status"><strong>✓ App Ready</strong><br>HP '+escapeHtml(m)+' verified.<br><strong>Product:</strong> '+escapeHtml(productText)+'<br>'+escapeHtml(fwText)+'</div>';document.getElementById('problemCard').classList.remove('hidden');}
 
 function backToErrorCodeEntry(){
+  if(typeof closeManualCoverage==="function") closeManualCoverage();
   document.getElementById("resultCard").classList.add("hidden");
   document.getElementById("problemCategories").classList.add("hidden");
   document.getElementById("otherEntry").classList.add("hidden");
@@ -2194,6 +2200,12 @@ function showBrowseAll(type){
   if(typeof renderManualCoverageList==="function") renderManualCoverageList(wanted);
 }
 
+function closeManualCoverage(){
+  const panel=document.getElementById("manualCoveragePanel");
+  if(panel){ panel.innerHTML=""; panel.style.display="none"; panel.classList.add("hidden","lookup-hidden"); }
+  window.manualCoverageType="errors";
+}
+
 function showManualCoverage(){const rootChoices=document.getElementById("lookupChoiceGrid");if(rootChoices)rootChoices.style.display="";
   const panel=document.getElementById("manualCoveragePanel");
   if(!panel) return;
@@ -2209,7 +2221,7 @@ function showManualCoverage(){const rootChoices=document.getElementById("lookupC
 
   panel.innerHTML=`
     <div class="manual-coverage-header">
-      <h3>HP Manual Coverage</h3>
+      <div class="manual-coverage-header-row"><h3>HP Manual Coverage</h3><button type="button" class="secondary" id="closeManualCoverageBtn">✕ Close List</button></div>
       <p>This browser displays the currently indexed service-manual entries loaded into the app. The list is not artificially capped, so additional indexed entries will continue below as more manuals are added.</p>
       <div class="coverage-stats">
         <span class="pill">${errors.length} numerical entries</span>
@@ -2232,6 +2244,10 @@ function showManualCoverage(){const rootChoices=document.getElementById("lookupC
     <div id="manualCoverageList" class="manual-coverage-list"></div>
   `;
   window.manualCoverageType="errors";
+  const closeListButton=document.getElementById("closeManualCoverageBtn");
+  if(closeListButton) closeListButton.addEventListener("click",function(e){
+    e.preventDefault(); e.stopPropagation(); closeManualCoverage();
+  });
 
   const errorTab=document.getElementById("manualErrorsTab");
   const messageTab=document.getElementById("manualMessagesTab");
@@ -2375,6 +2391,7 @@ function renderManualCoverageList(type){
 }
 
 function openManualErrorFromIndex(index){
+  if(typeof closeManualCoverage==="function") closeManualCoverage();
   const item=(window.E52645_ERROR_CATALOG||[])[index];
   if(!item) return;
   try{ if(window.__cwRegressionNavigation?.clearPaths) window.__cwRegressionNavigation.clearPaths(); }catch(e){}
@@ -2385,6 +2402,7 @@ function openManualErrorFromIndex(index){
 }
 
 function openManualMessageFromIndex(index){
+  if(typeof closeManualCoverage==="function") closeManualCoverage();
   const item=(window.E52645_ALPHABETICAL_MESSAGES||[])[index];
   if(!item) return;
   try{ if(window.__cwRegressionNavigation?.clearPaths) window.__cwRegressionNavigation.clearPaths(); }catch(e){}
@@ -2403,6 +2421,7 @@ function showLookup(which){
   const el=document.getElementById(which==="error"?"errorCodeLookup":"messageLookup");if(el)el.focus();
 }
 function beginErrorCodeDiagnosis(code){
+  if(typeof closeManualCoverage==="function") closeManualCoverage();
   const raw=String(code||"").trim();
   if(!raw) return;
   serviceReportContext.errorCode=raw;
@@ -4784,7 +4803,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='199';
+  const CURRENT='200';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;
