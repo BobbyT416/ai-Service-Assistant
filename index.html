@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 180</title>
+<title>Copier Wizard — Build 181</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -577,7 +577,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 180</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
+<footer><strong>Copier Wizard — Build 181</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -2589,6 +2589,36 @@ function findDocumentedError(code){
  }
  return null;
 }
+
+function cleanTechnicianStep(raw){
+  let t=String(raw||"").replace(/\s+/g," ").trim();
+  if(!t) return "";
+
+  // Remove section labels that were accidentally embedded in extracted text.
+  // Once a call-center section begins, everything after it belongs to that
+  // remote-support procedure, not the technician-facing procedure.
+  t=t.split(/\bRecommended action for call[- ]?center agents?\b/i)[0].trim();
+
+  t=t.replace(/\bRecommended action for customer\s*\d*\b/gi," ");
+
+  // Customer-facing escalation is not a technician action. Keep the fact that
+  // escalation is needed, but remove HP customer-support wording.
+  t=t.replace(/If the error persists,\s*(contact your HP-authorized service or support provider,?\s*or\s*)?contact customer support at www\.hp\.com\/go\/contactHP\.?/gi,
+              "If the error persists, escalate for additional service-level troubleshooting.");
+
+  // Convert customer-directed replacement language to technician-directed language.
+  t=t.replace(/Recommend that the customer replace the ([^.]+?) if the status is Low or Very Low/gi,
+              "Replace the $1 if the status is Low or Very Low");
+  t=t.replace(/recommend that the customer replace the ([^.]+?) if the status is Low or Very Low/gi,
+              "Replace the $1 if the status is Low or Very Low");
+
+  // Remove common extracted page-number artifacts, e.g. "31.13.01 151".
+  t=t.replace(/\b\d{2}\.\d{2}\.\d{2}\s+\d{2,4}\b/g,"");
+  t=t.replace(/\s{2,}/g," ").trim();
+
+  return t;
+}
+
 function renderDocumentedErrorBranch(raw){
   const hit=findDocumentedError(raw), r=document.getElementById("result");
   if(!hit || !r) return false;
@@ -2610,7 +2640,7 @@ function renderDocumentedErrorBranch(raw){
       '</ul>';
   }
 
-  const steps=Array.isArray(x.steps) ? x.steps.map(String).filter(v=>v.trim()) : [];
+  const steps=Array.isArray(x.steps) ? x.steps.map(cleanTechnicianStep).filter(v=>v.trim()) : [];
 
   if(steps.length){
     html+=`<h3>Technician Troubleshooting</h3>
