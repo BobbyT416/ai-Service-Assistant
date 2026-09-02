@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 187</title>
+<title>Copier Wizard — Build 188</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -577,7 +577,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 187</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
+<footer><strong>Copier Wizard — Build 188</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -1986,8 +1986,12 @@ function productNumberSelectionChanged(value){
 const firmwarePolicy={
   M506:["FS3","FS5"],M507:["FS4","FS5"],M525:["FS3","FS4"],M527:["FS3","FS4","FS5"],M528:["FS4","FS5"],E52645:["FS4","FS5"],
   M607:["FS4","FS5"],M608:["FS4","FS5"],M609:["FS4","FS5"],M610:["FS5"],M611:["FS5"],M612:["FS5"],
+  E60055:["FS4","FS5"],E60065:["FS4","FS5"],E60075:["FS4","FS5"],E60155:["FS4","FS5"],E60165:["FS4","FS5"],E60175:["FS4","FS5"],
   M631:["FS4","FS5"],M632:["FS4","FS5"],M633:["FS4","FS5"],M634:["FS4","FS5"],M635:["FS4","FS5"],M636:["FS4","FS5"],
+  E62555:["FS4","FS5"],E62565:["FS4","FS5"],E62575:["FS4","FS5"],E62655:["FS4","FS5"],E62665:["FS4","FS5"],E62675:["FS4","FS5"],
   M652:["FS4","FS5"],M653:["FS4","FS5"],M681:["FS4","FS5"],M682:["FS4","FS5"],
+  E65050:["FS4","FS5"],E65060:["FS4","FS5"],E65150:["FS4","FS5"],E65160:["FS4","FS5"],
+  E67550:["FS4","FS5"],E67560:["FS4","FS5"],E67650:["FS4","FS5"],E67660:["FS4","FS5"],
   "5700":["FS5"],"5800":["FS5"],"6700":["FS5"],"6701":["FS5"],X55745:["FS5"],X57945:["FS5"],X58045:["FS5"],
   X654:["FS5"],X65455:["FS5"],X65465:["FS5"],X677:["FS5"],X67755:["FS5"],X67765:["FS5"],
   X555:["FS3","FS5"],X585:["FS3","FS4"],"556":["FS3","FS4","FS5"],"586":["FS3","FS4","FS5"],
