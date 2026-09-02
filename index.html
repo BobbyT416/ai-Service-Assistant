@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 186</title>
+<title>Copier Wizard — Build 187</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -577,7 +577,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 186</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
+<footer><strong>Copier Wizard — Build 187</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -1984,7 +1984,7 @@ function productNumberSelectionChanged(value){
 }
 
 const firmwarePolicy={
-  M506:["FS3","FS5"],M507:["FS4","FS5"],M525:["FS3","FS4"],M527:["FS3","FS4","FS5"],M528:["FS4","FS5"],
+  M506:["FS3","FS5"],M507:["FS4","FS5"],M525:["FS3","FS4"],M527:["FS3","FS4","FS5"],M528:["FS4","FS5"],E52645:["FS4","FS5"],
   M607:["FS4","FS5"],M608:["FS4","FS5"],M609:["FS4","FS5"],M610:["FS5"],M611:["FS5"],M612:["FS5"],
   M631:["FS4","FS5"],M632:["FS4","FS5"],M633:["FS4","FS5"],M634:["FS4","FS5"],M635:["FS4","FS5"],M636:["FS4","FS5"],
   M652:["FS4","FS5"],M653:["FS4","FS5"],M681:["FS4","FS5"],M682:["FS4","FS5"],
@@ -1995,7 +1995,7 @@ const firmwarePolicy={
 };
 function firmwareOptionsForModel(model){const s=String(model||"").toUpperCase();const keys=Object.keys(firmwarePolicy).sort((a,b)=>b.length-a.length);for(const k of keys){if(s===k.toUpperCase()||s.includes(k.toUpperCase()))return firmwarePolicy[k];}return [];}
 function firmwareLabel(v){return v==='FS3'?'FutureSmart 3':v==='FS4'?'FutureSmart 4':v==='FS5'?'FutureSmart 5':v;}
-function configureFirmwareForModel(model){const section=document.getElementById('firmwareSection'),fw=document.getElementById('firmwareLevel'),hint=document.getElementById('firmwareHint');if(!section||!fw)return [];const opts=firmwareOptionsForModel(model);fw.innerHTML='<option value="">Select FutureSmart level...</option>';fw.value='';if(!opts.length){section.classList.add('hidden');if(hint)hint.textContent='';return opts;}opts.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=firmwareLabel(v);fw.appendChild(o);});section.classList.remove('hidden');if(opts.length===1){fw.value=opts[0];if(hint)hint.innerHTML='<strong>Firmware:</strong> '+escapeHtml(firmwareLabel(opts[0]))+' is the only supported FutureSmart level listed for this model.';}else if(hint)hint.innerHTML='<strong>Firmware:</strong> select the FutureSmart level currently installed on the verified machine.';return opts;}
+function configureFirmwareForModel(model){const section=document.getElementById('firmwareSection'),fw=document.getElementById('firmwareLevel'),hint=document.getElementById('firmwareHint');if(!section||!fw)return [];const opts=firmwareOptionsForModel(model);fw.innerHTML='<option value="">Select FutureSmart level...</option>';fw.value='';if(!opts.length){section.classList.add('hidden');if(hint)hint.textContent='';return opts;}opts.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=firmwareLabel(v);fw.appendChild(o);});section.classList.remove('hidden');if(opts.length===1){fw.value=opts[0];if(hint)hint.innerHTML='<strong>Firmware:</strong> '+escapeHtml(firmwareLabel(opts[0]))+' is the only supported FutureSmart level listed for this model.';}else if(hint){const s=String(model||'').toUpperCase();hint.innerHTML=s.includes('E52645')?'<strong>Firmware:</strong> HP lists FutureSmart 4 (4.12.0.1) and FutureSmart 5 (5.9.2.3) for the E52645. Select the level currently installed on the machine.':'<strong>Firmware:</strong> select the FutureSmart level currently installed on the verified machine.';}return opts;}
 function modelSelectionChanged(model){const hint=document.getElementById('modelHint');if(!hint)return;const type=(document.getElementById('machineType')||{}).value||'',familyId=(document.getElementById('machineFamily')||{}).value||'',family=machineSelectionFamilies[type]?.[familyId];if(!model){hint.textContent='';configureFirmwareForModel('');return;}hint.innerHTML=family?.docs?'<span class="source-note">Documentation: '+escapeHtml(family.docs)+'.</span>':'';configureProductNumberForModel(model);configureFirmwareForModel(model);}
 function firmwareSelectionChanged(fw){const hint=document.getElementById('firmwareHint');if(hint)hint.textContent='';}
 function verifyModel(){const m=document.getElementById('model').value,productEl=document.getElementById('product'),product=productEl?productEl.value:'',v=document.getElementById('verify'),type=(document.getElementById('machineType')||{}).value||'',familyId=(document.getElementById('machineFamily')||{}).value||'',family=machineSelectionFamilies[type]?.[familyId];if(!type){v.innerHTML='<div class="status danger"><strong>Step 1:</strong> Select Monochrome, Color, or PageWide.</div>';return;}if(!familyId||!family){v.innerHTML='<div class="status danger"><strong>Step 2:</strong> Select the machine family.</div>';return;}if(!m){v.innerHTML='<div class="status danger"><strong>Step 3:</strong> Select the machine model.</div>';return;}const opts=firmwareOptionsForModel(m),fwEl=document.getElementById('firmwareLevel'),fw=fwEl?fwEl.value:'';if(opts.length>1&&!fw){v.innerHTML='<div class="status warn"><strong>Machine selected.</strong><br>FutureSmart is applicable to this model. Select the installed FutureSmart level before continuing.</div>';if(fwEl)fwEl.focus();return;}if(opts.length===1&&fwEl)fwEl.value=opts[0];if(!family.supported){v.innerHTML='<div class="status"><strong>Documentation found — guided workflow not yet enabled</strong><br>HP '+escapeHtml(m)+' is organized under the '+escapeHtml(family.label)+'. The supporting documentation is present, but this family has not yet been enabled for guided troubleshooting in this build.</div>';return;}verifiedModel=m;currentMachineModel=m;window.verifiedProduct=product;setServiceReportProblem('');const selectedFw=fwEl?.value||'',fwText=selectedFw?firmwareLabel(selectedFw):'Firmware level not applicable',productText=product?product+' — '+escapeHtml((productNumberCatalog[productCatalogKey(m)]||[]).find(x=>x.product===product)?.model||m):'Product number not selected';v.innerHTML='<div class="status"><strong>✓ App Ready</strong><br>HP '+escapeHtml(m)+' verified.<br><strong>Product:</strong> '+escapeHtml(productText)+'<br>'+escapeHtml(fwText)+'</div>';document.getElementById('problemCard').classList.remove('hidden');}
@@ -4693,7 +4693,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='186';
+  const CURRENT='187';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;
