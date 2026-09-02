@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 189</title>
+<title>Copier Wizard — Build 190</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -577,7 +577,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 189</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
+<footer><strong>Copier Wizard — Build 190</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -2662,11 +2662,35 @@ function cleanTechnicianStep(raw){
   return t;
 }
 
+function getE52645TechnicianOverride(code, item){
+  if(normalizeErrorCode(code)!=="31.13.00") return null;
+  return {
+    steps:[
+      "Open the automatic document feeder cover, pull all the sheets back into the tray, and then resume the job.",
+      "Lift the document-feeder input tray and remove any jammed paper. Lower the tray and close the document feeder cover. Verify that the latch on the top of the document-feeder cover is completely closed.",
+      "Ensure that the paper meets the document feeder (ADF) specifications for the printer, including supported weights and sizes.",
+      "Ensure that the input tray is not overloaded and that the tray guides are set to the correct size. Make sure the paper stack is correctly aligned at the center of the input tray.",
+      "Check the Document Feeder Kit consumable status on the control panel. If the status is Low or Very Low, replace the Document Feeder Kit as specified by the service documentation.",
+      "Check and clean the document feeder pickup rollers and separation rollers. Remove visible lint or dust with a clean lint-free cloth moistened with warm water. Lift the roller assembly to access and clean the second roller.",
+      "If necessary, replace the Document Feeder Kit rollers and separation pad.",
+      "If the error persists after completing the documented checks, escalate for additional service-level troubleshooting."
+    ],
+    parts:[
+      "HP 200 ADF Roller Replacement Kit — W5U23A",
+      "ADF Whole Unit Workflow (M527c/M527z) — B5L47-67909",
+      "ADF Whole Unit Enterprise (M527dn/M527f) — B5L47-67908",
+      "Document feeder kit (E52645 Flow) — B5L47-67907",
+      "Document feeder kit (E52645 Enterprise) — B5L47-67906"
+    ]
+  };
+}
+
 function renderDocumentedErrorBranch(raw){
   const hit=findDocumentedError(raw), r=document.getElementById("result");
   if(!hit || !r) return false;
 
   const x=hit.item, code=normalizeErrorCode(raw);
+  const technicianOverride=getE52645TechnicianOverride(code,x);
   let html='<div class="pill">HP E52645</div><div class="pill">Model verified</div>';
   html+=`<h2>Documented Error — ${escapeHtml(code)}</h2>
     <div class="status"><strong>✓ Found in the supplied HP documentation.</strong><br>
@@ -2683,7 +2707,7 @@ function renderDocumentedErrorBranch(raw){
       '</ul>';
   }
 
-  const steps=Array.isArray(x.steps) ? x.steps.map(cleanTechnicianStep).filter(v=>v.trim()) : [];
+  const steps=technicianOverride ? technicianOverride.steps : (Array.isArray(x.steps) ? x.steps.map(cleanTechnicianStep).filter(v=>v.trim()) : []);
 
   if(steps.length){
     html+=`<h3>Technician Troubleshooting</h3>
@@ -2699,12 +2723,13 @@ function renderDocumentedErrorBranch(raw){
     </div>`;
   }
 
-  if(Array.isArray(x.parts) && x.parts.length){
+  const displayedParts=technicianOverride ? technicianOverride.parts : (Array.isArray(x.parts) ? [...new Set(x.parts.map(cleanDocumentedPart).filter(Boolean))] : []);
+  if(displayedParts.length){
     html+=`<div id="documentedPartsSection" class="hidden">
       <h3>Parts Specifically Mentioned by the Manual</h3>
       <div class="status">Only parts explicitly associated with this documented entry are shown.</div>
       <ul class="documented-parts">`+
-      [...new Set(x.parts.map(cleanDocumentedPart).filter(Boolean))].map(v=>`<li>${escapeHtml(v)}</li>`).join("")+
+      displayedParts.map(v=>`<li>${escapeHtml(v)}</li>`).join("")+
       `</ul>
     </div>`;
   }
