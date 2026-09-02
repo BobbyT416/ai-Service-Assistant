@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 191</title>
+<title>Copier Wizard — Build 192</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -577,7 +577,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 191</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
+<footer><strong>Copier Wizard — Build 192</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -2672,7 +2672,22 @@ function cleanTechnicianStep(raw){
 }
 
 function getE52645TechnicianOverride(code, item){
-  if(normalizeErrorCode(code)!=="31.13.00") return null;
+  const normalized=normalizeErrorCode(code);
+  if(normalized==="30.01.46"){
+    return {
+      steps:[
+        "Update the printer firmware to the latest version available from HP Customer Support.",
+        "Turn the printer off, and then on.",
+        "Turn off the printer, then disconnect and reconnect all cable connections between the formatter and the scanner control board (SCB).",
+        "Ensure that all cables on the formatter and SCB are connected and seated correctly before replacing a part.",
+        "If the error persists, replace the scanner control board (SCB)."
+      ],
+      parts:[
+        "Scan control PC board assembly — B5L47-67903"
+      ]
+    };
+  }
+  if(normalized!=="31.13.00") return null;
   return {
     steps:[
       "Open the automatic document feeder cover, pull all the sheets back into the tray, and then resume the job.",
