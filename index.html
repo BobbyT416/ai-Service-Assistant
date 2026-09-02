@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 193</title>
+<title>Copier Wizard — Build 194</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -577,7 +577,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 193</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
+<footer><strong>Copier Wizard — Build 194</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -2690,7 +2690,7 @@ function getE52645TechnicianOverride(code, item){
   if(normalized==="31.03.20"){
     return {
       steps:[
-        "Turn the printer off, and then on. Confirm that 31.03.20 returns after startup.",
+        "Scan a double-sided original and confirm that the 31.03.20 error occurs during the duplex scan. This error is associated with the backside scanner not being detected.",
         "Verify and reseat the cable between the scanner and the scanner control board (SCB), including connection 6 — ADF (side 2) FFC.",
         "Verify the connection from the automatic document feeder (ADF) to the PCA on the scanner.",
         "Inspect the ADF FFC cable routing for damage, bends, tears, or a nicked edge. If the error appeared after installation of a new ADF, remove the FFC, inspect it, and route it correctly.",
@@ -3101,14 +3101,14 @@ function diagnose(){
    <div class="status"><strong>✓ Error verified for E52645</strong><br>
    The supplied HP documentation identifies 31.03.20 as <strong>backside scanner not detected</strong>.</div>
 
-   <h3>Step 1 — Power cycle and verify the error</h3>
+   <h3>Step 1 — Reproduce the error</h3>
    <ol>
-     <li>Turn the printer off, and then on.</li>
-     <li>Confirm that <strong>31.03.20</strong> returns after startup.</li>
+     <li>Scan a double-sided original.</li>
+     <li>Confirm that <strong>31.03.20</strong> occurs during the duplex scan.</li>
    </ol>
-   <p><strong>Did the error return?</strong></p>
-   <button onclick="diagnosticAnswer('310320-persistent')">Yes — 31.03.20 returned</button>
-   <button class="secondary" onclick="diagnosticAnswer('310320-cleared')">No — error cleared</button>
+   <p><strong>Did the error occur while scanning the double-sided original?</strong></p>
+   <button onclick="diagnosticAnswer('310320-persistent')">Yes — 31.03.20 occurred</button>
+   <button class="secondary" onclick="diagnosticAnswer('310320-cleared')">No — error did not occur</button>
    <button class="secondary" onclick="backToErrorCodeEntry()">← Back to Error Code</button>`;
  } else if(p.includes("31.13.00")){
    html += `<h2>Let’s diagnose 31.13.00</h2>
@@ -4761,7 +4761,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='193';
+  const CURRENT='194';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;
