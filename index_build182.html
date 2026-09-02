@@ -2736,6 +2736,8 @@ function renderDocumentedErrorBranch(raw){
     };
     window.cwDocumentedStepCompleted=function(){
       window.cwDocumentedStepShow(window.cwDocumentedStepIndex+1);
+      const target=document.getElementById("resultCard");
+      if(target) target.scrollIntoView({behavior:"smooth",block:"start"});
     };
     window.cwDocumentedStepShow(0);
   }
