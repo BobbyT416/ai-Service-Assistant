@@ -2687,6 +2687,21 @@ function getE52645TechnicianOverride(code, item){
       ]
     };
   }
+  if(normalized==="31.03.20"){
+    return {
+      steps:[
+        "Turn the printer off, and then on. Confirm that 31.03.20 returns after startup.",
+        "Verify and reseat the cable between the scanner and the scanner control board (SCB), including connection 6 — ADF (side 2) FFC.",
+        "Verify the connection from the automatic document feeder (ADF) to the PCA on the scanner.",
+        "Inspect the ADF FFC cable routing for damage, bends, tears, or a nicked edge. If the error appeared after installation of a new ADF, remove the FFC, inspect it, and route it correctly.",
+        "If 31.03.20 still returns after the connection and FFC checks, replace the E52645 document feeder assembly and then retest the printer."
+      ],
+      parts:[
+        "Document feeder kit (E52645 Flow) — B5L47-67907",
+        "Document feeder kit (E52645 Enterprise) — B5L47-67906"
+      ]
+    };
+  }
   if(normalized!=="31.13.00") return null;
   return {
     steps:[
