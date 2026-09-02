@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 198</title>
+<title>Copier Wizard — Build 199</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -577,7 +577,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 198</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
+<footer><strong>Copier Wizard — Build 199</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.</footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -1292,7 +1292,7 @@ function startOverDiagnostic(){
 
   const panelsToHide=[
     "problemCard","resultCard","errorCodeEntry","otherEntry",
-    "problemCategories","errorLookupPanel","messageLookupPanel"
+    "problemCategories","errorLookupPanel","messageLookupPanel","manualCoveragePanel"
   ];
   panelsToHide.forEach(id=>{
     const el=document.getElementById(id);
@@ -1303,6 +1303,13 @@ function startOverDiagnostic(){
     const el=document.getElementById(id);
     if(el) el.innerHTML="";
   });
+  const manualPanel=document.getElementById("manualCoveragePanel");
+  if(manualPanel){
+    manualPanel.innerHTML="";
+    manualPanel.style.display="none";
+    manualPanel.classList.add("hidden","lookup-hidden");
+  }
+  window.manualCoverageType="errors";
 
   // Return to the very first screen, with no diagnostic state carried over.
   const selectCard=document.getElementById("selectCard");
@@ -2370,6 +2377,7 @@ function renderManualCoverageList(type){
 function openManualErrorFromIndex(index){
   const item=(window.E52645_ERROR_CATALOG||[])[index];
   if(!item) return;
+  try{ if(window.__cwRegressionNavigation?.clearPaths) window.__cwRegressionNavigation.clearPaths(); }catch(e){}
   const code=extractErrorCodeAliases(item.code)[0]||item.code;
   const input=document.getElementById("errorCodeLookup");
   if(input) input.value=code;
@@ -2379,6 +2387,7 @@ function openManualErrorFromIndex(index){
 function openManualMessageFromIndex(index){
   const item=(window.E52645_ALPHABETICAL_MESSAGES||[])[index];
   if(!item) return;
+  try{ if(window.__cwRegressionNavigation?.clearPaths) window.__cwRegressionNavigation.clearPaths(); }catch(e){}
   window.selectedMessage=item.message||item.title||"";
   const input=document.getElementById("messageLookup");
   if(input) input.value=window.selectedMessage;
@@ -4775,7 +4784,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='196';
+  const CURRENT='199';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;
