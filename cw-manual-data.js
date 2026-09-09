@@ -1,4 +1,4 @@
-/* Copier Wizard manual data layer — Build 201
+/* Copier Wizard manual data layer — Build 203
  * Schema v1. Service-manual content is intentionally separated from app logic.
  * Do not add inferred troubleshooting here; source/documented content only.
  */
