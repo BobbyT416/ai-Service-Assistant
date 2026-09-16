@@ -45,9 +45,47 @@ window.CW_MANUAL_DATABASE = {"schemaVersion":1,"databaseId":"hp-e52645","model":
     sourceStatus:"legacy-import-pending-validation"
   }));
 
-  // Parts intentionally start empty in the normalized layer. Existing legacy
-  // part strings remain untouched above until each part can be source-validated.
-  const parts=[];
+  // Build 207: only parts already explicitly identified in the current E52645
+  // service/parts data are promoted into the authoritative layer. No descriptions
+  // are inferred from part numbers.
+  const parts=[
+    {
+      id:`${sourceId}:part:B5L47-67906`,
+      partNumber:"B5L47-67906",
+      displayDescription:"Document feeder whole unit (E52645 Enterprise)",
+      type:"whole_unit",
+      models:["E52645"],
+      sourceId,
+      sourceStatus:"verified-current-data"
+    },
+    {
+      id:`${sourceId}:part:B5L47-67907`,
+      partNumber:"B5L47-67907",
+      displayDescription:"Document feeder whole unit (E52645 Flow)",
+      type:"whole_unit",
+      models:["E52645"],
+      sourceId,
+      sourceStatus:"verified-current-data"
+    },
+    {
+      id:`${sourceId}:part:RM2-5715-000CN`,
+      partNumber:"RM2-5715-000CN",
+      displayDescription:"Paper feed drive assembly",
+      type:"assembly",
+      models:["E52645"],
+      sourceId,
+      sourceStatus:"verified-current-data"
+    },
+    {
+      id:`${sourceId}:part:RM2-2577-000CN`,
+      partNumber:"RM2-2577-000CN",
+      displayDescription:"Registration assembly",
+      type:"assembly",
+      models:["E52645"],
+      sourceId,
+      sourceStatus:"verified-current-data"
+    }
+  ];
 
   window.CW_KNOWLEDGE_BASE={
     schemaVersion:2,
@@ -89,5 +127,9 @@ window.CW_MANUAL_DATABASE = {"schemaVersion":1,"databaseId":"hp-e52645","model":
   window.CW_KNOWLEDGE_BASE.getMessage = function(code){
     const c=normalizeCode(code);
     return this.messages.find(x=>x.code===c) || null;
+  };
+  window.CW_KNOWLEDGE_BASE.getPart = function(partNumber,model){
+    const pn=normalizeCode(partNumber).toUpperCase();
+    return this.parts.find(x=>String(x.partNumber).toUpperCase()===pn && (!model || !x.models?.length || x.models.includes(model))) || null;
   };
 })();
