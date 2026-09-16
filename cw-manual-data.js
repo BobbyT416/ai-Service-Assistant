@@ -1,4 +1,4 @@
-/* Copier Wizard manual data layer — Build 215
+/* Copier Wizard manual data layer — Build 216
  * Schema v2. Service-manual content is intentionally separated from app logic.
  * Backward-compatible legacy arrays remain available to the existing UI.
  * The normalized knowledge layer below is structural only; it does not infer source content.
