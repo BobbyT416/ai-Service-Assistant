@@ -54,6 +54,7 @@ footer{text-align:center;color:#697581;padding:20px;font-size:13px}
 .lookup-help{font-size:13px;color:#667085;margin-top:7px}
 .lookup-divider{display:flex;align-items:center;gap:10px;margin:18px 0;color:#667085;font-size:13px}
 .lookup-divider:before,.lookup-divider:after{content:"";height:1px;background:#d8dee5;flex:1}
+.lookup-count-note{font-size:.82em;font-weight:400;opacity:.8}
 </style>
 <style>
 /* Phone-friendly diagnostic controls */
@@ -4847,7 +4848,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='211';
+  const CURRENT='212';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;
@@ -4891,13 +4892,13 @@ document.addEventListener("click",(event)=>{
 })();
 </script>
 <script id="cw-parts-lookup-main">
-/* Build 211: technician search synonyms. Search terms may be flexible;
+/* Build 212: technician search synonyms. Search terms may be flexible;
    displayed/source terminology remains unchanged. */
 const CW_TECH_SEARCH_SYNONYMS={
   ADF:["ADF","document feeder","automatic document feeder"]
 };
 
-/* Build 211: canonicalize model variants to the base model key used by the parts catalog. */
+/* Build 212: canonicalize model variants to the base model key used by the parts catalog. */
 function cwCanonicalModel(model){
   const s=String(model||"").trim().toUpperCase();
   if(!s)return "";
@@ -5023,22 +5024,42 @@ function runVerifiedPartLookup(){
   if(!query){
     box.innerHTML='<div class="lookup-help"><strong>Enter a part name or part number.</strong></div>'; return;
   }
+
   const entries=(window.HP_PARTS_CATALOG||[]);
+  const variants=cwExpandTechnicianSearch(query).map(normalizePartLookupText).filter(Boolean);
+  const qNorm=normalizePartLookupText(query);
+
+  // Parts Lookup is intentionally a comprehensive search, not a single-answer
+  // lookup. Return every documented part applicable to the verified machine
+  // that matches the entered term or one of its technician synonyms. Ranking
+  // changes order only; it never removes a legitimate match.
   const results=entries.filter(e=>{
-    const applies=cwPartAppliesToMachine(e,model);
-    const text=normalizePartLookupText((e.partNumber||"")+" "+(e.description||""));
-    return applies && cwExpandTechnicianSearch(query).some(variant=>{
-      const v=normalizePartLookupText(variant);
+    if(!cwPartAppliesToMachine(e,model)) return false;
+    const authority=window.cwGetAuthoritativePart?.(e.partNumber,model);
+    const searchable=normalizePartLookupText(
+      (e.partNumber||"")+" "+(e.description||"")+" "+
+      (authority?.displayDescription||"")
+    );
+    return variants.some(v=>{
+      if(searchable.includes(v)) return true;
       const tokens=v.split(/\s+/).filter(Boolean);
-      return text.includes(v) || tokens.every(t=>text.includes(t));
+      return tokens.length>1 && tokens.every(t=>searchable.includes(t));
     });
   });
+
   if(!results.length){
     box.innerHTML='<div class="lookup-help"><strong>No documented part match found.</strong><br>Machine: '+escapeHtml(model)+' &nbsp; Product Number: '+escapeHtml(product)+'<br>Search: '+escapeHtml(query)+'</div>';
     return;
   }
-  results.sort((a,b)=>cwPartSearchScore(b,query,cwCanonicalModel(model),product)-cwPartSearchScore(a,query,cwCanonicalModel(model),product));
-  box.innerHTML='<div class="lookup-count">'+results.length+' matching part'+(results.length===1?'':'s')+'</div>'+
+
+  results.sort((a,b)=>{
+    const sb=cwPartSearchScore(b,query,cwCanonicalModel(model),product);
+    const sa=cwPartSearchScore(a,query,cwCanonicalModel(model),product);
+    if(sb!==sa) return sb-sa;
+    return String(a.description||"").localeCompare(String(b.description||""));
+  });
+
+  box.innerHTML='<div class="lookup-count">'+results.length+' matching part'+(results.length===1?'':'s')+' <span class="lookup-count-note">— all documented matches for this machine</span></div>'+
     results.map(e=>{
       const authority=window.cwGetAuthoritativePart?.(e.partNumber,model);
       const description=authority?.displayDescription || e.description || "";
@@ -5046,7 +5067,7 @@ function runVerifiedPartLookup(){
     }).join("");
 }
 
-// Build 211: Parts Lookup supports both Enter/Return and the Search Parts button.
+// Build 212: Parts Lookup supports both Enter/Return and the Search Parts button.
 (function(){
   const input=document.getElementById("partLookupQuery");
   if(input) input.addEventListener("keydown",function(e){
