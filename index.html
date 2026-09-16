@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 207</title>
+<title>Copier Wizard — Build 208</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -406,7 +406,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 </style>
 <script src="cw-manual-data.js"></script>
 <script id="cw-parts-authority">
-/* Build 207: the normalized knowledge layer is the single authority for promoted parts. */
+/* Build 208: the normalized knowledge layer is the single authority for promoted parts. */
 (function(){
   const parts=(window.CW_KNOWLEDGE_BASE?.parts||[]);
   window.CW_PART_AUTHORITY=Object.fromEntries(parts.map(p=>[String(p.partNumber||"").toUpperCase(),p]));
@@ -598,7 +598,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 207</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.<br/>Manual data layer: <strong>External</strong></footer>
+<footer><strong>Copier Wizard — Build 208</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.<br/>Manual data layer: <strong>External</strong></footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -2314,38 +2314,28 @@ function manualCoverageTokens(text){
 function manualCoverageScore(query, itemText, type){
   const raw=String(query||"").trim().toLowerCase();
   if(!raw) return 1;
-
   const normalized=manualCoverageNormalize(itemText);
-  const qNorm=manualCoverageNormalize(raw);
-  if(!qNorm) return 1;
-
-  // Exact phrase gets the highest score, but is never required.
-  let score=normalized.includes(qNorm) ? 100 : 0;
-
-  const qTokens=manualCoverageTokens(raw);
-  const textTokens=manualCoverageTokens(itemText);
-  const joined=textTokens.join(" ");
-
-  let found=0;
-  for(const token of qTokens){
-    if(!token) continue;
-    if(textTokens.some(t=>t===token || t.includes(token) || token.includes(t))){
-      found++;
-      continue;
+  let best=0;
+  for(const variant of cwExpandTechnicianSearch(raw)){
+    const qNorm=manualCoverageNormalize(variant);
+    if(!qNorm) continue;
+    let score=normalized.includes(qNorm) ? 100 : 0;
+    const qTokens=manualCoverageTokens(variant);
+    const textTokens=manualCoverageTokens(itemText);
+    const joined=textTokens.join(" ");
+    let found=0;
+    for(const token of qTokens){
+      if(textTokens.some(t=>t===token || t.includes(token) || token.includes(t))){ found++; continue; }
+      if(joined.includes(token)) found++;
     }
-    // Useful for codes such as 53.B0.01 or searches such as 53.B0.
-    if(joined.includes(token)) found++;
+    if(qTokens.length){
+      score += (found/qTokens.length)*80;
+      if(found===qTokens.length) score+=50;
+    }
+    if(type==="errors" && normalized.startsWith(qNorm)) score+=40;
+    best=Math.max(best,score);
   }
-
-  if(qTokens.length){
-    score += (found/qTokens.length)*80;
-    if(found===qTokens.length) score+=50;
-  }
-
-  // Prefix/code searches should also work.
-  if(type==="errors" && normalized.startsWith(qNorm)) score+=40;
-
-  return score;
+  return best;
 }
 
 function renderManualCoverageList(type){
@@ -2586,18 +2576,19 @@ function searchAlphabeticalMessages(value){
     const actions=(item.actions||[]).join(" ");
     const haystack=(message+" "+description+" "+actions).toLowerCase();
 
-    // Prefer an exact phrase in the message title. If the technician typed
-    // several words, also allow all of those words to occur in the title,
-    // even if the manual's wording puts them in a different order.
-    const phrase=message.toLowerCase().includes(q);
-    const words=q.split(/\s+/).filter(Boolean);
-    const allWords=words.length>1 && words.every(w=>message.toLowerCase().includes(w));
-    const anywhere=haystack.includes(q);
-
+    // Prefer an exact phrase in the message title. Technician synonyms are
+    // expanded only for matching; displayed/source wording remains unchanged.
     let score=0;
-    if(phrase) score=100;
-    else if(allWords) score=80;
-    else if(anywhere) score=40;
+    for(const variant of cwExpandTechnicianSearch(q)){
+      const v=variant.toLowerCase();
+      const phrase=message.toLowerCase().includes(v);
+      const words=v.split(/\s+/).filter(Boolean);
+      const allWords=words.length>1 && words.every(w=>message.toLowerCase().includes(w));
+      const anywhere=haystack.includes(v);
+      if(phrase) score=Math.max(score,100);
+      else if(allWords) score=Math.max(score,80);
+      else if(anywhere) score=Math.max(score,40);
+    }
 
     return {item,index,score};
   }).filter(x=>x.score>0)
@@ -4856,7 +4847,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='207';
+  const CURRENT='208';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;
@@ -4900,6 +4891,25 @@ document.addEventListener("click",(event)=>{
 })();
 </script>
 <script id="cw-parts-lookup-main">
+/* Build 208: technician search synonyms. Search terms may be flexible;
+   displayed/source terminology remains unchanged. */
+const CW_TECH_SEARCH_SYNONYMS={
+  ADF:["ADF","document feeder","automatic document feeder"]
+};
+function cwExpandTechnicianSearch(value){
+  const raw=String(value==null?"":value).trim();
+  if(!raw) return [];
+  const normalized=raw.toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+  const variants=[raw];
+  for(const [term,synonyms] of Object.entries(CW_TECH_SEARCH_SYNONYMS)){
+    const re=new RegExp("\\b"+term.toLowerCase()+"\\b","i");
+    if(re.test(normalized)){
+      for(const synonym of synonyms) variants.push(raw.replace(re,synonym));
+    }
+  }
+  return [...new Set(variants)];
+}
+
 function normalizePartLookupText(value){
   return String(value==null?"":value)
     .toLowerCase()
@@ -4958,13 +4968,15 @@ function runVerifiedPartLookup(){
   }
   const key=productCatalogKey(model);
   const entries=(window.HP_PARTS_CATALOG||[]);
-  const q=normalizePartLookupText(query);
-  const tokens=q.split(/\s+/).filter(Boolean);
   const results=entries.filter(e=>{
     const models=(e.models||[]).map(String);
     const applies=!models.length || models.some(x=>x.toUpperCase()===model.toUpperCase() || x.toUpperCase()===key.toUpperCase());
     const text=normalizePartLookupText((e.partNumber||"")+" "+(e.description||""));
-    return applies && (text.includes(q) || tokens.every(t=>text.includes(t)));
+    return applies && cwExpandTechnicianSearch(query).some(variant=>{
+      const v=normalizePartLookupText(variant);
+      const tokens=v.split(/\s+/).filter(Boolean);
+      return text.includes(v) || tokens.every(t=>text.includes(t));
+    });
   });
   if(!results.length){
     box.innerHTML='<div class="lookup-help"><strong>No documented part match found.</strong><br>Machine: '+escapeHtml(model)+' &nbsp; Product Number: '+escapeHtml(product)+'<br>Search: '+escapeHtml(query)+'</div>';
