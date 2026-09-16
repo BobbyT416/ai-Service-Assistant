@@ -1,4 +1,4 @@
-/* Copier Wizard manual data layer — Build 205
+/* Copier Wizard manual data layer — Build 210
  * Schema v2. Service-manual content is intentionally separated from app logic.
  * Backward-compatible legacy arrays remain available to the existing UI.
  * The normalized knowledge layer below is structural only; it does not infer source content.
@@ -52,20 +52,22 @@ window.CW_MANUAL_DATABASE = {"schemaVersion":1,"databaseId":"hp-e52645","model":
     {
       id:`${sourceId}:part:B5L47-67906`,
       partNumber:"B5L47-67906",
-      displayDescription:"Document feeder whole unit (E52645 Enterprise)",
+      displayDescription:"Document feeder whole unit (Enterprise)",
       type:"whole_unit",
-      models:["E52645"],
+      models:["E52545","E52645"],
+      sourceTerminology:"Document feeder kit / ADF whole unit",
       sourceId,
-      sourceStatus:"verified-current-data"
+      sourceStatus:"verified-source-supported"
     },
     {
       id:`${sourceId}:part:B5L47-67907`,
       partNumber:"B5L47-67907",
-      displayDescription:"Document feeder whole unit (E52645 Flow)",
+      displayDescription:"Document feeder whole unit (Flow)",
       type:"whole_unit",
-      models:["E52645"],
+      models:["E52545","E52645"],
+      sourceTerminology:"Document feeder kit / ADF whole unit",
       sourceId,
-      sourceStatus:"verified-current-data"
+      sourceStatus:"verified-source-supported"
     },
     {
       id:`${sourceId}:part:RM2-5715-000CN`,
