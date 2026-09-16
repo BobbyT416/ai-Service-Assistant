@@ -1,4 +1,4 @@
-/* Copier Wizard manual data layer — Build 213
+/* Copier Wizard manual data layer — Build 214
  * Schema v2. Service-manual content is intentionally separated from app logic.
  * Backward-compatible legacy arrays remain available to the existing UI.
  * The normalized knowledge layer below is structural only; it does not infer source content.
@@ -49,6 +49,23 @@ window.CW_MANUAL_DATABASE = {"schemaVersion":1,"databaseId":"hp-e52645","model":
   // service/parts data are promoted into the authoritative layer. No descriptions
   // are inferred from part numbers.
   const parts=[
+    {id:`${sourceId}:part:F2A76-67916`,partNumber:"F2A76-67916",displayDescription:"Image scanner assembly kit",type:"kit",models:["M527","E52545","M528","E52645"],sourceTerminology:"Image scanner assembly kit (M527/E52545/M528/E52645)",sourceId,sourceStatus:"verified-source-supported"},
+    {id:`${sourceId}:part:B5L47-67018`,partNumber:"B5L47-67018",displayDescription:"Control panel kit",type:"kit",models:["M527","E52545","M528","E52645"],sourceTerminology:"Control panel kit (M527/E52545/M528/E52645)",sourceId,sourceStatus:"verified-source-supported"},
+    {id:`${sourceId}:part:B5L47-67019`,partNumber:"B5L47-67019",displayDescription:"Keyboard US",type:"assembly",models:["M527","E52545","M528","E52645"],sourceTerminology:"Keyboard US (M527/E52545/M528/E52645)",sourceId,sourceStatus:"verified-source-supported"},
+    {id:`${sourceId}:part:B5L47-67020`,partNumber:"B5L47-67020",displayDescription:"Keyboard UK",type:"assembly",models:["M527","E52545","M528","E52645"],sourceTerminology:"Keyboard UK (M527/E52545/M528/E52645)",sourceId,sourceStatus:"verified-source-supported"},
+    {id:`${sourceId}:part:B5L46-40021`,partNumber:"B5L46-40021",displayDescription:"Cover, HIP",type:"cover",models:["M527","E52545","M528","E52645"],sourceTerminology:"Cover, HIP (M527/E52545/M528/E52645)",sourceId,sourceStatus:"verified-source-supported"},
+    {id:`${sourceId}:part:B5L46-60117`,partNumber:"B5L46-60117",displayDescription:"Bezel, control panel",type:"cover",models:["M527","E52545","M528","E52645"],sourceTerminology:"Bezel, control panel (M527/E52545/M528/E52645)",sourceId,sourceStatus:"verified-source-supported"},
+    {id:`${sourceId}:part:B5L46-40002`,partNumber:"B5L46-40002",displayDescription:"Cover, keyboard",type:"cover",models:["M527","E52545","M528","E52645"],sourceTerminology:"Cover, keyboard (M527/E52545/M528/E52645)",sourceId,sourceStatus:"verified-source-supported"},
+    {id:`${sourceId}:part:5851-5939`,partNumber:"5851-5939",displayDescription:"Cable, WU USB control panel",type:"cable",models:["M527","E52545"],sourceTerminology:"Cable, WU USB control panel (M527/E52545)",sourceId,sourceStatus:"verified-source-supported"},
+    {id:`${sourceId}:part:5851-5938`,partNumber:"5851-5938",displayDescription:"Cable, HIP USB control panel",type:"cable",models:["M527","E52545","M528","E52645"],sourceTerminology:"Cable, HIP USB control panel (M527/E52545/M528/E52645)",sourceId,sourceStatus:"verified-source-supported"},
+    {id:`${sourceId}:part:5851-5936`,partNumber:"5851-5936",displayDescription:"Cable, HDMI control panel",type:"cable",models:["M527","E52545","M528","E52645"],sourceTerminology:"Cable, HDMI control panel (M527/E52545/M528/E52645)",sourceId,sourceStatus:"verified-source-supported"},
+    {id:`${sourceId}:part:5851-5935`,partNumber:"5851-5935",displayDescription:"Cable, 18-pin control panel",type:"cable",models:["M527","E52545","M528","E52645"],sourceTerminology:"Cable, 18-pin control panel (M527/E52545/M528/E52645)",sourceId,sourceStatus:"verified-source-supported"},
+    {id:`${sourceId}:part:B5L46-60114`,partNumber:"B5L46-60114",displayDescription:"Cable, HDMI PAB to SCAM",type:"cable",models:["M527","E52545","M528","E52645"],sourceTerminology:"Cable, HDMI PAB to SCAM (M527/E52545/M528/E52645)",sourceId,sourceStatus:"verified-source-supported"},
+    {id:`${sourceId}:part:COM39-60064`,partNumber:"COM39-60064",displayDescription:"Hinge, left document feeder",type:"hinge",models:["M527","E52545","M528","E52645"],sourceTerminology:"Hinge, left document feeder (M527/E52545/M528/E52645)",sourceId,sourceStatus:"verified-source-supported"},
+    {id:`${sourceId}:part:COM39-60065`,partNumber:"COM39-60065",displayDescription:"Hinge, right document feeder",type:"hinge",models:["M527","E52545","M528","E52645"],sourceTerminology:"Hinge, right document feeder (M527/E52545/M528/E52645)",sourceId,sourceStatus:"verified-source-supported"},
+    {id:`${sourceId}:part:B5L46-40028`,partNumber:"B5L46-40028",displayDescription:"Cover, USB",type:"cover",models:["M527","E52545"],sourceTerminology:"Cover, USB (M527/E52545)",sourceId,sourceStatus:"verified-source-supported"},
+    {id:`${sourceId}:part:B5L46-40011`,partNumber:"B5L46-40011",displayDescription:"Cover, rear image scanner",type:"cover",models:["M527","E52545"],sourceTerminology:"Cover, rear image scanner (M527/E52545)",sourceId,sourceStatus:"verified-source-supported"},
+    {id:`${sourceId}:part:5851-6571`,partNumber:"5851-6571",displayDescription:"Scan-control board (SCB) kit",type:"kit",models:["M527","E52545"],sourceTerminology:"Scan-control board (SCB) kit (M527/E52545)",sourceId,sourceStatus:"verified-source-supported"},
     {
       id:`${sourceId}:part:B5L47-67906`,
       partNumber:"B5L47-67906",
