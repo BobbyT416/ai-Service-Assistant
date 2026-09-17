@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 219</title>
+<title>Copier Wizard — Build 220</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -407,7 +407,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 </style>
 <script src="cw-manual-data.js"></script>
 <script id="cw-parts-authority">
-/* Build 219: the normalized knowledge layer is the single authority for promoted parts. */
+/* Build 220: the normalized knowledge layer is the single authority for promoted parts. */
 (function(){
   const parts=(window.CW_KNOWLEDGE_BASE?.parts||[]);
   window.CW_PART_AUTHORITY=Object.fromEntries(parts.map(p=>[String(p.partNumber||"").toUpperCase(),p]));
@@ -599,7 +599,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 219</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.<br/>Manual data layer: <strong>External</strong></footer>
+<footer><strong>Copier Wizard — Build 220</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.<br/>Manual data layer: <strong>External</strong></footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -3294,6 +3294,51 @@ function saveDuplexFreeFlow(){
     <button class="secondary" onclick="diagnosticAnswer('location-duplex')">Back / Edit Description</button>
     <button class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>`;
 }
+function getAlphabeticalTechnicianActions(item){
+  const existing=Array.isArray(item?.actions)?item.actions.filter(Boolean):[];
+  if(existing.length) return existing;
+
+  const source=String(item?.description||'').replace(/\s+/g,' ').trim();
+  if(!source) return [];
+
+  // Some extracted alphabetical-message records contain the complete HP
+  // customer/call-center/onsite block in description while actions[] is empty.
+  // Prefer the documented onsite-technician section and never display the
+  // entire mixed-audience source block as the technician procedure.
+  const marker=/Recommended action for onsite technicians?/i;
+  const match=source.match(marker);
+  if(!match) return [];
+  let section=source.slice((match.index||0)+match[0].length).trim();
+
+  // Remove common extracted page-number artifacts and trailing section labels.
+  section=section.replace(/\bRecommended action for onsite technicians?\s*\d{1,4}\b/gi,' ');
+  section=section.replace(/\b\d{2}\.\d{2}\.\d{2}\s+\d{2,4}\b/g,' ');
+  section=section.replace(/\s{2,}/g,' ').trim();
+
+  // Split only on top-level numbered steps. Nested a./b./c. instructions stay
+  // with their parent step so the technician sees one coherent step at a time.
+  const starts=[];
+  const re=/(^|\s)([1-9]\d?)\.\s+/g;
+  let m;
+  while((m=re.exec(section))!==null){
+    starts.push({index:m.index+(m[1]?m[1].length:0), number:m[2]});
+  }
+
+  let rawSteps=[];
+  if(starts.length){
+    for(let i=0;i<starts.length;i++){
+      const start=starts[i].index;
+      const end=i+1<starts.length?starts[i+1].index:section.length;
+      rawSteps.push(section.slice(start,end).replace(/^\d{1,2}\.\s+/,'').trim());
+    }
+  }else{
+    rawSteps=[section];
+  }
+
+  const cleaned=rawSteps.map(cleanTechnicianStep).filter(Boolean);
+  return cleaned;
+}
+
 function diagnosticAnswer(answer){
  const r=document.getElementById("result");
  saveDiagnosticState();
@@ -3305,28 +3350,75 @@ function diagnosticAnswer(answer){
    if(item){
      serviceReportContext.message=item.message||"";
      setServiceReportProblem("Alphabetical message: "+(item.message||""));
-     const actions=Array.isArray(item.actions)?item.actions:[];
+     const actions=getAlphabeticalTechnicianActions(item);
+     const sourceDescription=String(item.description||"").split(/Recommended action for (?:customers|call-center agents?|onsite technicians?)/i)[0].replace(/\s+/g," ").trim();
      html += `<h2>${escapeHtml(item.message)}</h2>
-       <div class="status"><strong>Found in the supplied HP documentation.</strong><br>${escapeHtml(item.description||"")}</div>
-       <div class="doc-verification"><strong>Source:</strong> HP E52645 service documentation, Chapter 7 — Alphabetical control panel messages.</div>
-       <h3>Recommended action for call-center agents and onsite technicians</h3>`;
+       <div class="status"><strong>Found in the supplied HP documentation.</strong>${sourceDescription?`<br>${escapeHtml(sourceDescription)}`:""}</div>
+       <div class="doc-verification"><strong>Source:</strong> HP E52645 service documentation, Chapter 7 — Alphabetical control panel messages.</div>`;
      if(actions.length){
-       html += `<ol class="tech-steps">${actions.map(a=>`<li>${escapeHtml(a)}</li>`).join("")}</ol>`;
-       const partHits=[];
-       actions.join("\n").replace(/\b(?:Part number|Part Number|part number)\s*[:\-]?\s*([A-Z0-9][A-Z0-9\-]+)\b/gi,(m,p)=>{partHits.push(p);return m;});
-       if(partHits.length){
-         html += `<h3>Part numbers found in the documented action</h3><ul>${[...new Set(partHits)].map(p=>`<li><strong>${escapeHtml(p)}</strong></li>`).join("")}</ul>`;
-       }
-       html += `<h3>Result</h3>
-         <p>After completing the documented action, what happened?</p>
-         <button onclick="diagnosticAnswer('alpha-resolved')">Problem resolved</button>
-         <button class="secondary" onclick="diagnosticAnswer('alpha-persists')">Problem remains</button>`;
+       html += `<h3>Technician Troubleshooting</h3>
+         <div class="status">Complete each documented step in order. The next step is shown only after you confirm that you completed the current step.</div>
+         <div id="alphabeticalStepList" class="documented-step-list"></div>
+         <div id="alphabeticalStepProgress" class="muted" style="margin-top:10px;"></div>
+         <div id="alphabeticalOutcome" class="hidden" style="margin-top:18px;">
+           <h3>Documented Checks Completed</h3>
+           <p>What happened after completing the documented procedure?</p>
+           <button type="button" onclick="diagnosticAnswer('alpha-resolved')">Problem resolved</button>
+           <button type="button" class="secondary" onclick="diagnosticAnswer('alpha-persists')">Problem remains</button>
+         </div>`;
      }else{
        html += `<div class="status">The manual identifies this as an informational message and does not provide a further technician procedure.</div>
          <button onclick="diagnosticAnswer('alpha-resolved')">No action needed / cleared</button>`;
      }
      html += `<button class="secondary" onclick="showLookup('message')">← Back to Message Search</button>
        <button class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>`;
+     r.innerHTML=html;
+
+     if(actions.length){
+       window.cwAlphabeticalSteps=actions;
+       window.cwAlphabeticalStepIndex=0;
+       window.cwAlphabeticalStepShow=function(index){
+         const list=document.getElementById('alphabeticalStepList');
+         const progress=document.getElementById('alphabeticalStepProgress');
+         const outcome=document.getElementById('alphabeticalOutcome');
+         if(!list) return;
+         window.cwAlphabeticalStepIndex=index;
+         if(index>=window.cwAlphabeticalSteps.length){
+           list.innerHTML=`<div class="status"><strong>All documented troubleshooting steps completed.</strong><br>Review the result below and tell Copier Wizard what happened.<div style="margin-top:14px;"><button type="button" class="secondary" onclick="cwAlphabeticalStepBack()">← Back</button></div></div>`;
+           if(progress) progress.textContent='All documented steps completed.';
+           if(outcome) outcome.classList.remove('hidden');
+           return;
+         }
+         const step=window.cwAlphabeticalSteps[index];
+         const testInfo=extractDiagnosticTestReference(step);
+         let stepHtml=`<div class="documented-step" style="padding:16px;margin:10px 0;border:1px solid #d8e0e7;border-radius:9px;background:#fff;">
+           <div class="muted">Step ${index+1} of ${window.cwAlphabeticalSteps.length}</div>
+           <h4 style="margin:8px 0 10px;">Step ${index+1}</h4>
+           <div style="font-size:1.05rem;line-height:1.5;">${escapeHtml(step)}</div>`;
+         if(testInfo){
+           stepHtml+=`<div class="diagnostic-navigation" style="margin-top:14px;">
+             <strong>Diagnostic test referenced by this step</strong>
+             <div style="margin-top:5px;">${escapeHtml(testInfo.testName)}</div>
+             <button type="button" class="secondary diagnostic-nav-btn" onclick="showDiagnosticNavigation('${escapeHtml(testInfo.testName).replace(/'/g,"&#39;")}')">How to get to this test</button>
+           </div>`;
+         }
+         stepHtml+=`<div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;">
+           ${index>0?`<button type="button" class="secondary" onclick="cwAlphabeticalStepBack()">← Back</button>`:""}
+           <button type="button" onclick="cwAlphabeticalStepCompleted()">✓ Step Completed — Continue</button>
+         </div></div>`;
+         list.innerHTML=stepHtml;
+         if(progress) progress.textContent=`Step ${index+1} of ${window.cwAlphabeticalSteps.length}`;
+         if(outcome) outcome.classList.add('hidden');
+       };
+       window.cwAlphabeticalStepBack=function(){
+         const previous=window.cwAlphabeticalStepIndex-1;
+         if(previous>=0) window.cwAlphabeticalStepShow(previous);
+       };
+       window.cwAlphabeticalStepCompleted=function(){
+         window.cwAlphabeticalStepShow(window.cwAlphabeticalStepIndex+1);
+       };
+       window.cwAlphabeticalStepShow(0);
+     }
    } else {
      html += `<h2>Message Not Verified</h2><div class="status">The entered message was not found in the currently loaded verified E52645 alphabetical-message catalog.</div><button class="secondary" onclick="showLookup('message')">Back to Message Search</button><button class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>`;
    }
@@ -4848,7 +4940,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='219';
+  const CURRENT='220';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;
@@ -4892,7 +4984,7 @@ document.addEventListener("click",(event)=>{
 })();
 </script>
 <script id="cw-parts-lookup-main">
-/* Build 219: technician search synonyms. Search terms may be flexible;
+/* Build 220: technician search synonyms. Search terms may be flexible;
    displayed/source terminology remains unchanged. */
 const CW_TECH_SEARCH_SYNONYMS={
   ADF:["ADF","document feeder","automatic document feeder"],
@@ -4902,7 +4994,7 @@ const CW_TECH_SEARCH_SYNONYMS={
   "PAPER FEED":["paper feed","paper feed drive","paper feed drive assembly"]
 };
 
-/* Build 219: canonicalize model variants to the base model key used by the parts catalog. */
+/* Build 220: canonicalize model variants to the base model key used by the parts catalog. */
 function cwCanonicalModel(model){
   const s=String(model||"").trim().toUpperCase();
   if(!s)return "";
@@ -5033,7 +5125,7 @@ function runVerifiedPartLookup(){
   const variants=cwExpandTechnicianSearch(query).map(normalizePartLookupText).filter(Boolean);
   const qNorm=normalizePartLookupText(query);
 
-  // Build 219: applicability for the document-feeder hinges follows the HP parts table,
+  // Build 220: applicability for the document-feeder hinges follows the HP parts table,
   // which lists M527/E52545/M528/E52645 for both hinge parts.
 // Parts Lookup is intentionally a comprehensive search, not a single-answer
   // lookup. Return every documented part applicable to the verified machine
@@ -5073,7 +5165,7 @@ function runVerifiedPartLookup(){
     }).join("");
 }
 
-// Build 219: Parts Lookup supports both Enter/Return and the Search Parts button.
+// Build 220: Parts Lookup supports both Enter/Return and the Search Parts button.
 (function(){
   const input=document.getElementById("partLookupQuery");
   if(input) input.addEventListener("keydown",function(e){
