@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 246</title>
+<title>Copier Wizard — Build 247</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -599,7 +599,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 246</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.<br/>Manual data layer: <strong>External</strong></footer>
+<footer><strong>Copier Wizard — Build 247</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.<br/>Manual data layer: <strong>External</strong></footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -2852,7 +2852,7 @@ function getE52645TechnicianOverride(code, item){
       ],
       parts:[
         "Memory PCA — RM2-7955-000CN",
-        "High-voltage power supply (HVPS) assembly — RM2-7945-000CN"
+        "High-voltage power supply (HVPS) assembly — RM3-7424-000CN"
       ]
     };
   }
@@ -2900,9 +2900,9 @@ function getE52645TechnicianOverride(code, item){
         "Ensure that all cables on the formatter and SCB are connected and seated correctly before replacing a part.",
         "If the error persists, replace the scanner control board (SCB)."
       ],
-      parts:[
-        "Scan control PC board assembly — B5L47-67903"
-      ]
+      parts:[],
+      partWithheld:true,
+      partWithheldReason:"The supplied CPMD names B5L47-67903 in its scanner-control-board table, while the E52645-family parts data identifies B5L47-67901 for M528/E52645. Copier Wizard will not silently resolve that source conflict."
     };
   }
   if(normalized==="31.03.20"){
@@ -4846,7 +4846,7 @@ function diagnosticAnswer(answer){
    <button class="secondary" onclick="diagnosticAnswer('sensor-fails')">Sensor does not activate / counter does not increment</button>`;
  } else if(answer==='sensor-fails'){
    html += `<h2>Likely Repair</h2><div class="status"><strong>Diagnostic result:</strong> Replace the image scanner assembly.</div>
-   <h3>Replacement Part</h3><div class="part">F2A76-67914</div><p>Image scanner assembly</p>
+   <h3>Replacement Part</h3><div class="part">F2A76-67909</div><p>Image scanner assembly kit</p>
    <button onclick="showRepair('scanner')">View Replacement Procedure</button>`;
  } else if(answer==='sensor-works'){
    html += `<h2>Continue Diagnosis</h2><div class="status">The flatbed cover sensor is responding. Continue to the next verified diagnostic branch.</div>`;
@@ -4864,7 +4864,7 @@ function diagnosticAnswer(answer){
  } else if(answer==='52-basic-notdone'){
    html += `<h2>Start With the Basics</h2><ol><li>Turn the printer off and back on.</li><li>Verify the firmware is current.</li></ol>`;
  } else if(answer==='52-test-fail'){
-   html += `<h2>Likely Repair</h2><div class="status">The verified diagnostic path directs replacement of the laser/scanner if the scanner motor test fails.</div><h3>Part</h3><div class="part">RM2-5528-000CN</div>`;
+   html += `<h2>Likely Repair</h2><div class="status">The verified diagnostic path directs replacement of the laser/scanner if the scanner motor test fails.</div><h3>Part</h3><div class="part">RM2-2891-000CN</div>`;
  } else if(answer==='52-test-pass'){
    html += `<h2>Continue Diagnosis</h2><div class="status">The scanner motor test passes, so continue to the next verified branch.</div>`;
  } else if(answer==='tray'){
@@ -4907,33 +4907,68 @@ function escapeHtml(text){
  return text.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 }
 
+const CW_VERIFIED_REPAIR_PROCEDURES={
+  adf:{
+    title:'Document Feeder (MFP)',
+    parts:['B5L47-67906','B5L47-67907'],
+    source:'E52645-family Repair Service Manual, Removal and replacement: Document feeder (MFP)',
+    verified:true,
+    html:`<h2>Removal and Replacement — Document Feeder</h2>
+      <div class="status"><strong>Service Manual verified</strong><br>Applicable E52645 document-feeder assemblies: B5L47-67906 (Enterprise/Non-Flow) and B5L47-67907 (Workflow/Flow).</div>
+      <div class="step"><strong>Before service</strong><br>Turn the printer off, disconnect the power cable, and wait for the printer to shut down before servicing.</div>
+      <div class="step"><strong>1. Remove the formatter cover</strong><br>Remove the formatter cover. For M528/E52645, slide the cover toward the rear as specified by the Service Manual.</div>
+      <div class="step"><strong>2. Remove the applicable upper-left cover</strong><br>For M527/E52545/M528/E52645 configurations, remove the top-left cover as required to access the document-feeder connections.</div>
+      <div class="step"><strong>3. Disconnect and remove the document feeder</strong><br>Disconnect the applicable document-feeder connections and remove the complete feeder assembly using the mounting hardware and sequence specified in the Service Manual.</div>
+      <div class="step"><strong>4. Install the replacement</strong><br>Install the correct Enterprise or Workflow document-feeder assembly, reconnect all applicable cables, and reinstall the covers.</div>
+      <div class="step"><strong>Post-service test</strong><br>Power on the printer and use the document feeder to make a copy to verify proper operation.</div>
+      <p class="muted"><strong>Source:</strong> E52645-family Repair Service Manual — Removal and replacement: Document feeder (MFP).</p>`
+  },
+  scanner:{
+    title:'Sub-scanner Assembly (SSA)',
+    parts:['F2A76-67909'],
+    source:'E52645-family Repair Service Manual, Removal and replacement: Sub-scanner assembly (SSA) (MFP)',
+    verified:true,
+    html:`<h2>Removal and Replacement — Sub-scanner Assembly</h2>
+      <div class="status"><strong>Service Manual verified</strong><br>Part F2A76-67909 — Image scanner assembly kit for M527/E52545/M528/E52645.</div>
+      <div class="step"><strong>Before service</strong><br>Power off the printer, disconnect the power cable, and follow the Service Manual's safety and ESD precautions.</div>
+      <div class="step"><strong>1. Remove the white backing</strong><br>Open the document feeder and remove the white backing and retention clips as documented.</div>
+      <div class="step"><strong>2. Remove the control panel</strong><br>Release the control-panel cover, disconnect the applicable keyboard/HDMI/USB connections, and remove the control panel.</div>
+      <div class="step"><strong>3. Remove the sub-scanner assembly</strong><br>Continue through the documented cover, cable, and mounting-screw sequence to remove the sub-scanner assembly.</div>
+      <div class="step"><strong>4. Install the replacement</strong><br>Install the replacement assembly and reverse the documented removal sequence, including the white-backing and retention-clip installation.</div>
+      <div class="step"><strong>Post-service test</strong><br>Power on and verify scanner operation, including copying from the flatbed and document feeder as applicable.</div>
+      <p class="muted"><strong>Source:</strong> E52645-family Repair Service Manual — Removal and replacement: Sub-scanner assembly (SSA) (MFP).</p>`
+  },
+  dccontroller:{
+    title:'DC Controller',
+    parts:['RM3-7475-010CN'],
+    source:'E52645-family Repair Service Manual, Removal and replacement: DC controller',
+    verified:true,
+    html:`<h2>Removal and Replacement — DC Controller</h2>
+      <div class="status"><strong>Service Manual verified</strong><br>Part RM3-7475-010CN — DC controller PCA, duplex (M527/M528/E52545/E52645).</div>
+      <div class="step"><strong>Before service</strong><br>Power off, disconnect power, and follow the ESD and safety requirements in the Service Manual.</div>
+      <div class="step"><strong>1. Remove the required covers and tray</strong><br>Follow the E52645-specific access sequence in the DC-controller procedure.</div>
+      <div class="step"><strong>2. Remove the formatter</strong><br>Disconnect the required connectors/FFCs and remove the formatter as specified. Do not remove and install a replacement DCC and formatter at the same time.</div>
+      <div class="step"><strong>3. Access and remove the DC controller</strong><br>Disconnect the controller connections, remove the mounting hardware, and remove the DC controller.</div>
+      <div class="step"><strong>4. Install and test</strong><br>Install the replacement controller, reverse the documented sequence, power on, and perform the applicable Service Manual post-service checks.</div>
+      <p class="muted"><strong>Source:</strong> E52645-family Repair Service Manual — Removal and replacement: DC controller.</p>`
+  }
+};
+
 function showRepair(type){
  const r=document.getElementById("result");
- let extra;
- if(type==="fan") extra=`<h2>Step-by-Step — Fan FM2</h2><div class="status warn"><strong>Safety:</strong> Power off, disconnect power, and follow ESD precautions where applicable.</div>
- <div class="step"><strong>Step 1</strong><br>Remove the control panel as required for the applicable machine configuration.</div>
- <div class="step"><strong>Step 2</strong><br>Remove the tray and required covers to gain access to the fan.</div>
- <div class="step"><strong>Step 3</strong><br>Disconnect the fan and remove the retaining hardware.</div>
- <div class="step"><strong>Step 4</strong><br>Remove the fan and install the replacement.</div>
- <div class="step"><strong>Step 5</strong><br>Reassemble in the reverse sequence and reconnect power.</div>
- <p><strong>Post-service test:</strong> No dedicated post-service test is listed for this assembly.</p>`;
- else if(type==="dccontroller") extra=`<h2>DC Controller Replacement</h2><div class="status"><strong>HP E52645 — Service Manual verified</strong><br>Part: RM3-7475-010CN</div><div class="step"><strong>1. Remove the tray</strong><br>Pull the tray out until it stops, lift the front, and remove it.</div><div class="step"><strong>2. Remove the formatter cover</strong><br>For the E52645 family, slide the formatter cover toward the rear to remove it.</div><div class="step"><strong>3. Remove applicable accessories</strong><br>The Service Manual identifies HDD and fax PCA removal when those options are installed.</div><div class="step"><strong>4. Remove the formatter</strong><br>Disconnect the required connectors and FFCs and remove the formatter. <strong>Important:</strong> the manual warns not to remove and install a replacement DCC and formatter at the same time.</div><div class="step"><strong>5. Continue with required covers and assemblies</strong><br>The DC controller procedure includes additional configuration-specific covers and assemblies before the controller can be accessed.</div><div class="step"><strong>6. Remove the DC controller</strong><br>Disconnect the controller connectors/FFCs, remove the mounting hardware, and remove the controller.</div><h3>Installation</h3><p>Install the replacement controller and reassemble the machine following the documented procedure and configuration-specific requirements.</p><p class="muted"><strong>Source:</strong> E52645-family Repair Service Manual, DC controller removal/replacement section. This is a technician-oriented summary, not a reproduction of the manual.</p>`;
- else if(type==="adf") extra=`<h2>Step-by-Step — Document Feeder</h2>
- <div class="status warn"><strong>Safety:</strong> Use the applicable power-down and ESD precautions from the service manual.</div>
- <p>The production version will retrieve the exact model/configuration-specific removal procedure and illustrations from the approved knowledge base.</p>
- <div class="step"><strong>Step 1</strong><br>Confirm the exact E52645 configuration and whether it is a Flow or Non-Flow model before selecting the replacement part.</div>
- <div class="step"><strong>Step 2</strong><br>Follow the model-specific document-feeder removal procedure.</div>
- <div class="step"><strong>Step 3</strong><br>Install the replacement ADF and reconnect all applicable connections.</div>
- <div class="step"><strong>Step 4</strong><br>Run the applicable ADF sensor/feeding checks and verify normal document feeding.</div>
- <p><strong>Important:</strong> This first draft intentionally does not invent the mechanical removal sequence. The production app will only display a step when the exact service procedure has been verified for the selected model/configuration.</p>`;
- else extra=`<h2>Step-by-Step — Image Scanner Assembly</h2><div class="status warn"><strong>Safety:</strong> Follow applicable power-down and ESD precautions.</div>
- <div class="step"><strong>Step 1</strong><br>Prepare the machine for service and access the scanner assembly.</div>
- <div class="step"><strong>Step 2</strong><br>Disconnect the applicable scanner connections.</div>
- <div class="step"><strong>Step 3</strong><br>Remove the scanner assembly.</div>
- <div class="step"><strong>Step 4</strong><br>Install the replacement assembly and reconnect the connections.</div>
- <div class="step"><strong>Step 5</strong><br>Perform the applicable scanner diagnostic and verify normal operation.</div>
- <p><strong>Note:</strong> This first draft intentionally uses a simplified procedure. A production version would retrieve the exact model-specific procedure from the approved knowledge base.</p>`;
- r.innerHTML=extra;
+ const proc=CW_VERIFIED_REPAIR_PROCEDURES[type];
+ if(proc?.verified){
+   r.innerHTML=proc.html;
+   const resultCard=document.getElementById("resultCard");
+   if(resultCard) resultCard.classList.remove("hidden");
+   addServiceReportButton(`Viewed verified repair procedure — ${proc.title}`);
+   if(r) r.scrollIntoView({behavior:'smooth',block:'start'});
+   return;
+ }
+ r.innerHTML=`<h2>Repair Procedure Not Verified</h2><div class="status warn"><strong>Copier Wizard will not guess.</strong><br>No exact approved removal/replacement procedure is currently linked to this repair selection for the verified machine configuration.</div><p>Use the supplied Service/Repair Manual to locate the exact procedure, or load the appropriate manual into Copier Wizard before performing the replacement.</p>`;
+ const resultCard=document.getElementById("resultCard");
+ if(resultCard) resultCard.classList.remove("hidden");
+ if(r) r.scrollIntoView({behavior:'smooth',block:'start'});
 }
 const serviceReportObserver=new MutationObserver(()=>{
   recordServiceReportSnapshot();
@@ -5328,7 +5363,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='239';
+  const CURRENT='247';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;
