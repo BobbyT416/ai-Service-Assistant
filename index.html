@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 242</title>
+<title>Copier Wizard — Build 241</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -599,7 +599,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 242</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.<br/>Manual data layer: <strong>External</strong></footer>
+<footer><strong>Copier Wizard — Build 241</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.<br/>Manual data layer: <strong>External</strong></footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -1760,11 +1760,11 @@ const e52645Docs = {
       verifiedFor: "E52645dn/c"
     },
     adfRollerKit: {
-      category: "Document feeder roller / separation-pad maintenance kit",
-      partNumber: "B5L52-67903",
-      cpmDContractKit: "W5U23-67901",
+      category: "Document feeder roller replacement kit",
+      partNumber: "5851-7202",
+      productNumber: "J8J95A",
       verifiedFor: "E52645dn/c",
-      alternateContractualKit: "W5U23-67901"
+      sourceRule: "31.13.00 CPMD: J8J95A is the warranty product number; 5851-7202 is the service part number for contractual/on-site replacement."
     }
   },
   rules: {
@@ -2837,7 +2837,7 @@ function cleanTechnicianStep(raw){
 
 function getE52645TechnicianOverride(code, item){
   const normalized=normalizeErrorCode(code);
-  // Build 239: first importer-readiness batch; refined in Build 242. These procedures exercise
+  // Build 239: first importer-readiness batch; refined in Build 243. These procedures exercise
   // consumable, firmware/power-cycle, conditional replacement, voltage-specific
   // parts, and escalation outcomes using the existing HP manual data layer.
   if(normalized==="10.00.00" || normalized==="10.00.01"){
@@ -2929,7 +2929,7 @@ function getE52645TechnicianOverride(code, item){
     };
   }
   if(normalized!=="31.13.00") return null;
-  // Build 242: 31.13.00 is intentionally derived from the documented multi-pick
+  // Build 243: 31.13.00 is intentionally derived from the documented multi-pick
   // procedure, not from the motor/SCB branch used by other 31.03/31.13 errors.
   // Keep the procedure technician-focused while preserving the documented order.
   return {
@@ -2938,14 +2938,13 @@ function getE52645TechnicianOverride(code, item){
       "Lift the document-feeder input tray and remove any jammed paper. Lower the input tray and close the document-feeder cover, making sure the latch is fully closed.",
       "Ensure that the originals meet the document feeder (ADF) specifications for the printer.",
       "Ensure that the input tray is not overloaded and that the tray guides are set to the correct size. Make sure the paper stack is centered and aligned with the direction of travel into the document feeder paper path.",
-      "Check the Document Feeder Kit consumable status. If the status is Low or Very Low, replace the Document Feeder Kit as documented.",
-      "Check and clean the document feeder pickup and separation rollers. Use a clean lint-free cloth moistened with warm water as documented, and lift the roller assembly to access the second roller.",
-      "If necessary, replace the Document Feeder Kit rollers and separation pad.",
-      "If the multi-pick problem remains after the documented checks, escalate for additional service-level troubleshooting. Do not replace the complete document feeder solely from 31.13.00 without a documented reason to do so."
+      "Check the Document Feeder Kit consumable status. If the status is Low or Very Low, replace the Document Feeder Kit as documented. The CPMD lists J8J95A as the warranty product number and 5851-7202 as the service part number for contractual/on-site replacement.",
+      "Check and clean the document feeder pickup and separation rollers. Use a clean lint-free cloth moistened with warm water as documented.",
+      "If the error persists, replace the Document Feeder Kit rollers and separation pad. The documented service part number is 5851-7202 (HP product number J8J95A).",
+      "If a grinding noise is heard or reported in conjunction with ADF pickup or feed, the documentation directs replacement of the document feeder (ADF) unit. Otherwise, if the multi-pick problem remains after the documented checks, escalate using the documented service process rather than automatically replacing the complete ADF."
     ],
     parts:[
-      "Document feeder maintenance kit accessory with instruction guide — B5L52-67903",
-      "Document feeder maintenance kit — pickup, feed, and separation ADF roller kit — W5U23-67901"
+      "Document feeder roller replacement kit — 5851-7202 (HP product number J8J95A)"
     ]
   };
 }
@@ -2964,7 +2963,7 @@ function getDocumentedStepParts(step, displayedParts){
   const wantsADFKit=/\b(document feeder kit|adf roller|pickup.{0,20}separation|separation.{0,20}pad|maintenance kit)\b/i.test(text) &&
     /\b(replace|replacement|kit|roller|pad)\b/i.test(text);
   if(wantsADFKit){
-    const kit=parts.filter(v=>/B5L52-67903|W5U23-67901/i.test(String(v)));
+    const kit=parts.filter(v=>/5851-7202|J8J95A/i.test(String(v)));
     if(kit.length) return [...new Set(kit)];
   }
 
@@ -4058,7 +4057,7 @@ function diagnosticAnswer(answer){
  } else if(answer==='adf-kit-warranty'){
    html += `<h2>Replace the ADF Roller Kit</h2>
    <div class="doc-verification"><strong>Documentation verified</strong>The supplied CPMD identifies the HP 200 ADF Roller Replacement Kit for warranty customers when the Document Feeder Kit status is Low or Very Low.</div>
-   ${partCard('adfRollerKit','Do not confuse this maintenance kit with the complete ADF assembly. The CPMD uses W5U23A for warranty customers; the Repair Service Manual separately identifies B5L52-67903 as the maintenance-kit accessory.')}
+   ${partCard('adfRollerKit','For 31.13.00, the supplied CPMD identifies J8J95A as the warranty product number and 5851-7202 as the service part number for the documented roller replacement path.')}
    <p>Replace the applicable Document Feeder Kit, then retest the original ADF pickup problem.</p>
    <p><strong>Did the ADF pick up correctly after the kit replacement?</strong></p>
    <select class="diagnostic-select" onchange="diagnosticAnswer(this.value)">
@@ -4068,8 +4067,8 @@ function diagnosticAnswer(answer){
    </select>`;
  } else if(answer==='adf-kit-contract'){
    html += `<h2>Replace the ADF Roller Kit</h2>
-   <div class="doc-verification"><strong>Documentation verified</strong>The supplied CPMD identifies W5U23-67901 as the ADF maintenance replacement roller kit for contractual customers when the Document Feeder Kit status is Low or Very Low.</div>
-   <div class="part-card"><div class="label">ADF maintenance replacement roller kit</div><div><strong>Part number:</strong> W5U23-67901</div><div><strong>Applies to:</strong> Contractual ADF maintenance path</div><div class="source-note">CPMD: use this kit for contractual customers. This is not the complete ADF assembly.</div></div>
+   <div class="doc-verification"><strong>Documentation verified</strong>The supplied CPMD identifies 5851-7202 as the service part number for the ADF roller replacement kit; J8J95A is the corresponding warranty product number.</div>
+   <div class="part-card"><div class="label">ADF roller replacement kit</div><div><strong>Service part number:</strong> 5851-7202</div><div><strong>HP product number:</strong> J8J95A</div><div class="source-note">This is the documented roller replacement path, not the complete ADF assembly.</div></div>
    <p>Replace the applicable Document Feeder Kit, then retest the original ADF pickup problem.</p>
    <p><strong>Did the ADF pick up correctly after the kit replacement?</strong></p>
    <select class="diagnostic-select" onchange="diagnosticAnswer(this.value)">
@@ -4683,7 +4682,7 @@ function diagnosticAnswer(answer){
      <li>Check the ADF top cover, input tray, guides, and rollers.</li>
      <li>Clean the ADF pickup/separation rollers and inspect the ADF pick-success sensor window and reflector.</li>
      <li>Check the Document Feeder Kit status and replace the roller/separation-pad maintenance kit if the documentation calls for it.
-     ${partCard('adfRollerKit','Repair Service Manual: B5L52-67903 is the document-feeder maintenance kit. The CPMD separately lists W5U23-67901 for contractual ADF maintenance replacement rollers; these are not the complete ADF assembly.')}</li>
+     ${partCard('adfRollerKit','For the documented E52645 31.13.00 path, the CPMD identifies J8J95A as the warranty product number and 5851-7202 as the service part number for the ADF roller replacement kit.')}</li>
      <li>Verify and reseat all ADF connections to the scanner control board.</li>
      <li>Retest the original ADF paper-feed/jam symptom.</li>
    </ol>
