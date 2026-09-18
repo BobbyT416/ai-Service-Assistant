@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 248</title>
+<title>Copier Wizard — Build 249</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -599,7 +599,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 248</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.<br/>Manual data layer: <strong>External</strong></footer>
+<footer><strong>Copier Wizard — Build 249</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.<br/>Manual data layer: <strong>External</strong></footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -1862,8 +1862,9 @@ const machineSelectionFamilies = {
     "m776-family": {
       label: "M776 / M856 / E85055 family",
       models: ["M776","M856","E85055"],
-      supported: false,
-      docs: "M776 Repair Manual + M776 CPMD — guided workflow not yet enabled"
+      supported: true,
+      supportedModels: ["M776"],
+      docs: "M776 Repair Manual + M776 CPMD — verified M776 workflow enabled"
     },
     "m607-family": {
       label: "M607 / M608 / M609 / M610 / M611 / M612 family",
@@ -2074,7 +2075,7 @@ function firmwareLabel(v){return v==='FS3'?'FutureSmart 3':v==='FS4'?'FutureSmar
 function configureFirmwareForModel(model){const section=document.getElementById('firmwareSection'),fw=document.getElementById('firmwareLevel');if(!section||!fw)return [];const opts=firmwareOptionsForModel(model);fw.innerHTML='<option value="">Select FutureSmart level...</option>';fw.value='';if(!opts.length){section.classList.add('hidden');return opts;}opts.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=firmwareLabel(v);fw.appendChild(o);});section.classList.remove('hidden');if(opts.length===1)fw.value=opts[0];return opts;}
 function modelSelectionChanged(model){const hint=document.getElementById('modelHint');if(!hint)return;const type=(document.getElementById('machineType')||{}).value||'',familyId=(document.getElementById('machineFamily')||{}).value||'',family=machineSelectionFamilies[type]?.[familyId];if(!model){hint.textContent='';configureFirmwareForModel('');return;}hint.innerHTML=family?.docs?'<span class="source-note">Documentation: '+escapeHtml(family.docs)+'.</span>':'';configureProductNumberForModel(model);configureFirmwareForModel(model);}
 function firmwareSelectionChanged(fw){}
-function verifyModel(){const m=document.getElementById('model').value,productEl=document.getElementById('product'),product=productEl?productEl.value:'',v=document.getElementById('verify'),type=(document.getElementById('machineType')||{}).value||'',familyId=(document.getElementById('machineFamily')||{}).value||'',family=machineSelectionFamilies[type]?.[familyId];if(!type){v.innerHTML='<div class="status danger"><strong>Step 1:</strong> Select Monochrome, Color, or PageWide.</div>';return;}if(!familyId||!family){v.innerHTML='<div class="status danger"><strong>Step 2:</strong> Select the machine family.</div>';return;}if(!m){v.innerHTML='<div class="status danger"><strong>Step 3:</strong> Select the machine model.</div>';return;}const productEntries=productNumberCatalog[productCatalogKey(m)]||[];const validProduct=product ? productEntries.some(x=>x.product===product) : true;if(product && !validProduct){v.innerHTML='<div class="status danger"><strong>Product Number Mismatch</strong><br>Selected machine model: <strong>'+escapeHtml(m)+'</strong><br>Entered Product Number: <strong>'+escapeHtml(product)+'</strong><br>This product number is not cataloged for the selected model. Verify the model and product number on the machine before continuing.</div>';return;}const opts=firmwareOptionsForModel(m),fwEl=document.getElementById('firmwareLevel'),fw=fwEl?fwEl.value:'';if(opts.length>1&&!fw){v.innerHTML='<div class="status warn"><strong>Machine selected.</strong><br>FutureSmart is applicable to this model. Select the installed FutureSmart level before continuing.</div>';if(fwEl)fwEl.focus();return;}if(opts.length===1&&fwEl)fwEl.value=opts[0];if(!family.supported){v.innerHTML='<div class="status"><strong>Documentation found — guided workflow not yet enabled</strong><br>HP '+escapeHtml(m)+' is organized under the '+escapeHtml(family.label)+'. The supporting documentation is present, but this family has not yet been enabled for guided troubleshooting in this build.</div>';return;}verifiedModel=m;currentMachineModel=m;window.verifiedProduct=product;setServiceReportProblem('');const selectedFw=fwEl?.value||'',fwText=selectedFw?firmwareLabel(selectedFw):'Firmware level not applicable',productText=product?product+' — '+escapeHtml((productNumberCatalog[productCatalogKey(m)]||[]).find(x=>x.product===product)?.model||m):'Product number not selected';v.innerHTML='<div class="status"><strong>✓ App Ready</strong><br>HP '+escapeHtml(m)+' verified.<br><strong>Product:</strong> '+escapeHtml(productText)+'<br>'+escapeHtml(fwText)+'</div>';document.getElementById('problemCard').classList.remove('hidden');}
+function verifyModel(){const m=document.getElementById('model').value,productEl=document.getElementById('product'),product=productEl?productEl.value:'',v=document.getElementById('verify'),type=(document.getElementById('machineType')||{}).value||'',familyId=(document.getElementById('machineFamily')||{}).value||'',family=machineSelectionFamilies[type]?.[familyId];if(!type){v.innerHTML='<div class="status danger"><strong>Step 1:</strong> Select Monochrome, Color, or PageWide.</div>';return;}if(!familyId||!family){v.innerHTML='<div class="status danger"><strong>Step 2:</strong> Select the machine family.</div>';return;}if(!m){v.innerHTML='<div class="status danger"><strong>Step 3:</strong> Select the machine model.</div>';return;}const productEntries=productNumberCatalog[productCatalogKey(m)]||[];const validProduct=product ? productEntries.some(x=>x.product===product) : true;if(product && !validProduct){v.innerHTML='<div class="status danger"><strong>Product Number Mismatch</strong><br>Selected machine model: <strong>'+escapeHtml(m)+'</strong><br>Entered Product Number: <strong>'+escapeHtml(product)+'</strong><br>This product number is not cataloged for the selected model. Verify the model and product number on the machine before continuing.</div>';return;}const opts=firmwareOptionsForModel(m),fwEl=document.getElementById('firmwareLevel'),fw=fwEl?fwEl.value:'';if(opts.length>1&&!fw){v.innerHTML='<div class="status warn"><strong>Machine selected.</strong><br>FutureSmart is applicable to this model. Select the installed FutureSmart level before continuing.</div>';if(fwEl)fwEl.focus();return;}if(opts.length===1&&fwEl)fwEl.value=opts[0];if(!family.supported || (family.supportedModels && !family.supportedModels.includes(m))){v.innerHTML='<div class="status"><strong>Documentation found — guided workflow not yet enabled</strong><br>HP '+escapeHtml(m)+' is organized under the '+escapeHtml(family.label)+'. The supporting documentation is present, but this family has not yet been enabled for guided troubleshooting in this build.</div>';return;}verifiedModel=m;currentMachineModel=m;window.verifiedProduct=product;setServiceReportProblem('');const selectedFw=fwEl?.value||'',fwText=selectedFw?firmwareLabel(selectedFw):'Firmware level not applicable',productText=product?product+' — '+escapeHtml((productNumberCatalog[productCatalogKey(m)]||[]).find(x=>x.product===product)?.model||m):'Product number not selected';v.innerHTML='<div class="status"><strong>✓ App Ready</strong><br>HP '+escapeHtml(m)+' verified.<br><strong>Product:</strong> '+escapeHtml(productText)+'<br>'+escapeHtml(fwText)+'</div>';document.getElementById('problemCard').classList.remove('hidden');}
 
 function backToErrorCodeEntry(){
   if(typeof closeManualCoverage==="function") closeManualCoverage();
@@ -2213,9 +2214,34 @@ window.CW_IMPORT_AUDIT = window.CW_KNOWLEDGE_BASE?.importAudit || null;
   };
   window.CW_IMPORT_PACKAGE_VALIDATOR=validateManualPackage;
 })();
+/* Build 249: M776 diagnostic layer. M776 is enabled now; M856/E85055 remain selectable
+   but are not routed into this M776-specific catalog until their workflow is verified. */
+const M776_ERROR_CATALOG = [
+{code:"58.00.02",desc:"Environmental sensor failure.",steps:["Turn the printer off, and then on.","Disconnect and reconnect J521 and J522 on the fan connecting PCA.","Disconnect and reconnect J158 on the DC controller PCA.","If the error persists, replace the environmental sensor PCB assembly."],parts:["Environmental sensor PCB assembly — RM2-9620-000CN"],repairType:"envsensor-m776"},
+{code:"58.00.03",desc:"DC controller failure.",steps:["Turn the printer off, and then on.","Ensure that all connections on the DC controller PCA are securely seated.","If the error persists, replace the DC controller PCA."],parts:["DC controller PCB assembly (M856/E85055/M776dn/M776z) — RM2-9930-000CN"],repairType:"dccontroller-m776"},
+{code:"58.00.04",desc:"Low-voltage power supply unit malfunction.",steps:["Turn the printer off, and then on.","Check for source-power issues and verify the printer is connected to the correct dedicated power source.","Disconnect and reconnect J102 and J103 on the DC controller PCA and ensure they are securely seated.","If the error persists, replace the low-voltage power supply (LVPS)."],parts:["Low voltage power supply assembly (110V) — RM2-2473-000CN","Low voltage power supply assembly (220V) — RM2-2474-000CN"],repairType:"lvps-m776"},
+{code:"59.00.00",desc:"Motor error — paper path motor malfunction (M5 pickup motor).",steps:["Turn the printer off, and then on.","Open Support Tools → Troubleshooting → Diagnostic Tests → Component Test and run the M5 pickup motor drive test.","If the test fails, disconnect and reconnect J139 on the DC controller PCA and J572 and J574 on the pickup relay PCA.","Retest the M5 pickup motor. If the error persists, replace the pickup assembly which contains the pickup motor M5.","If the error persists after the motor has been replaced, replace the DC controller."],parts:["Paper pickup assembly (M856/E85055/M776) — RM2-1393-000CN","DC controller PCB assembly (M856/E85055/M776dn/M776z) — RM2-9930-000CN"],repairType:"pickup-m776"},
+{code:"59.00.03",desc:"Duplexer paper feed mechanism malfunction. This is typically the duplex feed motor error.",steps:["Turn the printer off, and then on.","Check the duplexer unit on the right door for jams or obstructions and remove them as needed.","If damage is found on the right door, replace the right door assembly (RM2-3434-000CN) as documented.","Open Support Tools → Troubleshooting → Diagnostic Tests → Component Test and run the duplex motor drive test (M12 for M776/M856/E85055; M13 for M776zs).","If the test fails, disconnect and reconnect J1660, J1651, J1657 and J1643 on the duplex PCA and J184 and J164 on the DC controller PCA, plus the connector on the motor.","Retest the motor. If the error persists, replace the paper delivery assembly.","If the error persists after the paper delivery assembly has been replaced, replace the duplexing controller PCB assembly."],parts:["Paper delivery assembly — RM2-3910-000CN","Duplexing controller PCB assembly — RM3-7380-000CN"],repairType:"delivery-m776"},
+{code:"59.00.04",desc:"Duplex unit malfunction. General duplex unit malfunction, typically the duplex switchback motor error.",steps:["Turn the printer off, and then on.","Check the duplexer unit on the right door for jams or obstructions and remove them as needed.","If damage is found on the right door, replace the right door assembly (RM2-3434-000CN) as documented.","Open Support Tools → Troubleshooting → Diagnostic Tests → Component Test and run the duplex switchback motor drive test (M11 for M776/M856/E85055; M15 for M776zs).","If the test fails, disconnect and reconnect J1656, J1648, J1657 and J1643 on the duplex PCA and J184 and J164 on the DC controller PCA, plus the connector on the motor.","Retest the motor. If the error persists, replace the paper delivery assembly.","If the error persists after the paper delivery assembly has been replaced, replace the duplexing controller PCB assembly."],parts:["Paper delivery assembly — RM2-3910-000CN","Duplexing controller PCB assembly — RM3-7380-000CN"],repairType:"delivery-m776"},
+{code:"51.00.10",desc:"Beam detect error — an error with the laser scanner assembly has occurred.",steps:["Turn the printer off, and then on.","Upgrade the firmware to the current revision available for the printer.","Check the wire harness and connections between the laser/scanner and the DC controller and reseat them if necessary.","If the error persists, replace the laser scanner assembly."],parts:["Laser scanner assembly — RM2-1328-020CN"],repairType:"laser-m776"},
+{code:"52.00.00",desc:"Laser scanner startup error.",steps:["Turn the printer off, and then on.","Upgrade the firmware to the current revision available for the printer.","Check all connections on the laser/scanner and from the laser/scanner to the DC controller and reseat them if necessary.","If the error persists, replace the laser scanner assembly."],parts:["Laser scanner assembly — RM2-1328-020CN"],repairType:"laser-m776"},
+{code:"52.00.20",desc:"Laser scanner rotation error.",steps:["Turn the printer off, and then on.","Upgrade the firmware to the current revision available for the printer.","Check all connections on the laser/scanner and from the laser/scanner to the DC controller and reseat them if necessary.","If the error persists, replace the laser scanner assembly."],parts:["Laser scanner assembly — RM2-1328-020CN"],repairType:"laser-m776"},
+{code:"53.B0.01",desc:"Tray 1 feed roller nearing end of life.",steps:["Replace the feed and separation rollers for Tray 1."],parts:["Tray 1 pickup and separation rollers — RM2-1525-000CN"],repairType:"tray1-m776"},
+{code:"53.B1.01",desc:"Tray 1 feed roller at end of life.",steps:["Replace the feed and separation rollers for Tray 1."],parts:["Tray 1 pickup and separation rollers — RM2-1525-000CN"],repairType:"tray1-m776"},
+{code:"53.B0.02",desc:"Tray 2 feed roller nearing end of life.",steps:["Replace the feed and separation rollers for Tray 2."],parts:["Tray 2 pickup and separation rollers — RM2-1526-000CN"],repairType:"tray2-m776"},
+{code:"53.B1.02",desc:"Tray 2 feed roller at end of life.",steps:["Replace the feed and separation rollers for Tray 2."],parts:["Tray 2 pickup and separation rollers — RM2-1526-000CN"],repairType:"tray2-m776"}
+];
+const M776_MESSAGE_CATALOG=[
+{message:"Bad optional tray connection",description:"The optional tray is not connected, not connected correctly, or a connection is not working correctly.",actions:["Turn the printer off and reseat the optional tray.","Inspect the tray and printer connectors for damage.","If the problem continues, replace the connector for the tray."]},
+{message:"Binname full",description:"The specified output bin is full.",actions:["Empty the bin.","Use diagnostic test SR41 to verify the bin full sensor.","If SR41 does not function correctly, replace the delivery assembly."]},
+{message:"Output Bin Full",description:"The output bin is full and paper must be removed before printing can continue.",actions:["Remove the paper from the output bin.","Verify the output bin sensor flag and run the output-bin-full sensor test.","If the sensor does not respond, replace the delivery assembly."]}
+];
 window.E52645_ALPHABETICAL_MESSAGES = window.CW_MANUAL_DATABASE.messages;
-const E52645_ERROR_CATALOG = window.CW_MANUAL_DATABASE.errors;
-window.E52645_ERROR_CATALOG = E52645_ERROR_CATALOG;
+let E52645_ERROR_CATALOG = window.CW_MANUAL_DATABASE.errors;
+function cwUseM776Catalog(){return String(currentMachineModel||verifiedModel||"").toUpperCase()==="M776";}
+function cwActiveErrorCatalog(){return cwUseM776Catalog()?M776_ERROR_CATALOG:E52645_ERROR_CATALOG;}
+function cwActiveMessageCatalog(){return cwUseM776Catalog()?M776_MESSAGE_CATALOG:window.E52645_ALPHABETICAL_MESSAGES;}
+window.E52645_ERROR_CATALOG=E52645_ERROR_CATALOG;
 function startSymptomDiagnosis(label,kind){
  // No error code/message: move to the symptom selector rather than trying to
  // render a branch with an undefined symptom.
@@ -2349,8 +2375,8 @@ function showManualCoverage(){const rootChoices=document.getElementById("lookupC
   panel.classList.remove("hidden","lookup-hidden");
   panel.style.display="block";
 
-  const errors=Array.isArray(window.E52645_ERROR_CATALOG) ? window.E52645_ERROR_CATALOG : (typeof E52645_ERROR_CATALOG!=="undefined" ? E52645_ERROR_CATALOG : []);
-  const messages=Array.isArray(window.E52645_ALPHABETICAL_MESSAGES) ? window.E52645_ALPHABETICAL_MESSAGES : [];
+  const errors=cwActiveErrorCatalog();
+  const messages=cwActiveMessageCatalog();
   const actionableErrors=errors.filter(x=>Array.isArray(x.steps)&&x.steps.length);
   const actionableMessages=messages.filter(x=>Array.isArray(x.actions)&&x.actions.length);
 
@@ -2471,8 +2497,8 @@ function renderManualCoverageList(type){
   });
 
   if(type==="all"){
-    const errors=window.E52645_ERROR_CATALOG||[];
-    const messages=window.E52645_ALPHABETICAL_MESSAGES||[];
+    const errors=cwActiveErrorCatalog();
+    const messages=cwActiveMessageCatalog();
     const combined=[];
     errors.forEach((item,index)=>{
       const hay=[item.code,item.desc,...(item.summary||[]),...(item.steps||[]),...(item.parts||[])].join(" ");
@@ -2496,7 +2522,7 @@ function renderManualCoverageList(type){
   }
 
   if(type==="errors"){
-    const catalog=window.E52645_ERROR_CATALOG||[];
+    const catalog=cwActiveErrorCatalog();
     const ranked=catalog.map((item,index)=>{
       const hay=[item.code,item.desc,...(item.summary||[]),...(item.steps||[]),...(item.parts||[])].join(" ");
       return {item,index,score:manualCoverageScore(search,hay,"errors")};
@@ -2513,7 +2539,7 @@ function renderManualCoverageList(type){
       </button>`;
     }).join("") || '<div class="lookup-help">No numerical errors matched those keywords.</div>';
   }else{
-    const catalog=window.E52645_ALPHABETICAL_MESSAGES||[];
+    const catalog=cwActiveMessageCatalog();
     const ranked=catalog.map((item,index)=>{
       const hay=[item.message,item.description,...(item.actions||[])].join(" ");
       return {item,index,score:manualCoverageScore(search,hay,"messages")};
@@ -2533,7 +2559,7 @@ function renderManualCoverageList(type){
 
 function openManualErrorFromIndex(index){
   if(typeof closeManualCoverage==="function") closeManualCoverage();
-  const item=(window.E52645_ERROR_CATALOG||[])[index];
+  const item=cwActiveErrorCatalog()[index];
   if(!item) return;
   try{ if(window.__cwRegressionNavigation?.clearPaths) window.__cwRegressionNavigation.clearPaths(); }catch(e){}
   const code=extractErrorCodeAliases(item.code)[0]||item.code;
@@ -2544,7 +2570,7 @@ function openManualErrorFromIndex(index){
 
 function openManualMessageFromIndex(index){
   if(typeof closeManualCoverage==="function") closeManualCoverage();
-  const item=(window.E52645_ALPHABETICAL_MESSAGES||[])[index];
+  const item=cwActiveMessageCatalog()[index];
   if(!item) return;
   try{ if(window.__cwRegressionNavigation?.clearPaths) window.__cwRegressionNavigation.clearPaths(); }catch(e){}
   window.selectedMessage=item.message||item.title||"";
@@ -2597,7 +2623,7 @@ function beginErrorCodeDiagnosis(code){
   if(!r) return;
   r.innerHTML=`<div class="pill">HP E52645</div><div class="pill">Model verified</div>
     <h2>Error Code Not Verified</h2>
-    <div class="status warn">The supplied E52645 documentation does not establish a verified diagnostic path for <strong>${escapeHtml(raw)}</strong>.</div>
+    <div class="status warn">The supplied documentation does not establish a verified diagnostic path for <strong>${escapeHtml(raw)}</strong> for this machine.</div>
     <p>The assistant will not invent a repair or substitute an Internet result for the manufacturer's documentation.</p>
     <button class="secondary" onclick="backToErrorCodeEntry()">← Back to Error Code</button>
     <button class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>`;
@@ -2622,7 +2648,7 @@ function submitMessageLookup(event){
   const text=(document.getElementById("messageLookup")?.value||"").trim();
   if(!text)return;
 
-  const catalog=window.E52645_ALPHABETICAL_MESSAGES||[];
+  const catalog=cwActiveMessageCatalog();
   const exact=catalog.find(x=>
     String(x.message||x.title||"").trim().toLowerCase()===text.toLowerCase()
   );
@@ -2654,7 +2680,7 @@ function searchErrorCodes(value){
   if(!q){ box.innerHTML=""; return; }
 
   const matches=[];
-  for(const item of E52645_ERROR_CATALOG){
+  for(const item of cwActiveErrorCatalog()){
     const aliases=extractErrorCodeAliases(item.code);
     if(aliases.some(a=>a===q || a.startsWith(q) || errorCodePatternMatches(a,q))){
       matches.push(item);
@@ -2691,7 +2717,7 @@ function searchAlphabeticalMessages(value){
   const q=String(value||"").trim().toLowerCase();
   if(!q){ box.innerHTML=""; return; }
 
-  const catalog=window.E52645_ALPHABETICAL_MESSAGES||[];
+  const catalog=cwActiveMessageCatalog();
   const matches=catalog.map((item,index)=>{
     const message=String(item.message||item.title||"");
     const description=String(item.description||"");
@@ -2784,7 +2810,7 @@ function findDocumentedError(code){
 
  // First check every exact code explicitly represented in a combined
  // documentation heading.
- for(const item of E52645_ERROR_CATALOG){
+ for(const item of cwActiveErrorCatalog()){
    const aliases=extractErrorCodeAliases(item.code);
    if(aliases.includes(c) && !aliases.some(a=>/[XYZ*]/.test(a))){
      return {item,matched:'exact'};
@@ -2792,7 +2818,7 @@ function findDocumentedError(code){
  }
 
  // Then check documented wildcard/pattern families.
- for(const item of E52645_ERROR_CATALOG){
+ for(const item of cwActiveErrorCatalog()){
    const aliases=extractErrorCodeAliases(item.code);
    for(const alias of aliases){
      if(errorCodePatternMatches(alias,c)){
@@ -2988,9 +3014,9 @@ function renderDocumentedErrorBranch(raw){
   const hit=findDocumentedError(raw), r=document.getElementById("result");
   if(!hit || !r) return false;
 
-  const x=hit.item, code=normalizeErrorCode(raw), verifiedModel="E52645";
-  const technicianOverride=getE52645TechnicianOverride(code,x);
-  let html='<div class="pill">HP E52645</div><div class="pill">Model verified</div>';
+  const x=hit.item, code=normalizeErrorCode(raw), activeModel=(currentMachineModel||verifiedModel||"E52645");
+  const technicianOverride=activeModel==="M776" ? null : getE52645TechnicianOverride(code,x);
+  let html='<div class="pill">HP '+escapeHtml(activeModel)+'</div><div class="pill">Model verified</div>';
   html+=`<h2>Documented Error — ${escapeHtml(code)}</h2>
     <div class="status"><strong>✓ Found in the supplied HP documentation.</strong><br>
     ${escapeHtml(x.desc||"Documented error condition.")}</div>`;
@@ -3038,7 +3064,7 @@ function renderDocumentedErrorBranch(raw){
     </div>`;
   }
 
-  const displayedParts=technicianOverride ? technicianOverride.parts : (Array.isArray(x.parts) ? [...new Set(x.parts.map(v=>cleanDocumentedPart(v,verifiedModel)).filter(Boolean))] : []);
+  const displayedParts=technicianOverride ? technicianOverride.parts : (Array.isArray(x.parts) ? [...new Set(x.parts.map(v=>cleanDocumentedPart(v,activeModel)).filter(Boolean))] : []);
   if(displayedParts.length){
     html+=`<div id="documentedPartsSection" class="hidden">
       <h3>Parts Specifically Mentioned by the Manual</h3>
@@ -3049,6 +3075,10 @@ function renderDocumentedErrorBranch(raw){
     </div>`;
   }
 
+  if(activeModel==="M776" && x.repairType){
+    const proc=CW_VERIFIED_REPAIR_PROCEDURES[x.repairType];
+    if(proc?.verified) html+=`<div style="margin-top:18px;"><button type="button" onclick="showRepair('${x.repairType}')">View Removal / Replacement Procedure</button></div>`;
+  }
   html+=`<div id="documentedOutcome" class="hidden" style="margin-top:18px;">
     <h3>Documented Checks Completed</h3>
     <p>What happened after completing the documented procedure?</p>
@@ -3371,6 +3401,7 @@ function documentedStepsCompleted(){
 function diagnose(){
  diagnosticHistory=[];
  const raw=document.getElementById("problem").value.trim(), p=raw.toLowerCase(), r=document.getElementById("result");
+ if(String(currentMachineModel||verifiedModel).toUpperCase()==="M776" && /^\d{2}\.[0-9A-F]{2}\.[0-9A-F]{2}$/i.test(raw)){ beginErrorCodeDiagnosis(raw); return; }
 
  // Symptom-based routing: free-text technician descriptions.
  const symptomText = raw.toLowerCase();
@@ -3690,11 +3721,11 @@ function getAlphabeticalTechnicianActions(item){
 function diagnosticAnswer(answer){
  const r=document.getElementById("result");
  saveDiagnosticState();
- let html='<div class="pill">HP E52645</div><div class="pill">Model verified</div>';
+ let html='<div class="pill">HP '+(currentMachineModel||verifiedModel)+ '</div><div class="pill">Model verified</div>';
 
  if(answer==='alphabetical-message'){
    const msg=window.selectedMessage||"";
-   const item=(window.E52645_ALPHABETICAL_MESSAGES||[]).find(x=>String(x.message).toLowerCase()===String(msg).toLowerCase());
+   const item=cwActiveMessageCatalog().find(x=>String(x.message).toLowerCase()===String(msg).toLowerCase());
    if(item){
      serviceReportContext.message=item.message||"";
      setServiceReportProblem("Alphabetical message: "+(item.message||""));
@@ -3806,7 +3837,7 @@ function diagnosticAnswer(answer){
        window.cwAlphabeticalStepShow(0);
      }
    } else {
-     html += `<h2>Message Not Verified</h2><div class="status">The entered message was not found in the currently loaded verified E52645 alphabetical-message catalog.</div><button class="secondary" onclick="showLookup('message')">Back to Message Search</button><button class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>`;
+     html += `<h2>Message Not Verified</h2><div class="status">The entered message was not found in the currently loaded verified alphabetical-message catalog.</div><button class="secondary" onclick="showLookup('message')">Back to Message Search</button><button class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>`;
    }
  } else if(answer==='alpha-resolved'){
    serviceReportContext.disposition='Problem resolved';
@@ -4960,6 +4991,17 @@ const CW_VERIFIED_REPAIR_PROCEDURES={
   }
 };
 
+Object.assign(CW_VERIFIED_REPAIR_PROCEDURES,{
+"envsensor-m776":{title:"Environmental sensor PCA",parts:["RM2-9620-000CN"],verified:true,html:`<h2>Removal and Replacement — Environmental Sensor PCA</h2><div class="status"><strong>Repair Manual verified</strong><br>RM2-9620-000CN — Environment sensor PCB assembly.</div><div class="step">Power off, disconnect power, and follow ESD precautions.</div><div class="step">Follow the M776 Repair Manual removal sequence for the environmental sensor PCA, including the required access covers, connectors, and mounting hardware.</div><div class="step">Install the replacement by reversing the documented sequence.</div><div class="step">Power on, confirm Ready, and print a page to verify operation.</div><p class="muted"><strong>Source:</strong> M776 Repair Manual.</p>`},
+"dccontroller-m776":{title:"DC controller (M856/E85055/M776)",parts:["RM2-9930-000CN","RM2-9931-000CN"],verified:true,html:`<h2>Removal and Replacement — DC Controller</h2><div class="status"><strong>Repair Manual verified</strong><br>RM2-9930-000CN for M776dn/M776z; RM2-9931-000CN for M776zs.</div><div class="step">Power off, disconnect power, and follow ESD precautions.</div><div class="step">Remove the formatter cover, left lower cover, right rear lower cover, M776 SCB cover, and applicable rear covers as specified.</div><div class="step">Follow the documented connector and mounting-hardware sequence to remove the DC controller.</div><div class="step">Install the replacement by reversing the documented sequence.</div><div class="step">Power on, confirm Ready, and print a page.</div><p class="muted"><strong>Source:</strong> M776 Repair Manual, Removal and replacement: DC controller (M856/E85055/M776).</p>`},
+"lvps-m776":{title:"Low-voltage power supply (M856/E85055/M776)",parts:["RM2-2473-000CN","RM2-2474-000CN"],verified:true,html:`<h2>Removal and Replacement — LVPS</h2><div class="status"><strong>Repair Manual verified</strong><br>RM2-2473-000CN (110V) or RM2-2474-000CN (220V).</div><div class="step">Power off and disconnect power.</div><div class="step">Remove the formatter cover and M776 SCB cover, then follow the applicable rear-cover access sequence.</div><div class="step">Disconnect the required connections, remove the mounting hardware, and remove the LVPS.</div><div class="step">Install the correct voltage assembly by reversing the documented sequence.</div><div class="step">Power on, confirm Ready, and print a page.</div><p class="muted"><strong>Source:</strong> M776 Repair Manual, Removal and replacement: Low-voltage power supply (LVPS) (M856/E85055/M776).</p>`},
+"delivery-m776":{title:"Delivery assembly (M776dn/M776z)",parts:["RM2-3910-000CN"],verified:true,html:`<h2>Removal and Replacement — Paper Delivery Assembly</h2><div class="status"><strong>Repair Manual verified</strong><br>RM2-3910-000CN — Paper delivery assembly. Procedure: Delivery assembly (M776dn/M776z).</div><div class="step">Power off, disconnect power, and wait 30 seconds before service.</div><div class="step">Remove the fuser.</div><div class="step">Remove the formatter cover and, on M776, the SCB cover.</div><div class="step">Remove the rear upper cover. On M776, remove the control panel, keyboard, and nose cone as specified.</div><div class="step">Disconnect the four connectors, remove the mounting screws, and slide/lift the delivery assembly out.</div><div class="step">Install in reverse order. Make sure the delivery flap passes through the cover opening and the assembly posts are seated in the printer tracks.</div><div class="step">Power on, confirm Ready, and print a page.</div><p class="muted"><strong>Source:</strong> M776 Repair Manual, pp. 634 onward.</p>`},
+"pickup-m776":{title:"Pickup assembly (M751/E75245/M856/E85055/M776)",parts:["RM2-1393-000CN"],verified:true,html:`<h2>Removal and Replacement — Pickup Assembly</h2><div class="status"><strong>Repair Manual verified</strong><br>RM2-1393-000CN — Paper pickup assembly for M856/E85055/M776.</div><div class="step">Power off and disconnect power.</div><div class="step">Follow the documented M776 pickup-assembly access sequence, disconnecting the required connectors and removing the mounting hardware.</div><div class="step">Install the replacement by reversing the documented removal sequence.</div><div class="step">Power on, confirm Ready, and perform the applicable paper-feed test.</div><p class="muted"><strong>Source:</strong> M776 Repair Manual, Removal and replacement: Pickup assembly, p. 1066 onward.</p>`},
+"laser-m776":{title:"Laser scanner (M751/E75245/M856/E85055/M776)",parts:["RM2-1328-020CN"],verified:true,html:`<h2>Removal and Replacement — Laser Scanner</h2><div class="status"><strong>Repair Manual verified</strong><br>RM2-1328-020CN — Laser scanner assembly.</div><div class="step">Power off and disconnect power.</div><div class="step">Follow the M776 Repair Manual laser-scanner access, connector, and mounting sequence.</div><div class="step">Install the replacement by reversing the documented sequence.</div><div class="step">Power on and print a test page.</div><p class="muted"><strong>Source:</strong> M776 Repair Manual, Removal and replacement: Laser scanner (M751/E75245/M856/E85055/M776), p. 1052 onward.</p>`},
+"tray1-m776":{title:"Tray 1 rollers",parts:["RM2-1525-000CN"],verified:true,html:`<h2>Removal and Replacement — Tray 1 Rollers</h2><div class="status"><strong>Repair Manual verified</strong><br>RM2-1525-000CN — Tray 1 pickup and separation rollers.</div><div class="step">Open Tray 1 and remove the pickup roller cover, then slide the pickup roller away to remove it.</div><div class="step">Slide the separation roller to the left and rotate the right side up to remove it.</div><div class="step">Install the replacement rollers, power on, and print a page from Tray 1.</div><p class="muted"><strong>Source:</strong> M776 Repair Manual, Removal and replacement: Tray 1 rollers, pp. 320 onward.</p>`},
+"tray2-m776":{title:"Tray 2 rollers",parts:["RM2-1526-000CN"],verified:true,html:`<h2>Removal and Replacement — Tray 2 Rollers</h2><div class="status"><strong>Repair Manual verified</strong><br>RM2-1526-000CN — Tray 2 pickup/separation roller assemblies.</div><div class="step">Follow the M776 Repair Manual procedure for Tray 2 pickup and separation rollers.</div><div class="step">Install the replacement rollers, power on, and print from Tray 2.</div><p class="muted"><strong>Source:</strong> M776 Repair Manual.</p>`}
+});
+
 function showRepair(type){
  const r=document.getElementById("result");
  const proc=CW_VERIFIED_REPAIR_PROCEDURES[type];
@@ -5369,7 +5411,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='248';
+  const CURRENT='249';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;
@@ -5557,6 +5599,13 @@ function cwPartSearchScore(entry, query, model, product){
 }
 
 function runVerifiedPartLookup(){
+  if(cwUseM776Catalog()){
+    const q=(document.getElementById("partLookupQuery")?.value||"").trim().toLowerCase();
+    const box=document.getElementById("partLookupResults");
+    const rows=window.CW_M776_PARTS.filter(x=>!q || (x.part+" "+x.description).toLowerCase().includes(q));
+    if(box) box.innerHTML=rows.map(x=>`<div class="status" style="margin:8px 0"><strong>${escapeHtml(x.description)}</strong><br><span class="part">${escapeHtml(x.part)}</span></div>`).join("") || '<div class="lookup-help">No M776 part matched that search.</div>';
+    return;
+  }
   const box=document.getElementById("partLookupResults");
   if(!box)return;
   const model=(document.getElementById("model")?.value||"").trim();
