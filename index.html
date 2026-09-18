@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 238</title>
+<title>Copier Wizard — Build 239</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -599,7 +599,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 238</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.<br/>Manual data layer: <strong>External</strong></footer>
+<footer><strong>Copier Wizard — Build 239</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.<br/>Manual data layer: <strong>External</strong></footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -711,7 +711,7 @@ function openServiceReport(disposition){
   const msg=serviceReportContext.message || document.getElementById("messageLookup")?.value.trim() || "";
   const defaultProblem=serviceReportContext.problem || (code?`Error code ${code}`:(msg?msg:"Diagnostic problem"));
   const log=serviceReportLog.filter(x=>x.title||x.detail||x.parts.length||x.steps.length);
-  // Build 238: the report should show the actual work performed once.
+  // Build 239: the report should show the actual work performed once.
   // Snapshot titles such as "Documented Error — 31.03.20" are navigation/history
   // markers, not work performed, and the old separate Key Checks / Actions
   // section duplicated the same completed steps.
@@ -2141,8 +2141,76 @@ function backToOtherDescription(){
 // Build 206: manual content is loaded from the external data layer (cw-manual-data.js).
 // The aliases below preserve compatibility with the existing diagnostic engine while
 // keeping service-manual content out of the application logic.
-// Build 238: expose the ingestion audit for development/testing without changing technician workflow.
+// Build 239: expose the ingestion audit for development/testing without changing technician workflow.
 window.CW_IMPORT_AUDIT = window.CW_KNOWLEDGE_BASE?.importAudit || null;
+
+// Build 239: formal manual-package validation contract. This is intentionally
+// validation-only: imported content is never merged into the live database
+// automatically, and no troubleshooting branch or part applicability is inferred.
+(function(){
+  const kb=window.CW_KNOWLEDGE_BASE;
+  if(!kb) return;
+  const text=v=>String(v==null?"":v).replace(/\s+/g," ").trim();
+  const arr=v=>Array.isArray(v)?v:[];
+  const unique=(values)=>[...new Set(values.map(text).filter(Boolean))];
+  function validateManualPackage(pkg){
+    const issues=[];
+    if(!pkg || typeof pkg!=="object") return {ok:false,status:"invalid",issues:["package-not-an-object"]};
+    if(pkg.packageType!=="copier-wizard-knowledge") issues.push("invalid:packageType");
+    if(Number(pkg.schemaVersion)!==2) issues.push("unsupported:schemaVersion");
+    if(!text(pkg.packageId)) issues.push("missing:packageId");
+    if(text(pkg.manufacturer).toUpperCase()!=="HP") issues.push("invalid:manufacturer");
+    const source=pkg.source||{};
+    if(!text(source.model)) issues.push("missing:source.model");
+    if(!text(source.authority)) issues.push("missing:source.authority");
+    const errors=arr(pkg.records?.errors), messages=arr(pkg.records?.messages);
+    const ids=[];
+    errors.forEach((r,i)=>{
+      if(r?.recordType!=="error") issues.push(`error-${i+1}:invalid-recordType`);
+      if(!text(r?.id)) issues.push(`error-${i+1}:missing-id`); else ids.push(text(r.id));
+      if(!text(r?.code)) issues.push(`error-${i+1}:missing-code`);
+      if(!Array.isArray(r?.summary)) issues.push(`error-${i+1}:summary-not-array`);
+      if(!Array.isArray(r?.steps)) issues.push(`error-${i+1}:steps-not-array`);
+      if(!Array.isArray(r?.partsMentioned)) issues.push(`error-${i+1}:partsMentioned-not-array`);
+    });
+    messages.forEach((r,i)=>{
+      if(r?.recordType!=="message") issues.push(`message-${i+1}:invalid-recordType`);
+      if(!text(r?.id)) issues.push(`message-${i+1}:missing-id`); else ids.push(text(r.id));
+      if(!text(r?.message)) issues.push(`message-${i+1}:missing-message`);
+      if(!Array.isArray(r?.actions)) issues.push(`message-${i+1}:actions-not-array`);
+    });
+    const dupIds=ids.filter((v,i,a)=>a.indexOf(v)!==i);
+    unique(dupIds).forEach(id=>issues.push(`duplicate-id:${id}`));
+    return {
+      ok:issues.length===0,
+      status:issues.length?"review-required":"pass",
+      packageId:text(pkg.packageId),
+      schemaVersion:Number(pkg.schemaVersion),
+      errorCount:errors.length,
+      messageCount:messages.length,
+      flaggedCount:issues.length,
+      issues
+    };
+  }
+  kb.validateManualPackage=validateManualPackage;
+  kb.getImportReadiness=function(){
+    const audit=this.importAudit||{};
+    const contract=this.importContract||{};
+    return {
+      schemaVersion:contract.schemaVersion||null,
+      contractVersion:contract.schemaVersion||null,
+      currentPackageSchema:2,
+      existingRecords:(this.records||[]).length,
+      existingParts:(this.parts||[]).length,
+      existingAuditStatus:audit.status||"unknown",
+      existingAuditFlagged:Number(audit.flaggedRecords||0),
+      readyForExternalPackageValidation:true,
+      automaticMerge:false,
+      partAuthorityRule:"HP source-supported only"
+    };
+  };
+  window.CW_IMPORT_PACKAGE_VALIDATOR=validateManualPackage;
+})();
 window.E52645_ALPHABETICAL_MESSAGES = window.CW_MANUAL_DATABASE.messages;
 const E52645_ERROR_CATALOG = window.CW_MANUAL_DATABASE.errors;
 window.E52645_ERROR_CATALOG = E52645_ERROR_CATALOG;
@@ -2773,7 +2841,7 @@ function cleanTechnicianStep(raw){
 
 function getE52645TechnicianOverride(code, item){
   const normalized=normalizeErrorCode(code);
-  // Build 238: first importer-readiness batch. These procedures exercise
+  // Build 239: first importer-readiness batch. These procedures exercise
   // consumable, firmware/power-cycle, conditional replacement, voltage-specific
   // parts, and escalation outcomes using the existing HP manual data layer.
   if(normalized==="10.00.00" || normalized==="10.00.01"){
@@ -5234,7 +5302,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='235';
+  const CURRENT='239';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;

@@ -1,4 +1,4 @@
-/* Copier Wizard manual data layer — Build 238
+/* Copier Wizard manual data layer — Build 239
  * Schema v2. Service-manual content is intentionally separated from app logic.
  * Backward-compatible legacy arrays remain available to the existing UI.
  * The normalized knowledge layer below is structural only; it does not infer source content.
@@ -190,10 +190,55 @@ window.CW_MANUAL_DATABASE = {"schemaVersion":1,"databaseId":"hp-e52645","model":
     if(issues.length) audit.push({id:r.id,code:r.code,type:r.type,issues});
   });
   kb.importAudit={
-    build:238,
+    build:239,
     checkedRecords:(kb.records||[]).length,
     flaggedRecords:audit.length,
     findings:audit,
     status:audit.length?"review-required":"pass"
+  };
+})();
+
+
+/* Build 239: normalized knowledge-package contract.
+ * This layer does not infer troubleshooting logic or part applicability.
+ * It preserves the existing source-derived arrays while giving the future
+ * manual-ingestion pipeline a stable package shape to validate against.
+ */
+(function(){
+  const db=window.CW_MANUAL_DATABASE||{};
+  const clean=v=>String(v==null?"":v).replace(/\s+/g," ").trim();
+  const toErrorRecord=e=>({
+    recordType:"error",
+    id:"error:"+clean(e?.code).toUpperCase(),
+    code:clean(e?.code),
+    title:clean(e?.desc),
+    summary:Array.isArray(e?.summary)?e.summary.map(clean).filter(Boolean):[],
+    steps:Array.isArray(e?.steps)?e.steps.map(clean).filter(Boolean):[],
+    partsMentioned:Array.isArray(e?.parts)?e.parts.map(clean).filter(Boolean):[],
+    sourceRecord:e
+  });
+  const toMessageRecord=e=>({
+    recordType:"message",
+    id:"message:"+clean(e?.message).toLowerCase(),
+    message:clean(e?.message),
+    description:clean(e?.description),
+    actions:Array.isArray(e?.actions)?e.actions.map(clean).filter(Boolean):[],
+    sourceRecord:e
+  });
+  window.CW_KNOWLEDGE_PACKAGE={
+    schemaVersion:2,
+    packageType:"copier-wizard-knowledge",
+    packageId:clean(db.databaseId)||"unknown",
+    manufacturer:"HP",
+    source:{
+      model:clean(db.model),
+      sourceDescription:clean(db.source),
+      authority:"HP service-manual / CPMD source data only"
+    },
+    records:{
+      errors:Array.isArray(db.errors)?db.errors.map(toErrorRecord):[],
+      messages:Array.isArray(db.messages)?db.messages.map(toMessageRecord):[]
+    },
+    legacyDatabase:db
   };
 })();
