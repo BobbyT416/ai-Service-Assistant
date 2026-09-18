@@ -1,4 +1,4 @@
-/* Copier Wizard manual data layer — Build 237
+/* Copier Wizard manual data layer — Build 238
  * Schema v2. Service-manual content is intentionally separated from app logic.
  * Backward-compatible legacy arrays remain available to the existing UI.
  * The normalized knowledge layer below is structural only; it does not infer source content.
@@ -150,5 +150,50 @@ window.CW_MANUAL_DATABASE = {"schemaVersion":1,"databaseId":"hp-e52645","model":
   window.CW_KNOWLEDGE_BASE.getPart = function(partNumber,model){
     const pn=normalizeCode(partNumber).toUpperCase();
     return this.parts.find(x=>String(x.partNumber).toUpperCase()===pn && (!model || !x.models?.length || x.models.includes(model))) || null;
+  };
+})();
+
+
+/* Build 238 — manual-ingestion readiness contract.
+ * This does not alter HP troubleshooting content. It defines the normalized
+ * fields future manual imports must provide and audits imported records so
+ * malformed extraction can be caught before it reaches the technician UI.
+ */
+(function(){
+  const kb=window.CW_KNOWLEDGE_BASE;
+  if(!kb) return;
+  kb.importContract={
+    schemaVersion:3,
+    requiredRecordFields:["id","type","model","code","sourceId"],
+    errorFields:["officialDescription","summary","troubleshootingSteps"],
+    messageFields:["message","description","actions"],
+    partFields:["partNumber","displayDescription","type","models","sourceId","sourceStatus"],
+    supportedRecordTypes:["error","message","part"],
+    decisionRule:"Only create a decision from an explicit documented condition; never invent a branch.",
+    partRule:"Promote a part only when its number, description, and applicability are supported by the HP source."
+  };
+
+  const looksTruncated=t=>{
+    t=String(t||"").trim();
+    if(!t) return false;
+    return /\b(and|or|the|a|an|to|for|with|from|between|on|of|at|in|all|any|following|customer|scanner|control|cable|part)\s*$/i.test(t);
+  };
+  const audit=[];
+  (kb.records||[]).forEach(r=>{
+    const issues=[];
+    kb.importContract.requiredRecordFields.forEach(f=>{ if(r[f]===undefined||r[f]===null||String(r[f]).trim()==="") issues.push(`missing:${f}`); });
+    const steps=r.type==="error"?(r.troubleshootingSteps||[]):r.type==="message"?(r.actions||[]):[];
+    steps.forEach((step,i)=>{
+      if(looksTruncated(step)) issues.push(`possible-truncation:step-${i+1}`);
+      if(/Recommended action for call-center agents/i.test(step)) issues.push(`mixed-audience:step-${i+1}`);
+    });
+    if(issues.length) audit.push({id:r.id,code:r.code,type:r.type,issues});
+  });
+  kb.importAudit={
+    build:238,
+    checkedRecords:(kb.records||[]).length,
+    flaggedRecords:audit.length,
+    findings:audit,
+    status:audit.length?"review-required":"pass"
   };
 })();

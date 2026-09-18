@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 237</title>
+<title>Copier Wizard — Build 238</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -599,7 +599,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 237</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.<br/>Manual data layer: <strong>External</strong></footer>
+<footer><strong>Copier Wizard — Build 238</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.<br/>Manual data layer: <strong>External</strong></footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -711,7 +711,7 @@ function openServiceReport(disposition){
   const msg=serviceReportContext.message || document.getElementById("messageLookup")?.value.trim() || "";
   const defaultProblem=serviceReportContext.problem || (code?`Error code ${code}`:(msg?msg:"Diagnostic problem"));
   const log=serviceReportLog.filter(x=>x.title||x.detail||x.parts.length||x.steps.length);
-  // Build 237: the report should show the actual work performed once.
+  // Build 238: the report should show the actual work performed once.
   // Snapshot titles such as "Documented Error — 31.03.20" are navigation/history
   // markers, not work performed, and the old separate Key Checks / Actions
   // section duplicated the same completed steps.
@@ -2141,6 +2141,8 @@ function backToOtherDescription(){
 // Build 206: manual content is loaded from the external data layer (cw-manual-data.js).
 // The aliases below preserve compatibility with the existing diagnostic engine while
 // keeping service-manual content out of the application logic.
+// Build 238: expose the ingestion audit for development/testing without changing technician workflow.
+window.CW_IMPORT_AUDIT = window.CW_KNOWLEDGE_BASE?.importAudit || null;
 window.E52645_ALPHABETICAL_MESSAGES = window.CW_MANUAL_DATABASE.messages;
 const E52645_ERROR_CATALOG = window.CW_MANUAL_DATABASE.errors;
 window.E52645_ERROR_CATALOG = E52645_ERROR_CATALOG;
@@ -2771,6 +2773,60 @@ function cleanTechnicianStep(raw){
 
 function getE52645TechnicianOverride(code, item){
   const normalized=normalizeErrorCode(code);
+  // Build 238: first importer-readiness batch. These procedures exercise
+  // consumable, firmware/power-cycle, conditional replacement, voltage-specific
+  // parts, and escalation outcomes using the existing HP manual data layer.
+  if(normalized==="10.00.00" || normalized==="10.00.01"){
+    return {
+      steps:[
+        "Remove and reinstall the toner cartridge.",
+        "If the error returns, turn the printer off and then on using the power button.",
+        "Inspect the toner-cartridge memory chip. If the memory chip is damaged, replace the toner cartridge.",
+        "If the error persists and the toner cartridge has not already been replaced, replace the toner cartridge.",
+        "If the error persists, replace the Memory PCA.",
+        "If the error persists after replacing the Memory PCA, replace the high-voltage power supply (HVPS)."
+      ],
+      parts:[
+        "Memory PCA — RM2-7955-000CN",
+        "High-voltage power supply (HVPS) assembly — RM2-7945-000CN"
+      ]
+    };
+  }
+  if(normalized==="10.00.10"){
+    return {
+      steps:[
+        "Remove and reinstall the indicated toner cartridge.",
+        "If the message returns, turn the printer off and then on using the power button.",
+        "Inspect the toner-cartridge memory tag. If it is damaged, replace the toner cartridge.",
+        "If the error persists, replace the indicated toner cartridge."
+      ],
+      parts:[]
+    };
+  }
+  if(normalized==="10.23.15"){
+    return {
+      steps:[
+        "Turn the printer off and then on.",
+        "If the error persists, replace or install the indicated fuser assembly that matches the printer input voltage."
+      ],
+      parts:[
+        "Fuser assembly 110V–127V (E52645) — RM2-2585-000CN",
+        "Fuser assembly 220V–240V (E52645) — RM2-2586-000CN"
+      ]
+    };
+  }
+  if(normalized==="10.23.35"){
+    return {
+      steps:[
+        "Turn the printer off and then on.",
+        "If the error persists, install a fuser assembly designed for the printer and matching the printer input voltage."
+      ],
+      parts:[
+        "Fuser assembly 110V–127V (E52645) — RM2-2585-000CN",
+        "Fuser assembly 220V–240V (E52645) — RM2-2586-000CN"
+      ]
+    };
+  }
   if(normalized==="30.01.46"){
     return {
       steps:[
