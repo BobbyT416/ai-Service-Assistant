@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 245</title>
+<title>Copier Wizard — Build 246</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -599,7 +599,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 245</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.<br/>Manual data layer: <strong>External</strong></footer>
+<footer><strong>Copier Wizard — Build 246</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.<br/>Manual data layer: <strong>External</strong></footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -2921,10 +2921,10 @@ function getE52645TechnicianOverride(code, item){
   }
   if(normalized==="31.03.14"){
     return {
-      steps:[
-        "No action required. 31.03.14 is a non-fatal backside scanner EEPROM (NVM) error and is informational only."
-      ],
-      parts:[]
+      noAction:true,
+      steps:[],
+      parts:[],
+      message:"No action required. 31.03.14 is a non-fatal backside scanner EEPROM (NVM) error and is informational only."
     };
   }
   if(normalized!=="31.13.00") return null;
@@ -2998,6 +2998,22 @@ function renderDocumentedErrorBranch(raw){
     html+='<h3>What the manual says</h3><ul>'+
       x.summary.map(v=>`<li>${escapeHtml(v)}</li>`).join("")+
       '</ul>';
+  }
+
+  // Global no-action rule: when the verified documentation explicitly says
+  // that a condition is informational/no action required, do not pass it into
+  // the generic step/decision engine. This prevents invented troubleshooting,
+  // escalation, or parts recommendations for future imported manuals too.
+  if(technicianOverride && technicianOverride.noAction){
+    html+=`<div class="status" style="margin-top:16px;"><strong>No technician action required.</strong><br>${escapeHtml(technicianOverride.message||"The supplied documentation indicates that no action is required.")}</div>
+      <button type="button" class="secondary" onclick="backToErrorCodeEntry()">← Back to Error Code</button>
+      <button type="button" class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>`;
+    r.innerHTML=html;
+    const resultCard=document.getElementById("resultCard");
+    if(resultCard) resultCard.classList.remove("hidden");
+    const target=document.getElementById("resultCard");
+    if(target) target.scrollIntoView({behavior:"smooth",block:"start"});
+    return true;
   }
 
   const steps=technicianOverride ? technicianOverride.steps : (Array.isArray(x.steps) ? x.steps.map(cleanTechnicianStep).filter(v=>v.trim()) : []);
