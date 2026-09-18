@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 234</title>
+<title>Copier Wizard — Build 235</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -599,7 +599,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 234</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.<br/>Manual data layer: <strong>External</strong></footer>
+<footer><strong>Copier Wizard — Build 235</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.<br/>Manual data layer: <strong>External</strong></footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -711,7 +711,7 @@ function openServiceReport(disposition){
   const msg=serviceReportContext.message || document.getElementById("messageLookup")?.value.trim() || "";
   const defaultProblem=serviceReportContext.problem || (code?`Error code ${code}`:(msg?msg:"Diagnostic problem"));
   const log=serviceReportLog.filter(x=>x.title||x.detail||x.parts.length||x.steps.length);
-  // Build 234: the report should show the actual work performed once.
+  // Build 235: the report should show the actual work performed once.
   // Snapshot titles such as "Documented Error — 31.03.20" are navigation/history
   // markers, not work performed, and the old separate Key Checks / Actions
   // section duplicated the same completed steps.
@@ -2927,9 +2927,8 @@ function renderDocumentedErrorBranch(raw){
       let stepHtml=`<div class="documented-step" style="padding:16px;margin:10px 0;border:1px solid #d8e0e7;border-radius:9px;background:#fff;">
         <div class="muted">Step ${index+1} of ${window.cwDocumentedSteps.length}</div>
         <h4 style="margin:8px 0 10px;">Step ${index+1}</h4>
-        <div style="font-size:1.05rem;line-height:1.5;">${escapeHtml(decision ? (decision.prefix || "Complete the documented check before evaluating the condition.") : step)}</div>`;
+        <div style="font-size:1.05rem;line-height:1.5;">${escapeHtml(decision ? (decision.prefix || "Complete the documented check, then answer the question below.") : step)}</div>`;
       if(decision){
-        stepHtml+=`<div class="status" style="margin-top:12px;"><strong>If ${escapeHtml(decision.condition)},</strong> ${escapeHtml(decision.action)}</div>`;
         stepHtml+=renderDocumentedDecisionControls(step,index,"documented");
       }
 
@@ -3028,16 +3027,42 @@ function parseDocumentedDecisionStep(step){
   return {prefix,condition,action,source:raw};
 }
 
+function documentedDecisionQuestion(condition){
+  let c=String(condition||"").replace(/\s+/g," ").trim().replace(/[.?!]+$/g,"");
+  if(!c) return "Is this condition true?";
+  let m=c.match(/^(.+?)\s+still\s+(returns?|occurs?|persists?|fails?)$/i);
+  if(m) return `Does ${m[1].trim()} still ${m[2].toLowerCase()}?`;
+  m=c.match(/^(.+?)\s+is\s+(.+)$/i);
+  if(m) return `Is ${m[1].trim()} ${m[2].trim()}?`;
+  m=c.match(/^(.+?)\s+are\s+(.+)$/i);
+  if(m) return `Are ${m[1].trim()} ${m[2].trim()}?`;
+  m=c.match(/^(.+?)\s+was\s+(.+)$/i);
+  if(m) return `Was ${m[1].trim()} ${m[2].trim()}?`;
+  m=c.match(/^(.+?)\s+were\s+(.+)$/i);
+  if(m) return `Were ${m[1].trim()} ${m[2].trim()}?`;
+  m=c.match(/^(.+?)\s+does\s+not\s+(.+)$/i);
+  if(m) return `Does ${m[1].trim()} not ${m[2].trim()}?`;
+  m=c.match(/^(.+?)\s+do\s+not\s+(.+)$/i);
+  if(m) return `Do ${m[1].trim()} not ${m[2].trim()}?`;
+  m=c.match(/^(.+?)\s+persists?$/i);
+  if(m) return `Does ${m[1].trim()} persist?`;
+  m=c.match(/^(.+?)\s+fails?$/i);
+  if(m) return `Does ${m[1].trim()} fail?`;
+  return `Is this condition true: ${c}?`;
+}
+
 function renderDocumentedDecisionControls(step, index, mode){
   const decision=parseDocumentedDecisionStep(step);
   if(!decision) return "";
   const fn=mode==="alphabetical" ? "cwAlphabeticalDecision" : "cwDocumentedDecision";
+  const question=documentedDecisionQuestion(decision.condition);
   return `<div class="documented-decision" style="margin-top:16px;padding:14px;border:1px solid #cfd9e2;border-radius:9px;background:#f8fafc;">
     <strong>Decision point</strong>
-    <div style="margin-top:7px;line-height:1.45;">Does this condition apply?</div>
+    <div style="margin-top:7px;line-height:1.45;font-weight:600;">${escapeHtml(question)}</div>
+    <div style="margin-top:6px;color:#5b6875;font-size:.92rem;">Answer based on the documented check you just performed.</div>
     <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
-      <button type="button" onclick="${fn}('yes')">Yes — condition applies</button>
-      <button type="button" class="secondary" onclick="${fn}('no')">No — continue</button>
+      <button type="button" onclick="${fn}('yes')">Yes — condition is true</button>
+      <button type="button" class="secondary" onclick="${fn}('no')">No — condition is not true</button>
     </div>
     <div id="documentedDecisionDetail" style="margin-top:12px;"></div>
   </div>`;
@@ -3499,8 +3524,8 @@ function diagnosticAnswer(answer){
          let stepHtml=`<div class="documented-step" style="padding:16px;margin:10px 0;border:1px solid #d8e0e7;border-radius:9px;background:#fff;">
            <div class="muted">Step ${index+1} of ${window.cwAlphabeticalSteps.length}</div>
            <h4 style="margin:8px 0 10px;">Step ${index+1}</h4>
-           <div style="font-size:1.05rem;line-height:1.5;">${escapeHtml(decision ? (decision.prefix || "Complete the documented check before evaluating the condition.") : step)}</div>
-           ${decision ? `<div class="status" style="margin-top:12px;"><strong>If ${escapeHtml(decision.condition)},</strong> ${escapeHtml(decision.action)}</div>${renderDocumentedDecisionControls(step,index,"alphabetical")}` : ``}`;
+           <div style="font-size:1.05rem;line-height:1.5;">${escapeHtml(decision ? (decision.prefix || "Complete the documented check, then answer the question below.") : step)}</div>
+           ${decision ? `${renderDocumentedDecisionControls(step,index,"alphabetical")}` : ``}`;
          if(testInfo){
            stepHtml+=`<div class="diagnostic-navigation" style="margin-top:14px;">
              <strong>Diagnostic test referenced by this step</strong>
@@ -5090,7 +5115,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='234';
+  const CURRENT='235';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;
