@@ -154,10 +154,11 @@ window.CW_MANUAL_DATABASE = {"schemaVersion":1,"databaseId":"hp-e52645","model":
 })();
 
 
-/* Build 238 — manual-ingestion readiness contract.
+/* Build 240 — manual-ingestion readiness contract.
  * This does not alter HP troubleshooting content. It defines the normalized
  * fields future manual imports must provide and audits imported records so
  * malformed extraction can be caught before it reaches the technician UI.
+ * Validation is record-type-aware: message records do not require an error code.
  */
 (function(){
   const kb=window.CW_KNOWLEDGE_BASE;
@@ -179,22 +180,41 @@ window.CW_MANUAL_DATABASE = {"schemaVersion":1,"databaseId":"hp-e52645","model":
     return /\b(and|or|the|a|an|to|for|with|from|between|on|of|at|in|all|any|following|customer|scanner|control|cable|part)\s*$/i.test(t);
   };
   const audit=[];
+  const warnings=[];
   (kb.records||[]).forEach(r=>{
     const issues=[];
-    kb.importContract.requiredRecordFields.forEach(f=>{ if(r[f]===undefined||r[f]===null||String(r[f]).trim()==="") issues.push(`missing:${f}`); });
+    const required = r.type === "error"
+      ? ["id","type","model","code","sourceId"]
+      : r.type === "message"
+        ? ["id","type","model","sourceId"]
+        : ["id","type","model","sourceId"];
+    required.forEach(f=>{
+      if(r[f]===undefined||r[f]===null||String(r[f]).trim()==="") issues.push(`missing:${f}`);
+    });
     const steps=r.type==="error"?(r.troubleshootingSteps||[]):r.type==="message"?(r.actions||[]):[];
     steps.forEach((step,i)=>{
-      if(looksTruncated(step)) issues.push(`possible-truncation:step-${i+1}`);
-      if(/Recommended action for call-center agents/i.test(step)) issues.push(`mixed-audience:step-${i+1}`);
+      if(looksTruncated(step)) warnings.push({id:r.id,code:r.code,type:r.type,issue:`possible-truncation:step-${i+1}`});
+      if(/Recommended action for call-center agents/i.test(step)) warnings.push({id:r.id,code:r.code,type:r.type,issue:`mixed-audience:step-${i+1}`});
     });
     if(issues.length) audit.push({id:r.id,code:r.code,type:r.type,issues});
   });
+  // Parts are audited separately because they are authoritative entities, not
+  // diagnostic/message records and therefore are not part of kb.records.
+  (kb.parts||[]).forEach(p=>{
+    const issues=[];
+    ["id","partNumber","displayDescription","type","models","sourceId","sourceStatus"].forEach(f=>{
+      if(p[f]===undefined||p[f]===null||(Array.isArray(p[f]) ? p[f].length===0 : String(p[f]).trim()==="")) issues.push(`missing:${f}`);
+    });
+    if(issues.length) audit.push({id:p.id,partNumber:p.partNumber,type:"part",issues});
+  });
   kb.importAudit={
-    build:239,
-    checkedRecords:(kb.records||[]).length,
+    build:240,
+    checkedRecords:(kb.records||[]).length+(kb.parts||[]).length,
     flaggedRecords:audit.length,
     findings:audit,
-    status:audit.length?"review-required":"pass"
+    warningCount:warnings.length,
+    warnings,
+    status:audit.length?"review-required":(warnings.length?"review-warnings":"pass")
   };
 })();
 
