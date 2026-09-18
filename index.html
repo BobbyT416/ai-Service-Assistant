@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 232</title>
+<title>Copier Wizard — Build 233</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -599,7 +599,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 232</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.<br/>Manual data layer: <strong>External</strong></footer>
+<footer><strong>Copier Wizard — Build 233</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.<br/>Manual data layer: <strong>External</strong></footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -2920,10 +2920,15 @@ function renderDocumentedErrorBranch(raw){
       const step=window.cwDocumentedSteps[index];
       const testInfo=extractDiagnosticTestReference(step);
       const stepParts=getDocumentedStepParts(step, displayedParts);
+      const decision=parseDocumentedDecisionStep(step);
       let stepHtml=`<div class="documented-step" style="padding:16px;margin:10px 0;border:1px solid #d8e0e7;border-radius:9px;background:#fff;">
         <div class="muted">Step ${index+1} of ${window.cwDocumentedSteps.length}</div>
         <h4 style="margin:8px 0 10px;">Step ${index+1}</h4>
-        <div style="font-size:1.05rem;line-height:1.5;">${escapeHtml(step)}</div>`;
+        <div style="font-size:1.05rem;line-height:1.5;">${escapeHtml(decision ? (decision.prefix || "Complete the documented check before evaluating the condition.") : step)}</div>`;
+      if(decision){
+        stepHtml+=`<div class="status" style="margin-top:12px;"><strong>If ${escapeHtml(decision.condition)},</strong> ${escapeHtml(decision.action)}</div>`;
+        stepHtml+=renderDocumentedDecisionControls(step,index,"documented");
+      }
 
       if(stepParts.length){
         stepHtml+=`<div class="status" style="margin-top:14px;">
@@ -2943,12 +2948,17 @@ function renderDocumentedErrorBranch(raw){
         </div>`;
       }
 
-      stepHtml+=`<div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;">
-        ${index>0 ? `<button type="button" class="secondary" onclick="cwDocumentedStepBack()">← Back</button>` : ``}
-        <button type="button" onclick="cwDocumentedStepCompleted()">
-          ✓ Step Completed — Continue
-        </button>
-      </div></div>`;
+      if(!decision){
+        stepHtml+=`<div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;">
+          ${index>0 ? `<button type="button" class="secondary" onclick="cwDocumentedStepBack()">← Back</button>` : ``}
+          <button type="button" onclick="cwDocumentedStepCompleted()">
+            ✓ Step Completed — Continue
+          </button>
+        </div>`;
+      } else if(index>0){
+        stepHtml+=`<div style="margin-top:18px;"><button type="button" class="secondary" onclick="cwDocumentedStepBack()">← Back</button></div>`;
+      }
+      stepHtml+=`</div>`;
       list.innerHTML=stepHtml;
       if(progress) progress.textContent=`Step ${index+1} of ${window.cwDocumentedSteps.length}`;
       const outcome=document.getElementById("documentedOutcome");
@@ -2958,6 +2968,32 @@ function renderDocumentedErrorBranch(raw){
       const previous=window.cwDocumentedStepIndex-1;
       if(previous>=0) window.cwDocumentedStepShow(previous);
     };
+    window.cwDocumentedDecision=function(choice){
+      const idx=window.cwDocumentedStepIndex;
+      const step=window.cwDocumentedSteps?.[idx]||"";
+      const decision=parseDocumentedDecisionStep(step);
+      if(!decision) return;
+      const detail=document.getElementById("documentedDecisionDetail");
+      if(choice==="yes"){
+        if(detail) detail.innerHTML=`<div class="status warn"><strong>Documented action:</strong> ${escapeHtml(decision.action)}<div style="margin-top:12px;"><button type="button" onclick="cwDocumentedDecisionActionCompleted()">✓ Action Completed — Continue</button></div></div>`;
+      }else{
+        const heading=document.querySelector("#result h2")?.innerText||"Documented diagnosis";
+        recordCompletedDiagnosticStep(step,heading,[]);
+        window.cwDocumentedStepShow(idx+1);
+      }
+    };
+    window.cwDocumentedDecisionActionCompleted=function(){
+      const idx=window.cwDocumentedStepIndex;
+      const step=window.cwDocumentedSteps?.[idx]||"";
+      const heading=document.querySelector("#result h2")?.innerText||"Documented diagnosis";
+      const decision=parseDocumentedDecisionStep(step);
+      recordCompletedDiagnosticStep(step,heading,getDocumentedStepParts(step, displayedParts));
+      if(decision){
+        serviceReportLog.push({title:`${heading} — Decision`,detail:`Condition applied: ${decision.condition}. Documented action completed: ${decision.action}`,parts:[],steps:[]});
+      }
+      window.cwDocumentedStepShow(idx+1);
+    };
+
     window.cwDocumentedStepCompleted=function(){
       const idx=window.cwDocumentedStepIndex;
       const step=window.cwDocumentedSteps?.[idx]||"";
@@ -2972,6 +3008,36 @@ function renderDocumentedErrorBranch(raw){
   const target=document.getElementById("resultCard");
   if(target) target.scrollIntoView({behavior:"smooth",block:"start"});
   return true;
+}
+
+
+function parseDocumentedDecisionStep(step){
+  const raw=String(step||"").replace(/\s+/g," " ).trim();
+  if(!raw) return null;
+  // Only expose a decision point when the source step explicitly contains
+  // an "If ... , ..." condition. We do not invent an alternate path.
+  const m=raw.match(/\bIf\s+(.+?),\s+(.+)$/i);
+  if(!m) return null;
+  const condition=m[1].trim();
+  const action=m[2].trim();
+  if(!condition || !action) return null;
+  const prefix=raw.slice(0,m.index).replace(/[;,:\s]+$/,'').trim();
+  return {prefix,condition,action,source:raw};
+}
+
+function renderDocumentedDecisionControls(step, index, mode){
+  const decision=parseDocumentedDecisionStep(step);
+  if(!decision) return "";
+  const fn=mode==="alphabetical" ? "cwAlphabeticalDecision" : "cwDocumentedDecision";
+  return `<div class="documented-decision" style="margin-top:16px;padding:14px;border:1px solid #cfd9e2;border-radius:9px;background:#f8fafc;">
+    <strong>Decision point</strong>
+    <div style="margin-top:7px;line-height:1.45;">Does this condition apply?</div>
+    <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
+      <button type="button" onclick="${fn}('yes')">Yes — condition applies</button>
+      <button type="button" class="secondary" onclick="${fn}('no')">No — continue</button>
+    </div>
+    <div id="documentedDecisionDetail" style="margin-top:12px;"></div>
+  </div>`;
 }
 
 function extractDiagnosticTestReference(step){
@@ -3426,10 +3492,12 @@ function diagnosticAnswer(answer){
          }
          const step=window.cwAlphabeticalSteps[index];
          const testInfo=extractDiagnosticTestReference(step);
+         const decision=parseDocumentedDecisionStep(step);
          let stepHtml=`<div class="documented-step" style="padding:16px;margin:10px 0;border:1px solid #d8e0e7;border-radius:9px;background:#fff;">
            <div class="muted">Step ${index+1} of ${window.cwAlphabeticalSteps.length}</div>
            <h4 style="margin:8px 0 10px;">Step ${index+1}</h4>
-           <div style="font-size:1.05rem;line-height:1.5;">${escapeHtml(step)}</div>`;
+           <div style="font-size:1.05rem;line-height:1.5;">${escapeHtml(decision ? (decision.prefix || "Complete the documented check before evaluating the condition.") : step)}</div>
+           ${decision ? `<div class="status" style="margin-top:12px;"><strong>If ${escapeHtml(decision.condition)},</strong> ${escapeHtml(decision.action)}</div>${renderDocumentedDecisionControls(step,index,"alphabetical")}` : ``}`;
          if(testInfo){
            stepHtml+=`<div class="diagnostic-navigation" style="margin-top:14px;">
              <strong>Diagnostic test referenced by this step</strong>
@@ -3437,10 +3505,15 @@ function diagnosticAnswer(answer){
              <button type="button" class="secondary diagnostic-nav-btn" onclick="showDiagnosticNavigation('${escapeHtml(testInfo.testName).replace(/'/g,"&#39;")}')">How to get to this test</button>
            </div>`;
          }
-         stepHtml+=`<div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;">
-           ${index>0?`<button type="button" class="secondary" onclick="cwAlphabeticalStepBack()">← Back</button>`:""}
-           <button type="button" onclick="cwAlphabeticalStepCompleted()">✓ Step Completed — Continue</button>
-         </div></div>`;
+         if(!decision){
+           stepHtml+=`<div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;">
+             ${index>0?`<button type="button" class="secondary" onclick="cwAlphabeticalStepBack()">← Back</button>`:""}
+             <button type="button" onclick="cwAlphabeticalStepCompleted()">✓ Step Completed — Continue</button>
+           </div>`;
+         } else if(index>0){
+           stepHtml+=`<div style="margin-top:18px;"><button type="button" class="secondary" onclick="cwAlphabeticalStepBack()">← Back</button></div>`;
+         }
+         stepHtml+=`</div>`;
          list.innerHTML=stepHtml;
          if(progress) progress.textContent=`Step ${index+1} of ${window.cwAlphabeticalSteps.length}`;
          if(outcome) outcome.classList.add('hidden');
@@ -3449,6 +3522,32 @@ function diagnosticAnswer(answer){
          const previous=window.cwAlphabeticalStepIndex-1;
          if(previous>=0) window.cwAlphabeticalStepShow(previous);
        };
+       window.cwAlphabeticalDecision=function(choice){
+         const idx=window.cwAlphabeticalStepIndex;
+         const step=window.cwAlphabeticalSteps?.[idx]||"";
+         const decision=parseDocumentedDecisionStep(step);
+         if(!decision) return;
+         const detail=document.getElementById("documentedDecisionDetail");
+         if(choice==="yes"){
+           if(detail) detail.innerHTML=`<div class="status warn"><strong>Documented action:</strong> ${escapeHtml(decision.action)}<div style="margin-top:12px;"><button type="button" onclick="cwAlphabeticalDecisionActionCompleted()">✓ Action Completed — Continue</button></div></div>`;
+         }else{
+           const heading=document.querySelector("#result h2")?.innerText||"Alphabetical message";
+           recordCompletedDiagnosticStep(step,heading,[]);
+           window.cwAlphabeticalStepShow(idx+1);
+         }
+       };
+       window.cwAlphabeticalDecisionActionCompleted=function(){
+         const idx=window.cwAlphabeticalStepIndex;
+         const step=window.cwAlphabeticalSteps?.[idx]||"";
+         const heading=document.querySelector("#result h2")?.innerText||"Alphabetical message";
+         const decision=parseDocumentedDecisionStep(step);
+         recordCompletedDiagnosticStep(step,heading,[]);
+         if(decision){
+           serviceReportLog.push({title:`${heading} — Decision`,detail:`Condition applied: ${decision.condition}. Documented action completed: ${decision.action}`,parts:[],steps:[]});
+         }
+         window.cwAlphabeticalStepShow(idx+1);
+       };
+
        window.cwAlphabeticalStepCompleted=function(){
          const idx=window.cwAlphabeticalStepIndex;
          const step=window.cwAlphabeticalSteps?.[idx]||"";
@@ -4988,7 +5087,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='232';
+  const CURRENT='233';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;
