@@ -1,4 +1,4 @@
-/* Copier Wizard manual data layer — Build 239
+/* Copier Wizard manual data layer — Build 241
  * Schema v2. Service-manual content is intentionally separated from app logic.
  * Backward-compatible legacy arrays remain available to the existing UI.
  * The normalized knowledge layer below is structural only; it does not infer source content.
@@ -20,6 +20,22 @@ window.CW_MANUAL_DATABASE = {"schemaVersion":1,"databaseId":"hp-e52645","model":
 
   const normalizeCode = v => String(v ?? "").trim();
   const normalizeText = v => String(v ?? "").replace(/\s+/g," ").trim();
+  // Technician-only normalization: preserve the original legacy database above,
+  // but remove customer/call-center routing text from the normalized diagnostic layer.
+  const normalizeTechnicianStep = v => {
+    let t = normalizeText(v);
+    if (!t) return "";
+    // If a whole extracted step is explicitly a customer-only routing line,
+    // omit it. Otherwise remove routing labels/page artifacts without deleting
+    // surrounding technician instructions (PDF extraction can place the label mid-sentence).
+    if (/^Recommended action for customers?\b/i.test(t)) return "";
+    t = t.replace(/Recommended action for (?:call-center agents?|customers?)(?:\s+and\s+onsite technicians?)?(?:\s+\d{1,3})?\b/gi, "");
+    t = t.replace(/\bFollow these troubleshooting steps in the order presented\.?/gi, "");
+    t = t.replace(/\s{2,}/g, " ").trim();
+    // Remove a page number that was attached directly to a routing label.
+    t = t.replace(/\s+(?=\d{1,3}\b)/g, " ");
+    return t;
+  };
 
   const errors=(Array.isArray(db.errors)?db.errors:[]).map((x,i)=>({
     id:`${sourceId}:error:${i+1}`,
@@ -28,7 +44,7 @@ window.CW_MANUAL_DATABASE = {"schemaVersion":1,"databaseId":"hp-e52645","model":
     code:normalizeCode(x.code),
     officialDescription:normalizeText(x.desc),
     summary:Array.isArray(x.summary)?x.summary.map(normalizeText).filter(Boolean):[],
-    troubleshootingSteps:Array.isArray(x.steps)?x.steps.map(normalizeText).filter(Boolean):[],
+    troubleshootingSteps:Array.isArray(x.steps)?x.steps.map(normalizeTechnicianStep).filter(Boolean):[],
     sourceId,
     sourceStatus:"legacy-import-pending-validation"
   }));
@@ -40,7 +56,7 @@ window.CW_MANUAL_DATABASE = {"schemaVersion":1,"databaseId":"hp-e52645","model":
     code:normalizeCode(x.code),
     message:normalizeText(x.message),
     description:normalizeText(x.description),
-    actions:Array.isArray(x.actions)?x.actions.map(normalizeText).filter(Boolean):[],
+    actions:Array.isArray(x.actions)?x.actions.map(normalizeTechnicianStep).filter(Boolean):[],
     sourceId,
     sourceStatus:"legacy-import-pending-validation"
   }));
@@ -208,7 +224,7 @@ window.CW_MANUAL_DATABASE = {"schemaVersion":1,"databaseId":"hp-e52645","model":
     if(issues.length) audit.push({id:p.id,partNumber:p.partNumber,type:"part",issues});
   });
   kb.importAudit={
-    build:240,
+    build:241,
     checkedRecords:(kb.records||[]).length+(kb.parts||[]).length,
     flaggedRecords:audit.length,
     findings:audit,
