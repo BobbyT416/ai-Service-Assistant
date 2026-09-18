@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 249</title>
+<title>Copier Wizard — Build 250</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -599,7 +599,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 249</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.<br/>Manual data layer: <strong>External</strong></footer>
+<footer><strong>Copier Wizard — Build 250</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.<br/>Manual data layer: <strong>External</strong></footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -2214,7 +2214,7 @@ window.CW_IMPORT_AUDIT = window.CW_KNOWLEDGE_BASE?.importAudit || null;
   };
   window.CW_IMPORT_PACKAGE_VALIDATOR=validateManualPackage;
 })();
-/* Build 249: M776 diagnostic layer. M776 is enabled now; M856/E85055 remain selectable
+/* Build 250: M776 diagnostic layer. M776 is enabled now; M856/E85055 remain selectable
    but are not routed into this M776-specific catalog until their workflow is verified. */
 const M776_ERROR_CATALOG = [
 {code:"58.00.02",desc:"Environmental sensor failure.",steps:["Turn the printer off, and then on.","Disconnect and reconnect J521 and J522 on the fan connecting PCA.","Disconnect and reconnect J158 on the DC controller PCA.","If the error persists, replace the environmental sensor PCB assembly."],parts:["Environmental sensor PCB assembly — RM2-9620-000CN"],repairType:"envsensor-m776"},
@@ -5411,7 +5411,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='249';
+  const CURRENT='250';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;
