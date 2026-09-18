@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 233</title>
+<title>Copier Wizard — Build 234</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -599,7 +599,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 233</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.<br/>Manual data layer: <strong>External</strong></footer>
+<footer><strong>Copier Wizard — Build 234</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.<br/>Manual data layer: <strong>External</strong></footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -711,11 +711,15 @@ function openServiceReport(disposition){
   const msg=serviceReportContext.message || document.getElementById("messageLookup")?.value.trim() || "";
   const defaultProblem=serviceReportContext.problem || (code?`Error code ${code}`:(msg?msg:"Diagnostic problem"));
   const log=serviceReportLog.filter(x=>x.title||x.detail||x.parts.length||x.steps.length);
-  const path=log.map(x=>x.title).filter(Boolean).slice(-15);
+  // Build 234: the report should show the actual work performed once.
+  // Snapshot titles such as "Documented Error — 31.03.20" are navigation/history
+  // markers, not work performed, and the old separate Key Checks / Actions
+  // section duplicated the same completed steps.
+  const completedSteps=[];
+  log.forEach(x=>x.steps.forEach(v=>{if(v && !completedSteps.includes(v))completedSteps.push(v);}));
+  const path=completedSteps.slice(-15);
   const partLines=[];
-  log.forEach(x=>x.parts.forEach(p=>{if(!partLines.includes(p))partLines.push(p);}));
-  const stepLines=[];
-  log.forEach(x=>x.steps.forEach(v=>{if(!stepLines.includes(v))stepLines.push(v);}));
+  log.forEach(x=>x.parts.forEach(p=>{if(p && !partLines.includes(p))partLines.push(p);}));
   const now=new Date();
   const date=now.toLocaleDateString()+" "+now.toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
   out.innerHTML=`<div class="report-inputs">
@@ -742,8 +746,7 @@ function openServiceReport(disposition){
     ${code?`<p><strong>Error code:</strong> ${serviceReportEscape(code)}</p>`:""}
     ${msg?`<p><strong>Control-panel message:</strong> ${serviceReportEscape(msg)}</p>`:""}
     <h3>Diagnostic Work Performed</h3>
-    ${path.length?`<ol class="report-list">${path.map(v=>`<li>${serviceReportEscape(v)}</li>`).join("")}</ol>`:"<p>Diagnostic history was not available for this path.</p>"}
-    ${stepLines.length?`<h3>Key Checks / Actions</h3><ul class="report-list">${stepLines.slice(0,20).map(v=>`<li>${serviceReportEscape(v)}</li>`).join("")}</ul>`:""}
+    ${path.length?`<ol class="report-list">${path.map(v=>`<li>${serviceReportEscape(v)}</li>`).join("")}</ol>`:"<p>No completed diagnostic steps were recorded.</p>"}
     ${partLines.length?`<h3>Parts / Components Mentioned</h3><ul class="report-list">${partLines.map(v=>`<li>${serviceReportEscape(v)}</li>`).join("")}</ul>`:""}
     <h3>Final Disposition</h3><p><strong>${serviceReportEscape(serviceReportContext.disposition)}</strong></p>
     <div id="reportPrintableNotes"></div>
@@ -817,7 +820,7 @@ function buildServiceReportPdf(){
 
   // Use the rendered report text, but skip the technician-input header and notes
   // because those are already explicitly captured above.
-  const headings=["Problem","Diagnostic Work Performed","Key Checks / Actions","Parts / Components Mentioned","Final Disposition"];
+  const headings=["Problem","Diagnostic Work Performed","Parts / Components Mentioned","Final Disposition"];
   headings.forEach(h=>{
     const hs=[...summary.querySelectorAll("h3")].find(x=>x.textContent.trim()===h);
     if(!hs) return;
@@ -5087,7 +5090,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='233';
+  const CURRENT='234';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;
