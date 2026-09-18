@@ -1774,24 +1774,20 @@ const e52645Docs = {
   }
 };
 
-function cleanDocumentedPart(raw){
+function cleanDocumentedPart(raw, model){
   const text=String(raw||'').replace(/^\s*[●•▪-]\s*/,'').replace(/\s+/g,' ').trim();
+  if(!text) return "";
   const partMatch=text.match(/\b[A-Z0-9]{2,}(?:-[A-Z0-9]+)+\b/i);
   if(partMatch){
-    const authority=window.cwGetAuthoritativePart?.(partMatch[0]);
-    if(authority?.displayDescription) return `${authority.displayDescription} — ${authority.partNumber}`;
+    const authority=window.cwGetAuthoritativePart?.(partMatch[0],model);
+    if(authority?.displayDescription || authority?.description){
+      return `${authority.displayDescription || authority.description} — ${authority.partNumber}`;
+    }
+    // A part number that is known to the global authority but does not apply to
+    // this machine must never leak into a model-specific recommendation.
+    if(window.CW_PART_AUTHORITY?.[String(partMatch[0]).toUpperCase()]) return "";
   }
-  const mappings={
-    'W5U23A':'HP 200 ADF Roller Replacement Kit',
-    'B5L47-67909':'ADF Whole Unit Workflow (M527c/M527z)',
-    'B5L47-67908':'ADF Whole Unit Enterprise (M527dn/M527f)',
-    'B5L47-67907':'Document feeder whole unit (E52645 Flow)',
-    'B5L47-67906':'Document feeder whole unit (E52645 Enterprise)'
-  };
-  for(const [pn,desc] of Object.entries(mappings)){
-    if(text.includes(pn)) return `${desc} — ${pn}`;
-  }
-  return text
+  return text;
 }
 
 function documentationBadge(text){
@@ -2841,7 +2837,7 @@ function cleanTechnicianStep(raw){
 
 function getE52645TechnicianOverride(code, item){
   const normalized=normalizeErrorCode(code);
-  // Build 239: first importer-readiness batch. These procedures exercise
+  // Build 239: first importer-readiness batch; refined in Build 242. These procedures exercise
   // consumable, firmware/power-cycle, conditional replacement, voltage-specific
   // parts, and escalation outcomes using the existing HP manual data layer.
   if(normalized==="10.00.00" || normalized==="10.00.01"){
@@ -2933,21 +2929,23 @@ function getE52645TechnicianOverride(code, item){
     };
   }
   if(normalized!=="31.13.00") return null;
+  // Build 242: 31.13.00 is intentionally derived from the documented multi-pick
+  // procedure, not from the motor/SCB branch used by other 31.03/31.13 errors.
+  // Keep the procedure technician-focused while preserving the documented order.
   return {
     steps:[
-      "Reproduce the problem by running multiple originals through the automatic document feeder (ADF) and confirm that more than one sheet is being picked at a time.",
-      "Verify that the originals meet the ADF paper specifications. Make sure the input tray is not overloaded and that the guides are correctly aligned to the paper.",
-      "Check and clean the ADF pickup rollers and separation pad. Also check the registration sensor for contamination or debris and clean it as needed.",
-      "Check the Document Feeder Kit consumable status. If the kit is Low or Very Low, replace the applicable Document Feeder Kit rollers and separation pad according to the service documentation.",
-      "Verify that the ADF motor cables are connected and seated correctly. Reseat the document feeder connections to the scanner control board (SCB).",
-      "If the multi-pick problem remains after the documented checks, escalate for additional service-level troubleshooting. Do not replace the entire document feeder solely from this error code without completing the documented checks first."
+      "Open the automatic document feeder cover, pull all the sheets back into the tray, and then resume the job.",
+      "Lift the document-feeder input tray and remove any jammed paper. Lower the input tray and close the document-feeder cover, making sure the latch is fully closed.",
+      "Ensure that the originals meet the document feeder (ADF) specifications for the printer.",
+      "Ensure that the input tray is not overloaded and that the tray guides are set to the correct size. Make sure the paper stack is centered and aligned with the direction of travel into the document feeder paper path.",
+      "Check the Document Feeder Kit consumable status. If the status is Low or Very Low, replace the Document Feeder Kit as documented.",
+      "Check and clean the document feeder pickup and separation rollers. Use a clean lint-free cloth moistened with warm water as documented, and lift the roller assembly to access the second roller.",
+      "If necessary, replace the Document Feeder Kit rollers and separation pad.",
+      "If the multi-pick problem remains after the documented checks, escalate for additional service-level troubleshooting. Do not replace the complete document feeder solely from 31.13.00 without a documented reason to do so."
     ],
     parts:[
-      "HP 200 ADF Roller Replacement Kit — W5U23A",
-      "ADF Whole Unit Workflow (M527c/M527z) — B5L47-67909",
-      "ADF Whole Unit Enterprise (M527dn/M527f) — B5L47-67908",
-      "Document feeder whole unit (E52645 Flow) — B5L47-67907",
-      "Document feeder whole unit (E52645 Enterprise) — B5L47-67906"
+      "Document feeder maintenance kit accessory with instruction guide — B5L52-67903",
+      "Document feeder maintenance kit — pickup, feed, and separation ADF roller kit — W5U23-67901"
     ]
   };
 }
@@ -2956,6 +2954,20 @@ function getDocumentedStepParts(step, displayedParts){
   const text=String(step||'').toLowerCase();
   const parts=Array.isArray(displayedParts)?displayedParts:[];
   if(!parts.length) return [];
+
+  // Global rule: if a documented step explicitly names a part number, associate
+  // that exact part with the step. This works for future imported manuals too.
+  const mentionedNumbers=[...(String(step||'').match(/\b[A-Z0-9]{2,}(?:-[A-Z0-9]+)+\b/gi)||[])].map(v=>v.toLowerCase());
+  const exact=parts.filter(v=>mentionedNumbers.some(n=>String(v).toLowerCase().includes(n)));
+  if(exact.length) return [...new Set(exact)];
+
+  const wantsADFKit=/\b(document feeder kit|adf roller|pickup.{0,20}separation|separation.{0,20}pad|maintenance kit)\b/i.test(text) &&
+    /\b(replace|replacement|kit|roller|pad)\b/i.test(text);
+  if(wantsADFKit){
+    const kit=parts.filter(v=>/B5L52-67903|W5U23-67901/i.test(String(v)));
+    if(kit.length) return [...new Set(kit)];
+  }
+
   const wantsADFWholeUnit=/\b(replace|replacement)\b[\s\S]{0,140}\b(document feeder|adf)\b/.test(text) &&
     /\b(assembly|whole unit|entire document feeder|document feeder)\b/.test(text);
   const wantsSCB=/\b(replace|replacement)\b[\s\S]{0,120}\b(scanner control board|scb)\b/.test(text);
@@ -2972,7 +2984,7 @@ function renderDocumentedErrorBranch(raw){
   const hit=findDocumentedError(raw), r=document.getElementById("result");
   if(!hit || !r) return false;
 
-  const x=hit.item, code=normalizeErrorCode(raw);
+  const x=hit.item, code=normalizeErrorCode(raw), verifiedModel="E52645";
   const technicianOverride=getE52645TechnicianOverride(code,x);
   let html='<div class="pill">HP E52645</div><div class="pill">Model verified</div>';
   html+=`<h2>Documented Error — ${escapeHtml(code)}</h2>
@@ -3006,7 +3018,7 @@ function renderDocumentedErrorBranch(raw){
     </div>`;
   }
 
-  const displayedParts=technicianOverride ? technicianOverride.parts : (Array.isArray(x.parts) ? [...new Set(x.parts.map(cleanDocumentedPart).filter(Boolean))] : []);
+  const displayedParts=technicianOverride ? technicianOverride.parts : (Array.isArray(x.parts) ? [...new Set(x.parts.map(v=>cleanDocumentedPart(v,verifiedModel)).filter(Boolean))] : []);
   if(displayedParts.length){
     html+=`<div id="documentedPartsSection" class="hidden">
       <h3>Parts Specifically Mentioned by the Manual</h3>
