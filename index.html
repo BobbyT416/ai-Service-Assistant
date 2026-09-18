@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 231</title>
+<title>Copier Wizard — Build 232</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -599,7 +599,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 231</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.<br/>Manual data layer: <strong>External</strong></footer>
+<footer><strong>Copier Wizard — Build 232</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.<br/>Manual data layer: <strong>External</strong></footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -630,7 +630,7 @@ function saveDiagnosticState(){
 // Build 231: record guided-step completion explicitly so the service report
 // reflects the work the technician actually confirmed, not just the last
 // screen that happened to be visible.
-function recordCompletedDiagnosticStep(stepText, contextTitle){
+function recordCompletedDiagnosticStep(stepText, contextTitle, partList){
   const text=String(stepText||"").replace(/\s+/g," ").trim();
   if(!text) return;
   const title=String(contextTitle||"").replace(/\s+/g," ").trim();
@@ -2962,7 +2962,8 @@ function renderDocumentedErrorBranch(raw){
       const idx=window.cwDocumentedStepIndex;
       const step=window.cwDocumentedSteps?.[idx]||"";
       const heading=document.querySelector("#result h2")?.innerText||"Documented diagnosis";
-      recordCompletedDiagnosticStep(step,heading);
+      const completedParts=getDocumentedStepParts(step, displayedParts);
+      recordCompletedDiagnosticStep(step,heading,completedParts);
       window.cwDocumentedStepShow(idx+1);
     };
     window.cwDocumentedStepShow(0);
@@ -3452,7 +3453,8 @@ function diagnosticAnswer(answer){
          const idx=window.cwAlphabeticalStepIndex;
          const step=window.cwAlphabeticalSteps?.[idx]||"";
          const heading=document.querySelector("#result h2")?.innerText||"Alphabetical message";
-         recordCompletedDiagnosticStep(step,heading);
+         const alphaParts=(Array.isArray(item.parts)?item.parts:[]).filter(v=>/\b(replace|replacement|kit|assembly|roller|motor|sensor|board|cable|feeder|fuser)\b/i.test(String(step)) ? item.parts : []);
+         recordCompletedDiagnosticStep(step,heading,alphaParts);
          window.cwAlphabeticalStepShow(idx+1);
        };
        window.cwAlphabeticalStepShow(0);
@@ -3461,10 +3463,14 @@ function diagnosticAnswer(answer){
      html += `<h2>Message Not Verified</h2><div class="status">The entered message was not found in the currently loaded verified E52645 alphabetical-message catalog.</div><button class="secondary" onclick="showLookup('message')">Back to Message Search</button><button class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>`;
    }
  } else if(answer==='alpha-resolved'){
+   serviceReportContext.disposition='Problem resolved';
+   serviceReportLog.push({title:'Final disposition',detail:'Problem resolved after completing the documented alphabetical-message procedure.',parts:[],steps:[]});
    html += `<h2>Alphabetical Message — Problem Resolved</h2>
      <div class="status">The documented procedure was completed and the problem is resolved.</div>
      <button class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>`;
  } else if(answer==='alpha-persists'){
+   serviceReportContext.disposition='Error remains — escalation recommended';
+   serviceReportLog.push({title:'Final disposition',detail:'The documented alphabetical-message procedure was completed but the problem remains; escalation is required.',parts:[],steps:[]});
    html += `<h2>Alphabetical Message — Escalation</h2>
      <div class="status warn">The documented procedure has been completed but the problem remains.</div>
      <p>The assistant will not invent an additional repair beyond the supplied HP documentation. Escalate through the applicable service/support process.</p>
@@ -4076,8 +4082,12 @@ function diagnosticAnswer(answer){
    <p>The CPMD directs escalation using the Standard Support Process. Do not guess at another component or replace the DC controller solely for this symptom.</p>
    <button class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>`;
 } else if(answer==='doc-error-resolved'){
+   serviceReportContext.disposition='Problem resolved';
+   serviceReportLog.push({title:'Final disposition',detail:'Problem resolved after completing the documented error-code procedure.',parts:[],steps:[]});
  html += `<h2>Error Resolved</h2><div class="status">The documented troubleshooting path was completed and the error is no longer present. Record the completed checks and repair, if any.</div><button class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>`;
  } else if(answer==='doc-error-persists'){
+   serviceReportContext.disposition='Error remains — escalation recommended';
+   serviceReportLog.push({title:'Final disposition',detail:'The documented error-code procedure was completed but the error remains; escalation is required.',parts:[],steps:[]});
  html += `<h2>Error Persists — Escalation</h2><div class="status">The supplied documentation does not establish another verified repair step beyond the documented procedure.</div><p>Use the manufacturer's service/support process rather than guessing at another component.</p><button class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>`;
  } else if(answer==='unknown-paper'){
    html += `<h2>Let's Identify the Jam</h2>
@@ -4978,7 +4988,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='231';
+  const CURRENT='232';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;
