@@ -3004,6 +3004,27 @@ function getDocumentedStepParts(step, displayedParts){
   if(wantsSCB){
     return parts.filter(v=>/b5l47-67901|b5l47-67903/i.test(String(v)));
   }
+
+  // Global fallback: HP often puts the part number in the documented parts
+  // list but refers to the same part only by description in the action, e.g.
+  // “replace the paper delivery assembly.” Match the action to the documented
+  // part description; never invent a part or search outside the supplied data.
+  const decision=typeof parseDocumentedDecisionStep==='function' ? parseDocumentedDecisionStep(step) : null;
+  const action=String(decision?.action||'').toLowerCase();
+  const stop=new Set(['the','a','an','and','or','of','to','for','on','in','is','are','be','replace','replaced','replacement','assembly','unit','part','parts','pcb','pca','kit']);
+  const tokenize=v=>String(v||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').split(/\s+/).filter(t=>t.length>=3&&!stop.has(t));
+  const actionTokens=new Set(tokenize(action));
+  const candidates=parts.map(v=>{
+    const desc=String(v).split(/\s+—\s+|\s+-\s+(?=[A-Z0-9])/i)[0];
+    const pt=tokenize(desc);
+    const overlap=pt.filter(t=>actionTokens.has(t)).length;
+    return {v,overlap,score:pt.length?overlap/pt.length:0};
+  }).filter(x=>x.overlap>0);
+  candidates.sort((a,b)=>b.overlap-a.overlap || b.score-a.score);
+  if(candidates.length){
+    const top=candidates[0];
+    if(top.overlap>=2 || top.score>=0.6) return [top.v];
+  }
   return [];
 }
 
@@ -5418,7 +5439,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='252';
+  const CURRENT='253';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;
