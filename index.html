@@ -5439,36 +5439,66 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='253';
+  const CURRENT='254';
+  const BUILD_KEY='cw_last_loaded_build';
+  const PENDING_KEY='cw_pending_update';
+  const REDIRECT_KEY='cw_update_redirect_build';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;
     b.textContent=msg;
     b.classList.add('show');
-    setTimeout(function(){b.classList.remove('show');},3000);
+    setTimeout(function(){b.classList.remove('show');},4000);
+  }
+  function numericBuild(v){
+    const n=parseInt(String(v||'').replace(/[^0-9]/g,''),10);
+    return Number.isFinite(n)?n:0;
+  }
+  function reloadToFreshApp(latest){
+    const target=numericBuild(latest);
+    if(!target || target<=numericBuild(CURRENT))return;
+    if(localStorage.getItem(REDIRECT_KEY)===String(target))return;
+    localStorage.setItem(REDIRECT_KEY,String(target));
+    const u=new URL(window.location.href);
+    u.searchParams.set('cw_update',String(target));
+    u.searchParams.set('cw_cb',String(Date.now()));
+    window.location.replace(u.toString());
   }
   async function checkForRemoteUpdate(){
     try{
-      const r=await fetch('version.json?cb='+Date.now(),{cache:'no-store'});
+      const r=await fetch('version.json?cw_cb='+Date.now(),{cache:'no-store',headers:{'Cache-Control':'no-cache'}});
       if(!r.ok)return;
       const d=await r.json();
-      const latest=String(d.build||'');
-      if(latest && latest!==CURRENT){
-        localStorage.setItem('cw_pending_update',latest);
-
+      const latest=String(d.build||d.version||'');
+      const remote=numericBuild(latest), current=numericBuild(CURRENT);
+      if(remote>current){
+        localStorage.setItem(PENDING_KEY,String(remote));
+        reloadToFreshApp(remote);
+      }else if(remote===current){
+        localStorage.removeItem(PENDING_KEY);
+        localStorage.removeItem(REDIRECT_KEY);
       }
-    }catch(e){}
+    }catch(e){
+      /* Update checking is non-blocking; the app continues normally if unavailable. */
+    }
   }
   document.addEventListener('DOMContentLoaded',function(){
-    const pending=localStorage.getItem('cw_pending_update');
-    const lastLoaded=localStorage.getItem('cw_last_loaded_build');
-    if(pending===CURRENT){
-      localStorage.removeItem('cw_pending_update');
+    const params=new URLSearchParams(window.location.search);
+    const loadedFromUpdate=params.get('cw_update');
+    const pending=localStorage.getItem(PENDING_KEY);
+    const lastLoaded=localStorage.getItem(BUILD_KEY);
+    if(loadedFromUpdate===CURRENT || pending===CURRENT || (lastLoaded && numericBuild(lastLoaded)<numericBuild(CURRENT))){
+      localStorage.removeItem(PENDING_KEY);
+      localStorage.removeItem(REDIRECT_KEY);
       show('Copier Wizard updated — Build '+CURRENT);
-    }else if(lastLoaded && lastLoaded!==CURRENT){
-      show('Copier Wizard updated — Build '+CURRENT);
+      if(params.has('cw_update') || params.has('cw_cb')){
+        params.delete('cw_update');
+        params.delete('cw_cb');
+        const clean=window.location.pathname+(params.toString()?'?'+params.toString():'')+window.location.hash;
+        window.history.replaceState({},document.title,clean);
+      }
     }
-    localStorage.setItem('cw_last_loaded_build',CURRENT);
+    localStorage.setItem(BUILD_KEY,CURRENT);
     checkForRemoteUpdate();
   });
 })();
