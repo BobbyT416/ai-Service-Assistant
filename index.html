@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Copier Wizard — Build 251</title>
+<title>Copier Wizard — Build 252</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#18212b}
 header{background:#0f4f8a;color:white;padding:14px 24px} header h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:#dceafa}.cw-brand{display:flex;align-items:center;gap:12px;max-width:900px;margin:0 auto}.cw-logo-home{display:block;line-height:0;text-decoration:none;cursor:pointer}.cw-brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}.cw-brand h1{font-size:24px}.cw-brand p{font-size:15px}@media(max-width:600px){header{padding:12px 16px}.cw-brand img{width:48px;height:48px}.cw-brand h1{font-size:22px}.cw-brand p{font-size:13px}}
@@ -599,7 +599,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <button class="modal-close" onclick="closeSpecs()">Close</button>
 </div>
 </div>
-<footer><strong>Copier Wizard — Build 251</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.<br/>Manual data layer: <strong>External</strong></footer>
+<footer><strong>Copier Wizard — Build 252</strong><br/>Prototype only. Technical content is based on the supplied HP documentation and is not a substitute for the manufacturer's service documentation.<br/>Manual data layer: <strong>External</strong></footer>
 <script>
 let verifiedModel="";
 let diagnosticHistory=[];
@@ -1859,13 +1859,6 @@ const machineSelectionFamilies = {
       supported: true,
       docs: "Service Manual + CPMD"
     },
-    "m776-family": {
-      label: "M776 / M856 / E85055 family",
-      models: ["M776","M856","E85055"],
-      supported: true,
-      supportedModels: ["M776"],
-      docs: "M776 Repair Manual + M776 CPMD — verified M776 workflow enabled"
-    },
     "m607-family": {
       label: "M607 / M608 / M609 / M610 / M611 / M612 family",
       models: ["M607","M608","M609","M610","M611","M612","E60055","E60065","E60075","E60155","E60165","E60175"],
@@ -1886,6 +1879,13 @@ const machineSelectionFamilies = {
     }
   },
   color: {
+    "m776-family": {
+      label: "M776 family",
+      models: ["M776"],
+      supported: true,
+      supportedModels: ["M776"],
+      docs: "M776 Repair Manual + M776 CPMD — verified M776 workflow enabled"
+    },
     "m652-family": {
       label: "M652 / M653 / E65050 / E65060 / E65150 / E65160 family",
       models: ["M652","M653","E65050","E65060","E65150","E65160"],
@@ -2208,7 +2208,7 @@ window.CW_IMPORT_AUDIT = window.CW_KNOWLEDGE_BASE?.importAudit || null;
   };
   window.CW_IMPORT_PACKAGE_VALIDATOR=validateManualPackage;
 })();
-/* Build 251: M776 product-number/variant layer. M776 is enabled now; M856/E85055 remain selectable
+/* Build 252: M776 product-number/variant layer. M776 is enabled now; M856/E85055 remain selectable
    but are not routed into this M776-specific catalog until their workflow is verified. */
 const M776_ERROR_CATALOG = [
 {code:"58.00.02",desc:"Environmental sensor failure.",steps:["Turn the printer off, and then on.","Disconnect and reconnect J521 and J522 on the fan connecting PCA.","Disconnect and reconnect J158 on the DC controller PCA.","If the error persists, replace the environmental sensor PCB assembly."],parts:["Environmental sensor PCB assembly — RM2-9620-000CN"],repairType:"envsensor-m776"},
@@ -3178,7 +3178,7 @@ function renderDocumentedErrorBranch(raw){
       if(!decision) return;
       const detail=document.getElementById("documentedDecisionDetail");
       if(choice==="yes"){
-        if(detail) detail.innerHTML=`<div class="status warn"><strong>Documented action:</strong> ${escapeHtml(decision.action)}<div style="margin-top:12px;"><button type="button" onclick="cwDocumentedDecisionActionCompleted()">✓ Action Completed — Continue</button></div></div>`;
+        if(detail) detail.innerHTML=`<div class="status warn"><strong>Documented action:</strong> ${formatDocumentedDecisionAction(decision, step, displayedParts)}<div style="margin-top:12px;"><button type="button" onclick="cwDocumentedDecisionActionCompleted()">✓ Action Completed — Continue</button></div></div>`;
       }else{
         const heading=document.querySelector("#result h2")?.innerText||"Documented diagnosis";
         recordCompletedDiagnosticStep(step,heading,[]);
@@ -3192,7 +3192,7 @@ function renderDocumentedErrorBranch(raw){
       const decision=parseDocumentedDecisionStep(step);
       recordCompletedDiagnosticStep(step,heading,getDocumentedStepParts(step, displayedParts));
       if(decision){
-        serviceReportLog.push({title:`${heading} — Decision`,detail:`Condition applied: ${decision.condition}. Documented action completed: ${decision.action}`,parts:[],steps:[]});
+        serviceReportLog.push({title:`${heading} — Decision`,detail:`Condition applied: ${decision.condition}. Documented action completed: ${decision.action}`,parts:getDocumentedStepParts(step, displayedParts),steps:[]});
       }
       window.cwDocumentedStepShow(idx+1);
     };
@@ -3240,6 +3240,13 @@ function parseDocumentedDecisionStep(step){
 
   const prefix=raw.slice(0,m.index).replace(/[;,:\s]+$/,'').trim();
   return {prefix,condition,action,source:raw};
+}
+
+function formatDocumentedDecisionAction(decision, step, displayedParts){
+  const action=String(decision?.action||"");
+  const associated=getDocumentedStepParts(step, displayedParts);
+  if(!associated.length) return escapeHtml(action);
+  return escapeHtml(action)+`<div style="margin-top:8px;"><strong>Part:</strong> ${associated.map(v=>escapeHtml(v)).join('<br>')}</div>`;
 }
 
 function documentedDecisionQuestion(condition){
@@ -3806,7 +3813,7 @@ function diagnosticAnswer(answer){
          if(!decision) return;
          const detail=document.getElementById("documentedDecisionDetail");
          if(choice==="yes"){
-           if(detail) detail.innerHTML=`<div class="status warn"><strong>Documented action:</strong> ${escapeHtml(decision.action)}<div style="margin-top:12px;"><button type="button" onclick="cwAlphabeticalDecisionActionCompleted()">✓ Action Completed — Continue</button></div></div>`;
+           if(detail) detail.innerHTML=`<div class="status warn"><strong>Documented action:</strong> ${formatDocumentedDecisionAction(decision, step, displayedParts)}<div style="margin-top:12px;"><button type="button" onclick="cwAlphabeticalDecisionActionCompleted()">✓ Action Completed — Continue</button></div></div>`;
          }else{
            const heading=document.querySelector("#result h2")?.innerText||"Alphabetical message";
            recordCompletedDiagnosticStep(step,heading,[]);
@@ -5411,7 +5418,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='251';
+  const CURRENT='252';
   function show(msg){
     const b=document.getElementById('cwUpdateBubble');
     if(!b)return;
