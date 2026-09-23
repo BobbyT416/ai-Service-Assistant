@@ -2235,7 +2235,7 @@ let E52645_ERROR_CATALOG = window.CW_MANUAL_DATABASE.errors;
 function cwUseM776Catalog(){return String(currentMachineModel||verifiedModel||"").toUpperCase()==="M776";}
 function cwM776Product(){return String(window.verifiedProduct||document.getElementById("product")?.value||"").toUpperCase();}
 function cwM776Variant(){const p=cwM776Product();if(p==="T3U55A")return "M776dn";if(p==="3WT91A")return "M776z";if(p==="T3U56A")return "M776zs";return "";}
-function cwM776PartsForError(x){const code=String(x?.code||"").toUpperCase(),variant=cwM776Variant();if(!variant)return Array.isArray(x?.parts)?x.parts:[];if(code==="59.00.03"||code==="59.00.04")return variant==="M776zs"?["Paper delivery assembly — RM2-1786-000CN","Duplexing controller PCB assembly — RM3-7380-000CN"]:["Paper delivery assembly — RM2-3910-000CN","Duplexing controller PCB assembly — RM2-9921-000CN"];if(code==="58.00.03")return [variant==="M776zs"?"DC controller PCB assembly — RM2-9931-000CN":"DC controller PCB assembly — RM2-9930-000CN"];if(code==="59.00.00")return ["Paper pickup assembly — SOURCE CONFLICT: CPMD lists RM2-1393-000CN; Repair Manual lists RM2-3908-000CN","DC controller PCB assembly — "+(variant==="M776zs"?"RM2-9931-000CN":"RM2-9930-000CN")];return Array.isArray(x?.parts)?x.parts:[];}
+function cwM776PartsForError(x){const code=String(x?.code||"").toUpperCase(),variant=cwM776Variant();if(!variant)return Array.isArray(x?.parts)?x.parts:[];if(code==="59.00.03"||code==="59.00.04")return variant==="M776zs"?["Right door assembly — RM2-3434-000CN","Paper delivery assembly — RM2-1786-000CN","Duplexing controller PCB assembly — RM3-7380-000CN"]:["Right door assembly — RM2-3434-000CN","Paper delivery assembly — RM2-3910-000CN","Duplexing controller PCB assembly — RM2-9921-000CN"];if(code==="58.00.03")return [variant==="M776zs"?"DC controller PCB assembly — RM2-9931-000CN":"DC controller PCB assembly — RM2-9930-000CN"];if(code==="59.00.00")return ["Paper pickup assembly — SOURCE CONFLICT: CPMD lists RM2-1393-000CN; Repair Manual lists RM2-3908-000CN","DC controller PCB assembly — "+(variant==="M776zs"?"RM2-9931-000CN":"RM2-9930-000CN")];return Array.isArray(x?.parts)?x.parts:[];}
 function cwActiveErrorCatalog(){return cwUseM776Catalog()?M776_ERROR_CATALOG:E52645_ERROR_CATALOG;}
 function cwActiveMessageCatalog(){return cwUseM776Catalog()?M776_MESSAGE_CATALOG:window.E52645_ALPHABETICAL_MESSAGES;}
 window.E52645_ERROR_CATALOG=E52645_ERROR_CATALOG;
@@ -2972,7 +2972,11 @@ function getE52645TechnicianOverride(code, item){
       "If a grinding noise is heard or reported in conjunction with ADF pickup or feed, the documentation directs replacement of the document feeder (ADF) unit. Otherwise, if the multi-pick problem remains after the documented checks, escalate using the documented service process rather than automatically replacing the complete ADF."
     ],
     parts:[
-      "Document feeder roller replacement kit — 5851-7202 (HP product number J8J95A)"
+      "Document feeder roller replacement kit — 5851-7202 (HP product number J8J95A)",
+      "Document feeder whole unit (E52645 Flow) — B5L47-67907",
+      "Document feeder whole unit (E52645 Enterprise) — B5L47-67906",
+      "Document Feeder whole unit (ADF) — Flow B5L47-67909",
+      "Document Feeder whole unit (ADF) — Non-Flow B5L47-67908"
     ]
   };
 }
@@ -2999,7 +3003,7 @@ function getDocumentedStepParts(step, displayedParts){
     /\b(assembly|whole unit|entire document feeder|document feeder)\b/.test(text);
   const wantsSCB=/\b(replace|replacement)\b[\s\S]{0,120}\b(scanner control board|scb)\b/.test(text);
   if(wantsADFWholeUnit){
-    return parts.filter(v=>/b5l47-67906|b5l47-67907/i.test(String(v)));
+    return parts.filter(v=>/b5l47-67906|b5l47-67907|b5l47-67908|b5l47-67909/i.test(String(v)));
   }
   if(wantsSCB){
     return parts.filter(v=>/b5l47-67901|b5l47-67903/i.test(String(v)));
@@ -3022,6 +3026,11 @@ function getDocumentedStepParts(step, displayedParts){
   }).filter(x=>x.overlap>0);
   candidates.sort((a,b)=>b.overlap-a.overlap || b.score-a.score);
   if(candidates.length){
+    const voltageCandidates=candidates.filter(x=>/\b(?:110|120|127|208|220|230|240)\s*V\b/i.test(String(x.v)));
+    if(voltageCandidates.length>1){
+      const distinctVoltageLabels=new Set(voltageCandidates.map(x=>String(x.v).match(/\b(?:110|120|127|208|220|230|240)\s*V\b/i)?.[0]?.replace(/\s+/g,'').toUpperCase()).filter(Boolean));
+      if(distinctVoltageLabels.size>1) return [...new Set(voltageCandidates.map(x=>x.v))];
+    }
     const top=candidates[0];
     if(top.overlap>=2 || top.score>=0.6) return [top.v];
   }
@@ -3097,7 +3106,8 @@ function renderDocumentedErrorBranch(raw){
     let repairType=x.repairType;
     if(x.repairType==="delivery-m776" && cwM776Variant()==="M776zs") repairType="delivery-m776zs";
     const proc=CW_VERIFIED_REPAIR_PROCEDURES[repairType];
-    if(proc?.verified) html+=`<div style="margin-top:18px;"><button type="button" onclick="showRepair('${repairType}')">View Removal / Replacement Procedure</button></div>`;
+    const sourceConflict=(code==="59.00.00" && cwM776PartsForError(x).some(v=>/SOURCE CONFLICT/i.test(String(v))));
+    if(proc?.verified && !sourceConflict) html+=`<div style="margin-top:18px;"><button type="button" onclick="showRepair('${repairType}')">View Removal / Replacement Procedure</button></div>`;
   }
   html+=`<div id="documentedOutcome" class="hidden" style="margin-top:18px;">
     <h3>Documented Checks Completed</h3>
@@ -5024,7 +5034,7 @@ Object.assign(CW_VERIFIED_REPAIR_PROCEDURES,{
 "lvps-m776":{title:"Low-voltage power supply (M856/E85055/M776)",parts:["RM2-2473-000CN","RM2-2474-000CN"],verified:true,html:`<h2>Removal and Replacement — LVPS</h2><div class="status"><strong>Repair Manual verified</strong><br>RM2-2473-000CN (110V) or RM2-2474-000CN (220V).</div><div class="step">Power off and disconnect power.</div><div class="step">Remove the formatter cover and M776 SCB cover, then follow the applicable rear-cover access sequence.</div><div class="step">Disconnect the required connections, remove the mounting hardware, and remove the LVPS.</div><div class="step">Install the correct voltage assembly by reversing the documented sequence.</div><div class="step">Power on, confirm Ready, and print a page.</div><p class="muted"><strong>Source:</strong> M776 Repair Manual, Removal and replacement: Low-voltage power supply (LVPS) (M856/E85055/M776).</p>`},
 "delivery-m776":{title:"Delivery assembly (M776dn/M776z)",parts:["RM2-3910-000CN"],verified:true,html:`<h2>Removal and Replacement — Paper Delivery Assembly</h2><div class="status"><strong>Repair Manual verified</strong><br>RM2-3910-000CN — Paper delivery assembly. Procedure: Delivery assembly (M776dn/M776z).</div><div class="step">Power off, disconnect power, and wait 30 seconds before service.</div><div class="step">Remove the fuser.</div><div class="step">Remove the formatter cover and, on M776, the SCB cover.</div><div class="step">Remove the rear upper cover. On M776, remove the control panel, keyboard, and nose cone as specified.</div><div class="step">Disconnect the four connectors, remove the mounting screws, and slide/lift the delivery assembly out.</div><div class="step">Install in reverse order. Make sure the delivery flap passes through the cover opening and the assembly posts are seated in the printer tracks.</div><div class="step">Power on, confirm Ready, and print a page.</div><p class="muted"><strong>Source:</strong> M776 Repair Manual, pp. 634 onward.</p>`},
 "delivery-m776zs":{title:"Delivery assembly (M776zs)",parts:["RM2-1786-000CN"],verified:true,html:`<h2>Removal and Replacement — Paper Delivery Assembly</h2><div class="status"><strong>Repair Manual verified</strong><br>RM2-1786-000CN — Paper delivery assembly. Procedure: Delivery assembly (M776zs).</div><div class="step">Power off, disconnect power, and wait 30 seconds before service.</div><div class="step">Remove the fuser and formatter cover.</div><div class="step">Remove the M776 SCB cover, rear/left rear upper covers, front cover, control panel, keyboard, and nose cone as specified for M776zs.</div><div class="step">Remove the right front/rear upper covers and right upper door.</div><div class="step">Remove the toggle front and toggle rear assemblies, disconnect five connectors, remove six mounting screws, and slide the delivery assembly away from the printer.</div><div class="step">Install in reverse order and follow the documented special installation instructions for the delivery assembly tracks.</div><div class="step">Power on, confirm Ready, and print a page.</div><p class="muted"><strong>Source:</strong> M776 Repair Manual, Removal and replacement: Delivery assembly (M776zs), pp. 653 onward.</p>`},
-"pickup-m776":{title:"Pickup assembly (M751/E75245/M856/E85055/M776)",parts:["RM2-1393-000CN"],verified:true,html:`<h2>Removal and Replacement — Pickup Assembly</h2><div class="status"><strong>Repair Manual verified</strong><br>RM2-1393-000CN — Paper pickup assembly for M856/E85055/M776.</div><div class="step">Power off and disconnect power.</div><div class="step">Follow the documented M776 pickup-assembly access sequence, disconnecting the required connectors and removing the mounting hardware.</div><div class="step">Install the replacement by reversing the documented removal sequence.</div><div class="step">Power on, confirm Ready, and perform the applicable paper-feed test.</div><p class="muted"><strong>Source:</strong> M776 Repair Manual, Removal and replacement: Pickup assembly, p. 1066 onward.</p>`},
+"pickup-m776":{title:"Pickup assembly (M856/E85055/M776)",parts:["RM2-3908-000CN"],verified:true,html:`<h2>Removal and Replacement — Pickup Assembly</h2><div class="status"><strong>Repair Manual verified</strong><br>RM2-3908-000CN — Pickup assembly for M856/E85055/M776.</div><div class="step">Power off and disconnect power.</div><div class="step">Follow the documented M776 pickup-assembly access sequence, disconnecting the required connectors and removing the mounting hardware.</div><div class="step">Install the replacement by reversing the documented removal sequence.</div><div class="step">Power on, confirm Ready, and perform the applicable paper-feed test.</div><p class="muted"><strong>Source:</strong> M776 Repair Manual, Removal and replacement: Pickup assembly, p. 1066 onward.</p>`},
 "laser-m776":{title:"Laser scanner (M751/E75245/M856/E85055/M776)",parts:["RM2-1328-020CN"],verified:true,html:`<h2>Removal and Replacement — Laser Scanner</h2><div class="status"><strong>Repair Manual verified</strong><br>RM2-1328-020CN — Laser scanner assembly.</div><div class="step">Power off and disconnect power.</div><div class="step">Follow the M776 Repair Manual laser-scanner access, connector, and mounting sequence.</div><div class="step">Install the replacement by reversing the documented sequence.</div><div class="step">Power on and print a test page.</div><p class="muted"><strong>Source:</strong> M776 Repair Manual, Removal and replacement: Laser scanner (M751/E75245/M856/E85055/M776), p. 1052 onward.</p>`},
 "tray1-m776":{title:"Tray 1 rollers",parts:["RM2-1525-000CN"],verified:true,html:`<h2>Removal and Replacement — Tray 1 Rollers</h2><div class="status"><strong>Repair Manual verified</strong><br>RM2-1525-000CN — Tray 1 pickup and separation rollers.</div><div class="step">Open Tray 1 and remove the pickup roller cover, then slide the pickup roller away to remove it.</div><div class="step">Slide the separation roller to the left and rotate the right side up to remove it.</div><div class="step">Install the replacement rollers, power on, and print a page from Tray 1.</div><p class="muted"><strong>Source:</strong> M776 Repair Manual, Removal and replacement: Tray 1 rollers, pp. 320 onward.</p>`},
 "tray2-m776":{title:"Tray 2 rollers",parts:["RM2-1526-000CN"],verified:true,html:`<h2>Removal and Replacement — Tray 2 Rollers</h2><div class="status"><strong>Repair Manual verified</strong><br>RM2-1526-000CN — Tray 2 pickup/separation roller assemblies.</div><div class="step">Follow the M776 Repair Manual procedure for Tray 2 pickup and separation rollers.</div><div class="step">Install the replacement rollers, power on, and print from Tray 2.</div><p class="muted"><strong>Source:</strong> M776 Repair Manual.</p>`}
@@ -5439,7 +5449,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='255';
+  const CURRENT='256';
   function cwSyncBuildLabels(){
     const label='Build '+CURRENT;
     document.title='Copier Wizard — '+label;
