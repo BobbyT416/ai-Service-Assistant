@@ -5043,15 +5043,24 @@ Object.assign(CW_VERIFIED_REPAIR_PROCEDURES,{
 function showRepair(type){
  const r=document.getElementById("result");
  const proc=CW_VERIFIED_REPAIR_PROCEDURES[type];
+ if(!r) return;
+ // Preserve the diagnosis screen so the technician can return to the exact
+ // step that opened this procedure. Previously the procedure view replaced
+ // the diagnosis with no navigation path back.
+ if(r.innerHTML.trim()) diagnosticHistory.push(r.innerHTML);
+ const repairNav=`<div class="repair-nav" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:24px;padding-top:16px;border-top:1px solid #d7e0e8;">
+   <button type="button" class="secondary" onclick="goBackDiagnostic()">← Back to Diagnosis</button>
+   <button type="button" onclick="resetProblem()">Start New Diagnosis</button>
+ </div>`;
  if(proc?.verified){
-   r.innerHTML=proc.html;
+   r.innerHTML=proc.html + repairNav;
    const resultCard=document.getElementById("resultCard");
    if(resultCard) resultCard.classList.remove("hidden");
    addServiceReportButton(`Viewed verified repair procedure — ${proc.title}`);
    if(r) r.scrollIntoView({behavior:'smooth',block:'start'});
    return;
  }
- r.innerHTML=`<h2>Repair Procedure Not Verified</h2><div class="status warn"><strong>Copier Wizard will not guess.</strong><br>No exact approved removal/replacement procedure is currently linked to this repair selection for the verified machine configuration.</div><p>Use the supplied Service/Repair Manual to locate the exact procedure, or load the appropriate manual into Copier Wizard before performing the replacement.</p>`;
+ r.innerHTML=`<h2>Repair Procedure Not Verified</h2><div class="status warn"><strong>Copier Wizard will not guess.</strong><br>No exact approved removal/replacement procedure is currently linked to this repair selection for the verified machine configuration.</div><p>Use the supplied Service/Repair Manual to locate the exact procedure, or load the appropriate manual into Copier Wizard before performing the replacement.</p>` + repairNav;
  const resultCard=document.getElementById("resultCard");
  if(resultCard) resultCard.classList.remove("hidden");
  if(r) r.scrollIntoView({behavior:'smooth',block:'start'});
